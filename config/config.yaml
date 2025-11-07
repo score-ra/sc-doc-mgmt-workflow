@@ -1,0 +1,160 @@
+---
+# Symphony Core Document Management Workflow - Configuration
+# Version: 1.0.0
+
+# Mode selection: "symphony-core" or "business-docs"
+mode: "symphony-core"
+
+# Processing settings
+processing:
+  # Directories to scan for markdown documents
+  doc_directories:
+    - "."
+  # File to store document cache (for change detection)
+  cache_file: "_meta/.document-cache.json"
+  # Directory for backups before modifications
+  backup_dir: "_meta/.backups/"
+  # File patterns to include
+  include_patterns:
+    - "**/*.md"
+  # File patterns to exclude
+  exclude_patterns:
+    - "_meta/**"
+    - "node_modules/**"
+    - ".git/**"
+    - "venv/**"
+
+# Validation rules for YAML frontmatter
+validation:
+  yaml:
+    enabled: true
+    # Required fields based on mode
+    required_fields:
+      symphony-core:
+        - title
+        - version
+        - author
+        - last_updated
+        - category
+        - tags
+        - status
+        - audience
+      business-docs:
+        - title
+        - version
+        - date
+        - tags
+        - status
+    # Date format validation
+    date_format: "YYYY-MM-DD"
+    # Allowed status values
+    allowed_statuses:
+      - draft
+      - review
+      - approved
+      - deprecated
+      - active
+    # Allowed categories (Symphony Core mode)
+    allowed_categories:
+      - Standards
+      - Guide
+      - Reference
+      - SOP
+      - Process
+    # Allowed audience values (Symphony Core mode)
+    allowed_audiences:
+      - internal-technical
+      - customer-facing
+      - mixed
+
+  # Markdown syntax validation rules
+  markdown:
+    enabled: true
+    # Enforce proper heading hierarchy (H1 → H2 → H3, no skips)
+    enforce_heading_hierarchy: true
+    # Require language specification in code blocks
+    require_language_in_code_blocks: true
+    # Only allow relative links (no absolute URLs in internal docs)
+    relative_links_only: true
+    # Preferred horizontal rule format
+    horizontal_rule_format: "---"
+    # Check for trailing whitespace
+    check_trailing_whitespace: true
+
+  # Naming convention validation
+  naming:
+    enabled: true
+    # Naming pattern: lowercase-with-hyphens
+    pattern: "lowercase-with-hyphens"
+    # Maximum filename length (excluding extension)
+    max_length: 50
+    # Disallow version numbers in filenames
+    no_version_numbers: true
+    # Require descriptive names (minimum length)
+    min_length: 5
+
+# Reporting configuration
+reporting:
+  # Report format: "markdown", "json", or "text"
+  format: "markdown"
+  # Directory for validation reports
+  output_dir: "_meta/reports/"
+  # Include verbose details in reports
+  verbose: true
+  # Include auto-fix suggestions
+  include_suggestions: true
+  # Severity levels to report
+  report_levels:
+    - error
+    - warning
+    - info
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  # Log file path
+  file: "logs/symphony-core.log"
+  # Also output logs to console
+  console: true
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # Rotate log files (max size in MB before rotation)
+  max_file_size_mb: 10
+  # Number of backup log files to keep
+  backup_count: 5
+
+# Performance settings
+performance:
+  # Enable caching for change detection
+  enable_cache: true
+  # Number of documents to process in parallel (0 = auto-detect cores)
+  parallel_workers: 0
+  # Timeout for individual document processing (seconds)
+  processing_timeout: 30
+
+# Feature flags (for future features)
+features:
+  # Auto-fix common issues (v1.1+)
+  auto_fix: false
+  # Document routing (v1.1+)
+  intelligent_routing: false
+  # Automated tagging (v1.1+)
+  automated_tagging: false
+  # Conflict detection (v1.1+)
+  conflict_detection: false
+
+# API configuration (for future LLM features in v1.1+)
+api:
+  # Provider: "anthropic" or "openai"
+  provider: "anthropic"
+  # Model to use
+  model: "claude-3-sonnet-20240229"
+  # Max tokens per request
+  max_tokens: 4096
+  # API timeout (seconds)
+  timeout: 60
+  # Retry attempts on failure
+  max_retries: 3
+  # Exponential backoff base (seconds)
+  retry_backoff_base: 2

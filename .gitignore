@@ -82,6 +82,8 @@ output/
 .cache/
 *.cache
 document_cache.json
+.document-cache.json
+_meta/.document-cache.json
 *.pkl
 *.pickle
 
