@@ -285,10 +285,10 @@ class YAMLValidator:
 
     Checks:
     - Presence of YAML frontmatter
-    - Required fields for current mode
+    - Required fields (title, version, date, tags, status)
     - Date format validation (YYYY-MM-DD)
     - Status values from allowed list
-    - Category/audience values (Symphony Core mode)
+    - Tags is a list format
     """
 
     def __init__(self, config: Config, logger: Logger):
@@ -311,13 +311,11 @@ class YAMLValidator:
 | Rule ID | Check | Severity |
 |---------|-------|----------|
 | YAML-001 | YAML block present | ERROR |
-| YAML-002 | Required fields present | ERROR |
+| YAML-002 | Required fields present (title, version, date, tags, status) | ERROR |
 | YAML-003 | Date format (YYYY-MM-DD) | ERROR |
 | YAML-004 | Status in allowed list | ERROR |
-| YAML-005 | Category valid (SC mode) | ERROR |
-| YAML-006 | Audience valid (SC mode) | ERROR |
-| YAML-007 | Tags is a list | ERROR |
-| YAML-008 | Version format | WARNING |
+| YAML-005 | Tags is a list | ERROR |
+| YAML-006 | Version format (semantic) | WARNING |
 
 ### 4.3 MarkdownValidator
 
@@ -745,15 +743,16 @@ except CacheError as e:
 **End-to-End Tests** (5% of tests):
 - Full CLI workflow with sample documents
 - Error handling paths
-- Different configuration modes
+- Different validation strictness levels
 
 ### 9.3 Test Fixtures
 
 ```
 tests/fixtures/
 ├── valid_documents/
-│   ├── symphony-core-doc.md      (Perfect SC doc)
-│   └── business-doc.md            (Perfect business doc)
+│   ├── pricing-policy.md          (Valid pricing document)
+│   ├── product-specification.md   (Valid product spec)
+│   └── support-guide.md           (Valid support guide)
 ├── invalid_documents/
 │   ├── missing-yaml.md
 │   ├── invalid-date-format.md
@@ -761,7 +760,8 @@ tests/fixtures/
 │   └── uppercase-filename.md
 └── config/
     ├── valid-config.yaml
-    └── invalid-config.yaml
+    ├── strict-config.yaml
+    └── lenient-config.yaml
 ```
 
 ---
@@ -812,11 +812,12 @@ python main.py --help
 ### 10.3 Configuration
 
 Edit `config/config.yaml` to customize:
-- Mode (symphony-core or business-docs)
-- Required YAML fields per mode
+- Required YAML fields (title, version, date, tags, status)
 - Validation rules to enable/disable
+- Validation strictness (strict, lenient, report-only)
 - Report output directory
 - Log level and file location
+- Allowed status values
 
 ---
 

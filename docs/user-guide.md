@@ -16,7 +16,7 @@ audience: end-users
 
 ## Overview
 
-Symphony Core is an automated document validation system that ensures your markdown documentation meets quality standards. It validates YAML frontmatter, markdown syntax, and naming conventions across both Symphony Core technical documentation and business operation documents.
+Symphony Core is an automated document validation system for business operations documentation. It ensures markdown documents meet quality standards by validating YAML frontmatter, markdown syntax, and naming conventions. Symphony Core helps teams maintain consistent, high-quality documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures.
 
 ### What Symphony Core Does
 
@@ -86,28 +86,13 @@ Symphony Core is an automated document validation system that ensures your markd
 
 ## Configuration
 
-Symphony Core is configured through `config/config.yaml`. The system supports two modes:
-
-### Modes
-
-**1. Symphony Core Mode** (Technical Documentation)
-- Strict standards for internal technical docs
-- Required fields: title, version, author, last_updated, category, tags, status, audience
-- Used for Symphony Core repository documentation
-
-**2. Business Docs Mode** (Business Operations)
-- More flexible for business documents
-- Required fields: title, version, date, tags, status
-- Used for pricing, policies, product specs, support docs
+Symphony Core is configured through `config/config.yaml`. The system validates business operations documentation including pricing, policies, product specifications, support guides, billing information, and operational procedures.
 
 ### Editing Configuration
 
 Open `config/config.yaml` and customize:
 
 ```yaml
-# Select your mode
-mode: "symphony-core"  # or "business-docs"
-
 # Document directories to scan
 processing:
   doc_directories:
@@ -117,6 +102,12 @@ processing:
 validation:
   yaml:
     enabled: true
+    required_fields:
+      - title
+      - version
+      - date
+      - tags
+      - status
   markdown:
     enabled: true
   naming:
@@ -171,35 +162,28 @@ python main.py --help
 
 **Checks:**
 - YAML block present at start of file
-- Required fields included (depends on mode)
+- Required fields included (title, version, date, tags, status)
 - Date format correct (YYYY-MM-DD)
 - Status from allowed list
 - Tags is a list (not a string)
 
-**Example Valid Frontmatter (Symphony Core mode):**
+**Example Valid Frontmatter:**
 ```yaml
 ---
-title: My Document
-version: 1.0
-author: John Doe
-last_updated: 2025-11-07
-category: Guide
-tags: [documentation, howto]
+title: Pricing Information for Product X
+version: 2.0
+date: 2025-11-07
+tags: [pricing, product-x, business-operations]
 status: approved
-audience: internal-technical
 ---
 ```
 
-**Example Valid Frontmatter (Business Docs mode):**
-```yaml
----
-title: Pricing Information
-version: 2.0
-date: 2025-11-07
-tags: [pricing, product-x]
-status: approved
----
-```
+**Common Status Values:**
+- `draft` - Document in progress
+- `review` - Ready for review
+- `approved` - Approved and ready for use
+- `active` - Currently in use
+- `deprecated` - No longer current but preserved
 
 #### 2. Markdown Syntax ⏳ (Sprint 3)
 
@@ -364,31 +348,30 @@ pytest tests/path/to/test_file.py::test_name -v
 
 ### Document Organization
 
-**For Symphony Core Mode:**
-- Keep technical docs in organized folders
-- Use clear, descriptive filenames
-- Include complete YAML frontmatter
+**Best Practices for All Documents:**
+- Organize by topic (pricing, policies, product-specs, support, etc.)
+- Use clear, descriptive filenames (lowercase-with-hyphens)
+- Keep documents in logical folder structures
+- Include complete YAML frontmatter on every document
 - Link related documents
-
-**For Business Docs Mode:**
-- Organize by topic (pricing, policies, etc.)
-- Use consistent tagging
-- Keep content up-to-date
-- Version documents appropriately
+- Use consistent tagging across similar documents
+- Keep content up-to-date and review regularly
+- Version documents appropriately (semantic versioning)
 
 ### Writing Good Frontmatter
 
-**Required Fields**:
-- Use descriptive, clear titles
-- Keep versions semantic (1.0, 1.1, 2.0)
-- Use YYYY-MM-DD for all dates
-- Apply relevant tags
-- Set appropriate status
+**Required Fields (must be present):**
+- **title**: Use descriptive, clear titles that explain the document's purpose
+- **version**: Keep versions semantic (1.0, 1.1, 2.0) - increment appropriately
+- **date**: Use YYYY-MM-DD format for last updated date
+- **tags**: Apply relevant tags (list format: [tag1, tag2, tag3])
+- **status**: Set appropriate status (draft, review, approved, active, deprecated)
 
-**Recommended Fields**:
-- Add `author` for accountability
-- Include `audience` to clarify readers
-- Use `related_docs` for cross-referencing
+**Optional Fields (recommended):**
+- `author`: Add for accountability and contact information
+- `category`: Group similar documents (e.g., Policies, Procedures, Pricing)
+- `related_docs`: Link to related documentation
+- `audience`: Clarify intended readers (internal, customer-facing, etc.)
 
 ### Maintaining Document Quality
 
@@ -417,7 +400,7 @@ A: The system uses SHA-256 file hashing to detect changes. Only changed files ar
 A: In `_meta/.document-cache.json` (gitignored by default).
 
 **Q: Can I use this for other markdown documents?**
-A: Yes! Configure it for your document type using business-docs mode or create a custom configuration.
+A: Yes! The system is designed for business operations documentation but can be adapted for other markdown documentation types by customizing the validation rules in config.yaml.
 
 ### Technical Questions
 

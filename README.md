@@ -30,15 +30,14 @@ See [Product Requirements Document](docs/product-requirements-document.md) for f
 
 ## Overview
 
-Symphony Core helps teams manage markdown documentation by automating validation against defined standards. The system supports two modes:
-- **Symphony Core mode**: Technical documentation with strict standards compliance
-- **Business docs mode**: Business operation documents (pricing, policies, specs)
+Symphony Core is an automated document validation system for business operations documentation. It helps teams maintain high-quality, consistent markdown documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures.
 
 **Key Benefits:**
 - Reduce document review time from 4 hours/week to 30 minutes/week
 - Ensure 100% standards compliance automatically
 - Process 50+ documents in < 10 minutes
 - Incremental processing (only check what changed)
+- Configurable validation rules to match your team's needs
 
 ## Installation
 
@@ -111,23 +110,22 @@ python main.py --help
 Edit `config/config.yaml` to customize validation rules:
 
 ```yaml
-# Mode selection
-mode: "symphony-core"  # or "business-docs"
-
 # Validation rules
 validation:
   yaml:
     enabled: true
     required_fields:
-      symphony-core:
-        - title
-        - version
-        - author
-        - last_updated
-        - category
-        - tags
-        - status
-        - audience
+      - title      # Document title
+      - version    # Semantic version (1.0, 1.2.1)
+      - date       # Last updated date (YYYY-MM-DD)
+      - tags       # List of tags
+      - status     # Document status
+    allowed_statuses:
+      - draft
+      - review
+      - approved
+      - deprecated
+      - active
 
   markdown:
     enabled: true

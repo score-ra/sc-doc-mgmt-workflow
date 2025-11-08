@@ -1,9 +1,7 @@
 ---
 # Symphony Core Document Management Workflow - Configuration
-# Version: 1.0.0
-
-# Mode selection: "symphony-core" or "business-docs"
-mode: "symphony-core"
+# Version: 1.1.0
+# Symphony Core is a business operations documentation system
 
 # Processing settings
 processing:
@@ -28,23 +26,13 @@ processing:
 validation:
   yaml:
     enabled: true
-    # Required fields based on mode
+    # Required fields for all documents
     required_fields:
-      symphony-core:
-        - title
-        - version
-        - author
-        - last_updated
-        - category
-        - tags
-        - status
-        - audience
-      business-docs:
-        - title
-        - version
-        - date
-        - tags
-        - status
+      - title      # Document title (string, non-empty)
+      - version    # Semantic version (e.g., 1.0, 1.2.1)
+      - date       # Last updated date (YYYY-MM-DD format)
+      - tags       # List of tags
+      - status     # Document status
     # Date format validation
     date_format: "YYYY-MM-DD"
     # Allowed status values
@@ -54,18 +42,6 @@ validation:
       - approved
       - deprecated
       - active
-    # Allowed categories (Symphony Core mode)
-    allowed_categories:
-      - Standards
-      - Guide
-      - Reference
-      - SOP
-      - Process
-    # Allowed audience values (Symphony Core mode)
-    allowed_audiences:
-      - internal-technical
-      - customer-facing
-      - mixed
 
   # Markdown syntax validation rules
   markdown:

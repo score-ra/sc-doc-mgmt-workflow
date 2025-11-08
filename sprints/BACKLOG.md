@@ -66,23 +66,22 @@ Implement complete YAML frontmatter validation system with parser and validator.
 **So that** all documents have correct and complete metadata
 
 **Acceptance Criteria**:
-- [ ] Validates required fields per mode (symphony-core/business-docs)
+- [ ] Validates required fields (title, version, date, tags, status)
 - [ ] Checks date formats (YYYY-MM-DD)
 - [ ] Validates status from allowed list
-- [ ] Validates category values (Symphony Core mode)
-- [ ] Validates audience values (Symphony Core mode)
-- [ ] Validates tags is a list
+- [ ] Validates tags is a list (not a string)
+- [ ] Validates version format (semantic versioning)
 - [ ] Generates ValidationIssue objects with line numbers
 - [ ] Clear error messages with suggestions
 
 **Tasks**:
 - [ ] Create `src/core/validators/yaml_validator.py`
 - [ ] Implement YAMLValidator class
-- [ ] Implement all validation rules (YAML-001 through YAML-008)
+- [ ] Implement all validation rules (YAML-001 through YAML-006)
 - [ ] Add configuration support for rule enabling/disabling
-- [ ] Generate clear error messages
+- [ ] Generate clear error messages with suggestions
 - [ ] Write comprehensive tests for each rule
-- [ ] Test with symphony-core and business-docs modes
+- [ ] Test with various document types (pricing, policies, specs)
 - [ ] Document the validator
 
 **Files to Create**:
@@ -94,13 +93,11 @@ Implement complete YAML frontmatter validation system with parser and validator.
 | Rule ID | Description |
 |---------|-------------|
 | YAML-001 | YAML block present |
-| YAML-002 | Required fields present |
+| YAML-002 | Required fields present (title, version, date, tags, status) |
 | YAML-003 | Date format (YYYY-MM-DD) |
 | YAML-004 | Status in allowed list |
-| YAML-005 | Category valid |
-| YAML-006 | Audience valid |
-| YAML-007 | Tags is a list |
-| YAML-008 | Version format |
+| YAML-005 | Tags is a list |
+| YAML-006 | Version format (semantic) |
 
 ---
 
@@ -125,7 +122,7 @@ Implement markdown syntax and naming convention validation.
 - [ ] Checks horizontal rule format (---)
 - [ ] Validates list formatting
 - [ ] Detects trailing whitespace
-- [ ] Configurable rules per mode
+- [ ] Configurable rules (enable/disable individual checks)
 - [ ] Clear error messages with line numbers
 
 **Tasks**:
@@ -158,7 +155,7 @@ Implement markdown syntax and naming convention validation.
 - [ ] Detects version numbers in filename
 - [ ] Validates minimum length (descriptive names)
 - [ ] Suggests corrected filenames
-- [ ] Configurable patterns per mode
+- [ ] Configurable strictness levels
 
 **Tasks**:
 - [ ] Create `src/core/validators/naming_validator.py`

@@ -1,10 +1,10 @@
 ---
 title: Symphony Core Document Management Workflow - Product Requirements Document
-version: 2.0
+version: 2.1
 author: Symphony Core Systems Team
 last_updated: 2025-11-07
 category: Reference
-tags: [prd, project-planning, document-management, automation, workflow]
+tags: [prd, project-planning, document-management, automation, workflow, business-operations]
 status: approved
 audience: internal-technical
 ---
@@ -17,19 +17,20 @@ audience: internal-technical
 ## 1. Executive Summary
 
 **Product Name**: Symphony Core Document Management Workflow
-**Product Vision**: Unified automated document processing system that ensures consistency across both technical documentation repositories and business operation documents.
+**Product Vision**: Automated documentation system for business operations - ensuring consistency, quality, and standards compliance for pricing, policies, product specs, support documentation, and internal operational guides.
 
 **One-Liner**: "Continuous document intelligence for small teams"
 
 **Target Users**:
-- Symphony Core documentation contributors (technical docs, repository management)
-- Business operations team (pricing, policies, product specs documentation)
+- Business operations team members who create and maintain markdown documentation
+- Documentation managers who review and approve changes
+- Product managers and team leads who contribute operational documentation
 
 **Primary Goal**: Reduce document review time from 4 hours/week to 15-30 minutes/week
 
 **Success Metric**:
-- 100% standards compliance for Symphony Core repository documents
-- Eliminate customer-facing contradictions in business documents
+- 100% standards compliance for all business operations documents
+- Eliminate customer-facing contradictions
 - Process 50+ documents in < 10 minutes
 
 ---
@@ -38,45 +39,42 @@ audience: internal-technical
 
 ### Current State
 
-**Symphony Core Documentation Repository:**
+**Symphony Core Business Operations Documentation:**
+- 50-100 markdown documents covering pricing, policies, product specifications, support guides, billing information, and operational procedures
 - Documents manually added through `_inbox/` system
-- Manual review of YAML frontmatter, markdown syntax, naming conventions
+- Manual review of YAML frontmatter, markdown syntax, and naming conventions
 - Manual filing from `_inbox/` to appropriate folders
-- No automated conflict detection
-- Inconsistent standards compliance
-- 10-15 minutes per document for manual processing
-
-**Business Operations Documentation:**
-- 30-50 markdown documents covering pricing, policies, product specs, support
 - Updated 2-3 times per week by multiple team members
-- Manually reviewed for consistency
 - Inconsistently tagged and organized
-- Source for customer-facing FAQs (manual process)
+- No automated conflict detection
+- Inconsistent standards compliance across contributors
+- 10-15 minutes per document for manual processing
+- Source for customer-facing information (FAQs, support articles)
 
 ### Problems & Pain Points
 
-| Problem | Impact | Frequency | User Pain (1-10) | Affected System |
-|---------|--------|-----------|------------------|-----------------|
-| No automated conflict detection | Contradictory info reaches customers | Weekly | 9 | Business Docs |
-| Inconsistent standards compliance | Quality varies by author | Daily | 7 | Symphony Core |
-| Manual tagging inconsistent | Can't find relevant docs quickly | Daily | 7 | Business Docs |
-| No change tracking | Don't know what was updated | Daily | 6 | Both |
-| Time-consuming manual review | 4+ hours per week | Weekly | 8 | Both |
-| Manual document routing | Misplaced files, broken structure | Weekly | 8 | Symphony Core |
+| Problem | Impact | Frequency | User Pain (1-10) |
+|---------|--------|-----------|------------------|
+| No automated conflict detection | Contradictory info reaches customers | Weekly | 9 |
+| Inconsistent standards compliance | Quality varies by author | Daily | 7 |
+| Manual tagging inconsistent | Can't find relevant docs quickly | Daily | 7 |
+| No change tracking | Don't know what was updated | Daily | 6 |
+| Time-consuming manual review | 4+ hours per week | Weekly | 8 |
+| Manual document routing | Misplaced files, broken structure | Weekly | 8 |
 
 ### Root Causes
 - No structured validation against standards
 - No automated metadata management
 - Lack of change detection mechanism
-- Manual processes don't scale
-- No unified system for both use cases
+- Manual processes don't scale with growing document volume
+- No systematic quality control
 
 ### Why Now?
-- Document volume growing (50+ Symphony Core docs, 30-50 business docs)
+- Document volume growing (50+ documents and increasing)
 - Team bandwidth shrinking
 - Customer support receiving conflicting information
-- Compliance requirements increasing
-- Technical debt from inconsistent standards
+- Compliance and quality requirements increasing
+- Technical debt from inconsistent standards accumulating
 
 ### Impact
 - **Lost Productivity**: ~5 hours/week on manual document processing
@@ -125,12 +123,13 @@ audience: internal-technical
 ## 4. User Personas & Use Cases
 
 ### Primary Persona 1: Documentation Manager (Sarah)
-- **Role**: Operations lead responsible for document accuracy
-- **Context**: Manages both Symphony Core repo and business docs
-- **Technical Skill**: Comfortable with command line
-- **Goals**: Ensure consistency, quickly review changes, maintain standards
-- **Frustrations**: Spending hours on manual validation and cross-referencing
+- **Role**: Operations lead responsible for business documentation accuracy
+- **Context**: Manages Symphony Core business operations documentation repository
+- **Technical Skill**: Comfortable with command line and Git workflows
+- **Goals**: Ensure consistency, quickly review changes, maintain standards, prevent contradictions from reaching customers
+- **Frustrations**: Spending hours on manual validation, cross-referencing, and standards enforcement
 - **Frequency**: Uses system 3-4x per week
+- **Documents Managed**: Pricing, policies, product specs, support guides, billing, procedures
 
 **User Journey**:
 1. Monday morning: Reviews weekend document changes
@@ -140,26 +139,20 @@ audience: internal-technical
 5. Approves documents for publication
 
 ### Primary Persona 2: Documentation Contributor (Mike)
-- **Role**: Product manager/engineer adding documentation
-- **Context**: Contributes to Symphony Core technical docs
-- **Technical Skill**: Basic markdown knowledge
-- **Goals**: Add documents quickly, meet standards, avoid breaking things
-- **Frustrations**: Unsure of all standards, worried about placement
-- **Frequency**: Adds/edits 1-2 docs per week
+- **Role**: Product manager or business operations team member
+- **Context**: Creates and updates business operations documentation (pricing sheets, policy updates, product specifications, support guides)
+- **Technical Skill**: Basic markdown knowledge, comfortable with text editors
+- **Goals**: Add/update documents quickly, meet standards, avoid creating contradictions, not break existing structure
+- **Frustrations**: Unsure of all standards, worried about placement, concerned about conflicting with other docs
+- **Frequency**: Adds/edits 1-3 docs per week
+- **Documents Created**: Product pricing, policy documents, feature specifications, support procedures
 
 **User Journey**:
-1. Creates new markdown doc in `_inbox/`
+1. Creates or updates markdown doc in `_inbox/`
 2. Runs validation to check compliance
 3. Fixes any validation errors reported
 4. Submits for review with validation passing
 5. Sarah reviews and approves routing
-
-### Secondary Persona: Content Contributor (Business Team)
-- **Role**: Business team member maintaining policies/pricing docs
-- **Technical Skill**: Basic markdown, less technical than Mike
-- **Goals**: Update business docs accurately without creating conflicts
-- **Frustrations**: Worried about contradicting existing content
-- **Frequency**: Updates 2-3 docs per week
 
 ---
 
@@ -171,16 +164,19 @@ audience: internal-technical
 
 #### Feature 1: Document Validation Engine
 
-**Description:** Automated validation of documents against Symphony Core standards and configurable business document standards.
+**Description:** Automated validation of business operations documents against Symphony Core documentation standards.
 
 **FR-1.1: YAML Frontmatter Validation**
 - System SHALL verify presence of YAML frontmatter block
-- System SHALL validate required fields based on configuration:
-  - Symphony Core mode: title, version, author, last_updated, category, tags, status, audience
-  - Business mode: title, version, date, tags, status
+- System SHALL validate required fields:
+  - title (string, non-empty)
+  - version (semantic version format: X.Y or X.Y.Z)
+  - date (YYYY-MM-DD format)
+  - tags (list of strings, non-empty)
+  - status (from approved list: draft, review, approved, deprecated, active)
 - System SHALL check field formats (dates as YYYY-MM-DD, status from approved list)
-- System SHALL validate tag usage (no redundant tags, follows tag philosophy)
-- System SHALL add missing YAML frontmatter with appropriate fields
+- System SHALL validate tag usage (list format, no redundant tags)
+- System SHALL add missing YAML frontmatter with appropriate template
 - System SHALL preserve existing frontmatter when present
 - **Acceptance Criteria**:
   - 100% of submitted documents validated
@@ -210,7 +206,7 @@ audience: internal-technical
 - **Acceptance Criteria**:
   - Identifies all naming violations
   - Suggests corrected names
-  - Works for both Symphony Core and business docs
+  - Consistent enforcement across all documents
 
 **FR-1.4: Change Detection**
 - System SHALL detect new, modified, and deleted markdown files
@@ -253,21 +249,21 @@ audience: internal-technical
 
 **FR-2.2: Configuration Management**
 - System SHALL read from config.yaml file
-- System SHALL support configuration profiles (symphony-core, business-docs)
-- System SHALL allow override of:
-  - API key (environment variable)
+- System SHALL allow configuration of:
+  - API key (environment variable, for future features)
   - Document directory paths
   - Output/report paths
   - Required YAML fields
-  - Validation rules to apply
-  - Tag taxonomies
+  - Validation rules to enable/disable
+  - Tag taxonomies (for future tagging features)
+  - Allowed status values
 - System SHALL validate configuration on startup
 - System SHALL provide sensible defaults
 - **Acceptance Criteria**:
   - Config file well-documented with examples
   - Configuration validation with clear errors
-  - Support for multiple profiles/modes
   - No hardcoded values in code
+  - Easy to customize for different strictness levels
 
 #### Feature 3: Logging & Monitoring
 
@@ -371,7 +367,7 @@ audience: internal-technical
 - **NFR-10**: Error messages SHALL be actionable (not just stack traces)
 - **NFR-11**: Setup SHALL take < 30 minutes for new team member
 - **NFR-12**: Documentation SHALL include examples for common tasks
-- **NFR-13**: Clear distinction between modes (Symphony Core vs Business docs)
+- **NFR-13**: Configuration SHALL be intuitive with clear examples and sensible defaults
 
 ### 6.4 Cost
 - **NFR-14**: API costs SHALL remain under $50/month for typical usage
@@ -430,10 +426,10 @@ US-2.1: As a documentation manager, I want all documents to have consistent
         YAML frontmatter, so I can track metadata systematically.
 
         Acceptance Criteria:
-        - [ ] Validates required fields per mode
+        - [ ] Validates required fields (title, version, date, tags, status)
         - [ ] Checks date formats (YYYY-MM-DD)
         - [ ] Validates status from allowed list
-        - [ ] Validates tag usage
+        - [ ] Validates tags is a list
         - [ ] Adds missing frontmatter with template
         - [ ] Preserves existing frontmatter
         - [ ] Valid YAML syntax guaranteed
@@ -456,7 +452,7 @@ US-2.2: As a documentation contributor, I want clear validation errors,
 
 ```
 US-3.1: As a documentation manager, I want markdown syntax validated,
-        so all documents follow SC standards consistently.
+        so all documents follow Symphony Core standards consistently.
 
         Acceptance Criteria:
         - [ ] Heading hierarchy validation
@@ -465,7 +461,7 @@ US-3.1: As a documentation manager, I want markdown syntax validated,
         - [ ] Horizontal rule format (---)
         - [ ] List formatting checks
         - [ ] Trailing whitespace detection
-        - [ ] Configurable rules per mode
+        - [ ] Configurable rules (enable/disable individual checks)
 
         Story Points: 8
 
@@ -548,9 +544,7 @@ src/
 
 tests/                          # Mirror src/ structure
 config/
-├── config.yaml                 # Main configuration
-├── symphony-core-profile.yaml  # Symphony Core specific rules
-└── business-docs-profile.yaml  # Business docs specific rules
+└── config.yaml                 # Main configuration
 docs/                           # Documentation including this PRD
 .env.example                    # Example environment variables
 ```
@@ -578,9 +572,6 @@ docs/                           # Documentation including this PRD
 ```yaml
 version: "1.0"
 
-# Mode selection
-mode: "symphony-core"  # or "business-docs"
-
 # Processing settings
 processing:
   doc_directories:
@@ -588,24 +579,23 @@ processing:
   cache_file: "_meta/.document-cache.json"
   backup_dir: "_meta/.backups/"
 
-# Validation rules (can be overridden per mode)
+# Validation rules
 validation:
   yaml:
     enabled: true
     required_fields:
-      - title
-      - version
-      - author
-      - last_updated
-      - category
-      - tags
-      - status
+      - title      # Document title
+      - version    # Semantic version (e.g., 1.0, 1.2.1)
+      - date       # Last updated date (YYYY-MM-DD)
+      - tags       # List of tags
+      - status     # Document status
     date_format: "YYYY-MM-DD"
     allowed_statuses:
       - draft
       - review
       - approved
       - deprecated
+      - active
 
   markdown:
     enabled: true
@@ -938,82 +928,72 @@ For this document management workflow system, **neither an HTTP server nor a Win
 
 ---
 
-### Appendix C: Example Configuration Profiles
+### Appendix C: Configuration Customization Examples
 
-**Symphony Core Profile (config/symphony-core-profile.yaml):**
+**Strict Validation (Default):**
 ```yaml
-mode: "symphony-core"
-
 validation:
   yaml:
-    required_fields:
-      - title
-      - version
-      - author
-      - last_updated
-      - category
-      - tags
-      - status
-      - audience
-    allowed_categories:
-      - Standards
-      - Guide
-      - Reference
-      - SOP
-    allowed_audiences:
-      - internal-technical
-      - customer-facing
-      - mixed
-
-  markdown:
-    enforce_heading_hierarchy: true
-    require_language_in_code_blocks: true
-    relative_links_only: true
-
-  naming:
-    max_length: 50
-    pattern: "lowercase-with-hyphens"
-```
-
-**Business Docs Profile (config/business-docs-profile.yaml):**
-```yaml
-mode: "business-docs"
-
-validation:
-  yaml:
+    enabled: true
     required_fields:
       - title
       - version
       - date
       - tags
       - status
-    allowed_statuses:
-      - draft
-      - review
-      - approved
-
   markdown:
-    enforce_heading_hierarchy: false  # More lenient
-    require_language_in_code_blocks: false
-
+    enabled: true
+    enforce_heading_hierarchy: true
+    require_language_in_code_blocks: true
   naming:
-    max_length: 60  # Slightly more lenient
-    pattern: "lowercase-with-hyphens"
+    enabled: true
+    max_length: 50
+```
+
+**Lenient Validation (For Migration/Legacy Docs):**
+```yaml
+validation:
+  yaml:
+    enabled: true
+    required_fields:
+      - title
+      - tags
+      - status
+    # Only essential fields required
+  markdown:
+    enabled: false  # Disable markdown checks during migration
+  naming:
+    enabled: true
+    max_length: 60  # Allow slightly longer names
+```
+
+**Report-Only Mode (No Enforcement):**
+```yaml
+validation:
+  yaml:
+    enabled: true
+    required_fields: []  # Report on all fields, require none
+  markdown:
+    enabled: true
+    enforce_heading_hierarchy: false  # Warn but don't fail
+  naming:
+    enabled: true
 ```
 
 ---
 
 ### Appendix D: Sample Tag Definitions (For v1.1+)
 
-| Tag | Description | Example Keywords | Use Case |
-|-----|-------------|------------------|----------|
-| pricing | Cost, fees, payment terms | price, cost, $, fee, payment | Business Docs |
-| product-specs | Features, technical specs | specification, feature, technical, requirement | Business Docs |
-| policies | Terms, conditions, legal | policy, terms, conditions, agreement, legal | Business Docs |
-| support | Help, contact information | contact, support, help, email, phone | Business Docs |
-| billing | Invoicing, payment process | invoice, billing, charge, receipt | Business Docs |
-| standards | Standards and guidelines | standard, guideline, convention, best-practice | Symphony Core |
-| sop | Standard operating procedures | procedure, process, workflow, sop | Symphony Core |
+| Tag | Description | Example Keywords | Document Type |
+|-----|-------------|------------------|---------------|
+| pricing | Cost, fees, payment terms | price, cost, $, fee, payment | Business Operations |
+| product-specs | Features, technical specs | specification, feature, technical, requirement | Business Operations |
+| policies | Terms, conditions, legal | policy, terms, conditions, agreement, legal | Business Operations |
+| support | Help, contact information | contact, support, help, email, phone | Business Operations |
+| billing | Invoicing, payment process | invoice, billing, charge, receipt | Business Operations |
+| standards | Standards and guidelines | standard, guideline, convention, best-practice | Business Operations |
+| sop | Standard operating procedures | procedure, process, workflow, sop | Business Operations |
+| procedures | Step-by-step instructions | how-to, guide, instructions, steps | Business Operations |
 
 ---
 
@@ -1026,6 +1006,7 @@ validation:
 | 1.0 | 2025-10-09 | Initial draft PRD (business focus) | Product Team |
 | 1.5 | 2025-11-05 | Expanded PRD (Symphony Core focus) | Symphony Core Systems Team |
 | 2.0 | 2025-11-07 | **Unified PRD - Merged both use cases, focused v1.0 on validation only** | Symphony Core Systems Team |
+| 2.1 | 2025-11-07 | **Simplified PRD - Removed artificial distinction between "technical" and "business" docs. Symphony Core IS business operations documentation.** | Symphony Core Systems Team |
 
 **Review & Approval:**
 
