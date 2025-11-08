@@ -68,8 +68,8 @@ coverage.xml
 dmypy.json
 .pyre/
 
-# Logs
-logs/
+# Logs (excluding our logs directory for reports)
+# logs/ - commented out to allow logs/ directory with reports
 *.log
 *.log.*
 

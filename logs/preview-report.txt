@@ -1,0 +1,300 @@
+
+================================================================================
+Symphony Core Documentation Frontmatter Fix Report
+================================================================================
+
+Mode: PREVIEW MODE
+Repository: C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents
+
+OVERALL STATISTICS
+------------------
+Total Documents Scanned:        158
+Documents Missing Frontmatter:  64
+Documents Fixed:                64
+Errors:                         0
+
+RESULTS BREAKDOWN
+-----------------
+Successful Fixes:  64
+Failed:            0
+Skipped (no issues): 0
+
+STATISTICS BY SECTION
+---------------------
+
+01-strategy:
+  Scanned: 9
+  Missing Frontmatter: 0
+  Fixed: 0
+  Coverage Before: 100.0%
+  Coverage After: 100.0%
+
+02-marketing-brand:
+  Scanned: 20
+  Missing Frontmatter: 13
+  Fixed: 13
+  Coverage Before: 35.0%
+  Coverage After: 100.0%
+
+03-sales:
+  Scanned: 15
+  Missing Frontmatter: 13
+  Fixed: 13
+  Coverage Before: 13.3%
+  Coverage After: 100.0%
+
+04-operations:
+  Scanned: 23
+  Missing Frontmatter: 10
+  Fixed: 10
+  Coverage Before: 56.5%
+  Coverage After: 100.0%
+
+05-platform:
+  Scanned: 32
+  Missing Frontmatter: 10
+  Fixed: 10
+  Coverage Before: 68.8%
+  Coverage After: 100.0%
+
+06-team-training:
+  Scanned: 10
+  Missing Frontmatter: 2
+  Fixed: 2
+  Coverage Before: 80.0%
+  Coverage After: 100.0%
+
+08-reference:
+  Scanned: 33
+  Missing Frontmatter: 11
+  Fixed: 11
+  Coverage Before: 66.7%
+  Coverage After: 100.0%
+
+09-clients:
+  Scanned: 5
+  Missing Frontmatter: 0
+  Fixed: 0
+  Coverage Before: 100.0%
+  Coverage After: 100.0%
+
+_inbox:
+  Scanned: 6
+  Missing Frontmatter: 4
+  Fixed: 4
+  Coverage Before: 33.3%
+  Coverage After: 100.0%
+
+_meta:
+  Scanned: 1
+  Missing Frontmatter: 0
+  Fixed: 0
+  Coverage Before: 100.0%
+  Coverage After: 100.0%
+
+root:
+  Scanned: 4
+  Missing Frontmatter: 1
+  Fixed: 1
+  Coverage Before: 75.0%
+  Coverage After: 100.0%
+
+SUCCESSFUL FIXES (64):
+--------------------------------------------------------------------------------
+
+CLAUDE.md:
+  + Added YAML frontmatter block
+
+_inbox\drafts\ClickUp Changes.md:
+  + Added YAML frontmatter block
+
+_inbox\drafts\input-prompt.md:
+  + Added YAML frontmatter block
+
+_inbox\pending-decision\sc-use-of-wise-for-payments.md:
+  + Added YAML frontmatter block
+
+_inbox\drafts\clickup\clickup-client-delivery-process.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\glossary-guidelines.md:
+  + Added YAML frontmatter block
+
+08-reference\standards\frameworks\client-success-system\sc-client-success-framework.md:
+  + Added YAML frontmatter block
+
+08-reference\standards\frameworks\task-management\sc-task-data-standard.md:
+  + Added YAML frontmatter block
+
+08-reference\platforms\Extendly\custom-values-form-md.md:
+  + Added YAML frontmatter block
+
+08-reference\platforms\GHL\user-training-ghl-info.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\lean-startup.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\product-management.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\retail-property-glossary.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\seo-glossary-page.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\service-as-product-glossary.md:
+  + Added YAML frontmatter block
+
+08-reference\glossary\pages\standardized-marketing-terms.md:
+  + Added YAML frontmatter block
+
+06-team-training\executive-functions\sc-use-of-wise-for-payments.md:
+  + Added YAML frontmatter block
+
+06-team-training\platform-training\kb-004-client-onboarding-checklist.md:
+  + Added YAML frontmatter block
+
+05-platform\client-onboarding\ghl-systems-integration.md:
+  + Added YAML frontmatter block
+
+05-platform\client-onboarding\snapshots-architecture.mermaid.md:
+  + Added YAML frontmatter block
+
+05-platform\platforms-config\clickup-client-delivery-process.md:
+  + Added YAML frontmatter block
+
+05-platform\platforms-config\fireflies_symphony_guide.md:
+  + Added YAML frontmatter block
+
+05-platform\platforms-config\quickbooks_guide.md:
+  + Added YAML frontmatter block
+
+05-platform\platforms-config\sc_meeting_config.md:
+  + Added YAML frontmatter block
+
+05-platform\client-reporting\implementation\ghl-dashboard-build-guide.md:
+  + Added YAML frontmatter block
+
+05-platform\client-reporting\implementation\implementation-comparison.md:
+  + Added YAML frontmatter block
+
+05-platform\client-reporting\implementation\phase-1-simplified-specifications.md:
+  + Added YAML frontmatter block
+
+05-platform\client-reporting\implementation\strategy-doc-assessment.md:
+  + Added YAML frontmatter block
+
+04-operations\checklists\email-subdomain-checklist.md:
+  + Added YAML frontmatter block
+
+04-operations\checklists\website-functional-testing-checklist.md:
+  + Added YAML frontmatter block
+
+04-operations\guides\business-search-guide.md:
+  + Added YAML frontmatter block
+
+04-operations\guides\elementor-best-practices.md:
+  + Added YAML frontmatter block
+
+04-operations\guides\testing-identity-guide.md:
+  + Added YAML frontmatter block
+
+04-operations\guides\website-coding-best-practices.md:
+  + Added YAML frontmatter block
+
+04-operations\guides\wordpress-ghl-developer-guide.md:
+  + Added YAML frontmatter block
+
+04-operations\sops\gtm-integration-sop.md:
+  + Added YAML frontmatter block
+
+04-operations\standards\social-media-content-framework.md:
+  + Added YAML frontmatter block
+
+04-operations\standards\website-sitemap-structure.mermaid.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\brand-customization-checklist.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\presentation-guide.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\SUMMARY-sales-enablement-created.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\addons_internal_ops.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\addons_pricing_copy.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\comprehensive_faq.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\core_plans_internal_ops.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\core_plans_pricing_copy.md:
+  + Added YAML frontmatter block
+
+03-sales\pricing-strategy\document_version_control.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\video-scripts\demo-video-script.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\video-scripts\onboarding-video-script.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\video-scripts\prospecting-video-script.md:
+  + Added YAML frontmatter block
+
+03-sales\enablement\presentations\exports\symphony-core-automation-demo.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\brand\gbp-description.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\brand\sc-marketing-blurbs.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\print-media\assets.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\seo\about_page_keywords.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\seo\competitive_analysis_keywords.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\social-media\symphony_core_social_framework.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\about-page-copy.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\contact_page_copy.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\homepage_copy.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\page_priority_plan.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\symphony_core_about.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\issues-to-fix\mobile-testing-results.md:
+  + Added YAML frontmatter block
+
+02-marketing-brand\website\issues-to-fix\steps to fix domain issue.md:
+  + Added YAML frontmatter block
+
+================================================================================
+NOTE: This was a PREVIEW run. No files were modified.
+Run with --apply to make actual changes.
+================================================================================
