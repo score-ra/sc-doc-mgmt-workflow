@@ -1,486 +1,485 @@
-# START HERE - Sprint 3 Execution Guide
+# Sprint 3 Quick Start Guide
 
-**Last Updated**: 2025-11-08
-**Current Status**: Sprint 1-2 Complete, Sprint 3 Ready to Execute
-**Repository**: https://github.com/score-ra/sc-doc-mgmt-workflow.git
-
----
-
-## Quick Context
-
-**Project**: Symphony Core Document Management Workflow
-**Purpose**: Automated validation system for business operations documentation (pricing, policies, SOPs, specs)
-**Use Case**: Scaling SaaS platform with multiple contributors and expanding business domains
-**Mission Critical**: Conflict detection to prevent contradictory information from reaching customers
+**Based on**: Full Documentation Repository Review (Nov 8, 2025)
+**Full Report**: See `DOCUMENTATION_REVIEW_REPORT.md` for complete analysis
 
 ---
 
-## Current State ✅
+## TL;DR - What You Need to Know
 
-### Sprint 1: COMPLETE (8/8 story points)
-**What's Built**:
-- ✅ Project structure (`src/`, `tests/`, `config/`)
-- ✅ Configuration system (`src/utils/config.py`, `config/config.yaml`)
-- ✅ Logging utilities (`src/utils/logger.py`)
-- ✅ Document cache with SHA-256 hashing (`src/utils/cache.py`)
-- ✅ Change detection (`src/core/change_detector.py`)
-- ✅ Test framework (pytest configured)
+**Repository**: `C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents`
 
-### Sprint 2: COMPLETE (13/13 story points) ✅
-**What's Built**:
-- ✅ YAML Frontmatter Parser (`src/utils/frontmatter.py`) - 268 lines, 84% coverage
-- ✅ YAML Validator (`src/core/validators/yaml_validator.py`) - 327 lines, 97% coverage
-- ✅ Auto-Fix Engine (`src/core/auto_fixer.py`) - 354 lines, 95% coverage
-- ✅ 73 tests passing (33 frontmatter, 20 validator, 20 auto-fix)
-- ✅ 10 test fixture documents
-- ✅ Validation scripts (`validate_strategy_docs.py`, `demo_auto_fix.py`)
+**Key Stats**:
+- 174 markdown files across 9 sections
+- 42.5% (74 files) **missing YAML frontmatter** ← MAJOR ISSUE
+- 44 files with **naming violations** (uppercase dirs, spaces)
+- 10+ **status value conflicts** (draft vs Draft, non-standard values)
+- Strong sections: 01-strategy, 05-platform, 08-reference
+- Weak sections: 02-marketing-brand, 03-sales (missing metadata)
 
-**Real-World Validation**:
-- ✅ 10/10 Symphony Core strategy documents validated successfully
-- ✅ All documents compliant with 3-field requirement (ADR-001)
-- ✅ Auto-fix demonstrated with preview and backup
+---
 
-**Key Features Delivered**:
-- 🔒 Preview mode (show changes before applying)
-- 💾 Automatic backups (timestamped for safety)
-- 🎯 Smart extraction (title from H1, tags from path)
-- 📝 Actionable errors (every issue has suggestion)
+## Critical Findings for Sprint 3
 
-**Available for Use**:
+### 1. Markdown Validator (US-3.1) Will Encounter
+
+✅ **Good Test Data Available**:
+- `05-platform/platforms-config/*.md` - Well-structured docs
+- `08-reference/glossary/pages/*.md` - Consistent formatting
+- `01-strategy/business-plans/*.md` - Clean markdown
+
+⚠️ **Challenges**:
+- **42.5% of files have NO frontmatter** - Must handle gracefully
+- Marketing/sales content has inconsistent formatting
+- Need to validate heading hierarchy, code blocks, links
+- Cross-references to deprecated docs exist
+
+**Implementation Tip**: Don't crash on missing frontmatter. Validate markdown body separately from YAML metadata.
+
+### 2. Naming Validator (US-3.2) Will Encounter
+
+❌ **44 Known Violations** (excellent test data!):
+- **34 files** in uppercase directories:
+  ```
+  08-reference/platforms/Extendly/  → should be: extendly/
+  08-reference/platforms/GHL/       → should be: ghl/
+  ```
+- **10+ files** with spaces in names:
+  ```
+  steps to fix domain issue.md
+  automation ecosystem map.md
+  CV - B-000 Foundations.csv
+  ```
+
+**Implementation Tip**: Create rename suggestion function. Provide migration script for bulk fixes.
+
+**Exception Handling**:
+- README.md files: Allow uppercase ✅
+- *.csv files: Different rules (document this)
+
+### 3. Conflict Detector (US-3.3) Will Encounter
+
+🔥 **Real Conflicts to Test Against**:
+
+**Status Conflicts**:
+```yaml
+status: draft          # Lowercase, no quotes
+status: "Draft"        # Capitalized, quoted ❌
+status: published      # Non-standard value ❌
+status: complete       # Non-standard value ❌
+```
+
+**Tag Conflicts** (synonyms):
+```yaml
+tags: [gohighlevel, ...]
+tags: [ghl, ...]            # Same platform, different tag
+tags: [GoHighLevel, ...]    # Case conflict
+```
+
+**Pricing Conflicts** (CRITICAL - test this!):
+- Pricing info scattered across:
+  - `03-sales/pricing-strategy/*.md`
+  - `02-marketing-brand/website/*.md`
+- **Risk**: Inconsistent pricing across marketing and sales docs
+- **Detection**: Regex extract $X/month mentions, compare
+
+**Deprecated Doc References**:
+- Some active docs reference deprecated content
+- Need cross-reference validation
+
+**Implementation Tip**: Start with status/tag conflicts (easier). Build to pricing conflicts (harder). Use tag normalization dictionary.
+
+---
+
+## Sprint 3 Recommended Approach
+
+### Week 1: Naming Validator (3 points) - EASIEST
+**Why Start Here**: Immediate impact, clear test cases, low complexity
+
+1. Implement directory case checker
+2. Implement filename space checker
+3. Generate rename suggestions
+4. Test on 44 known violations
+5. **Success**: Flag all violations, provide fixes
+
+**Test Command**:
+```bash
+python -m pytest tests/core/validators/test_naming_validator.py -v
+```
+
+**Real Test Data**:
 ```python
-from src.utils.frontmatter import parse_frontmatter, add_frontmatter
-from src.core.validators.yaml_validator import YAMLValidator
-from src.core.auto_fixer import AutoFixer
+# Use actual violating files from review
+test_files = [
+    Path("08-reference/platforms/Extendly/training-docs/automation ecosystem map.md"),
+    Path("02-marketing-brand/website/issues-to-fix/steps to fix domain issue.md"),
+]
 ```
 
----
+### Week 2: Markdown Validator (5 points) - MODERATE
+**Why Second**: Builds on frontmatter work from Sprint 2, moderate complexity
 
-## What's Next: Sprint 3 (18 story points)
+1. Handle docs without frontmatter gracefully
+2. Implement heading hierarchy checker
+3. Implement code block validator
+4. Implement link integrity checker
+5. **Success**: Validate all 174 docs without crashing
 
-### Sprint Goal
-Complete validation engine WITH conflict detection for mission-critical scaling.
-
-**THIS IS THE BIG ONE**: Conflict detection is why Symphony Core exists. Without it, contradictory pricing and policies reach customers.
-
-### User Stories to Implement
-
-**US-3.1: Markdown Syntax Validator** (5 points)
-- Create `src/core/validators/markdown_validator.py`
-- Validate heading hierarchy, code blocks, links, formatting
-- Rules: MD-001 through MD-008
-- Generate ValidationIssue objects with line numbers
-
-**US-3.2: Naming Convention Validator** (3 points)
-- Create `src/core/validators/naming_validator.py`
-- Validate lowercase-with-hyphens, length limits, no version numbers
-- Rules: NAME-001 through NAME-005
-- Suggest corrected filenames
-
-**US-3.3: Conflict Detection Engine** ⭐ (10 points) - MISSION CRITICAL
-- Create `src/core/conflict_detector.py` and `src/core/semantic_analyzer.py`
-- Detect pricing conflicts (same product, different prices)
-- Detect policy contradictions (conflicting statements)
-- Detect duplicate SOPs (>80% similarity)
-- **Batch mode**: Validates ALL documents (not just changed - ADR-006)
-- Severity classification (CRITICAL, HIGH, MEDIUM, LOW)
-
----
-
-## Key Insights from Sprint 2
-
-### Architecture Patterns That Work ✅
-1. **Separation of Concerns**:
-   ```
-   frontmatter.py  → Parse/manipulate (84% coverage)
-   validator.py    → Validate rules (97% coverage)
-   auto_fixer.py   → Apply fixes (95% coverage)
-   ```
-   **Apply to Sprint 3**: Same pattern for markdown, naming, conflict validators
-
-2. **Comprehensive Test Fixtures**:
-   ```
-   tests/fixtures/yaml_test_documents/
-   ├── valid_complete.md      (happy path)
-   ├── missing_frontmatter.md (error case)
-   ├── malformed_yaml.md      (edge case)
-   └── multiple_issues.md     (complex case)
-   ```
-   **Apply to Sprint 3**: Build markdown, naming, conflict fixtures EARLY
-
-3. **Safety First**:
-   - Preview mode for all changes
-   - Timestamped backups before modifications
-   - Actionable error messages with suggestions
-   **Apply to Sprint 3**: Preview for naming changes, conflict resolutions
-
-### What to Replicate
-✅ Same architecture (separate validators)
-✅ >80% test coverage target
-✅ Dataclasses for structured results
-✅ Configuration-driven behavior
-✅ Real document validation before "done"
-
-### What Needs Improvement
-⚠️ Tag suggestion too generic (file path only)
-⚠️ Need content-based analysis for better tags
-⚠️ Consider LLM integration for semantic understanding
-
-**For Sprint 3**: Conflict detection will need semantic analysis. Consider simple rule-based first, then LLM enhancement.
-
----
-
-## Critical Architectural Decisions
-
-**Read `DECISIONS.md` for full context. Key points:**
-
-1. **ADR-001**: Only 3 required YAML fields (title, tags, status)
-   - Sprint 2 validated this: 10/10 real docs passed
-
-2. **ADR-002**: Conflict detection in v1.0 (MISSION CRITICAL)
-   - Why: Scaling SaaS platform needs it NOW
-   - Can't wait for v1.1
-
-3. **ADR-003**: Auto-fix with preview and backup
-   - Sprint 2 proved this builds user trust
-   - Apply same pattern for naming fixes
-
-4. **ADR-006**: Accuracy > Speed (batch mode acceptable)
-   - Conflict detection processes ALL documents
-   - Not just changed files
-   - Full corpus comparison for pricing/policies
-
----
-
-## Exact Prompt to Start Sprint 3
-
-**Copy and paste this prompt to begin Sprint 3 implementation:**
-
-```
-I'm ready to start Sprint 3 implementation for Symphony Core Document Management Workflow.
-
-Context:
-- Sprint 1-2 are complete (foundation, YAML validation, auto-fix)
-- Sprint 3 goal: Markdown + Naming + Conflict Detection (18 story points)
-- This sprint includes MISSION CRITICAL conflict detection (ADR-002)
-- 73 tests passing from Sprint 1-2 with 84-97% coverage
-
-Sprint 2 delivered excellent results. Key learnings:
-- Separation of concerns works (separate validators)
-- Comprehensive test fixtures are essential
-- >80% coverage is achievable and valuable
-- Preview mode + backups build user trust
-- Real document validation confirms design
-
-Please implement Sprint 3 following these priorities:
-
-1. **US-3.1: Markdown Validator** (5 points)
-   - Create src/core/validators/markdown_validator.py
-   - Same architecture as yaml_validator.py
-   - Validate heading hierarchy, code blocks, links
-   - Build comprehensive test fixtures FIRST
-   - Target >80% coverage
-
-2. **US-3.2: Naming Validator** (3 points)
-   - Create src/core/validators/naming_validator.py
-   - Validate lowercase-with-hyphens, length limits
-   - Suggest corrected filenames
-   - Preview mode for rename operations
-
-3. **US-3.3: Conflict Detector** ⭐ (10 points) - MISSION CRITICAL
-   - Create src/core/conflict_detector.py
-   - Create src/core/semantic_analyzer.py
-   - Detect: pricing conflicts, policy contradictions, duplicate SOPs
-   - Batch mode: process ALL documents (ADR-006)
-   - Severity classification
-   - Start simple (rule-based), enhance with LLM if needed
-
-Key requirements:
-- Follow Sprint 2 architecture patterns (proven to work)
-- Build test fixtures early (one for each validation rule)
-- >80% test coverage on new modules
-- Use Config, Logger from Sprint 1
-- Use ValidationIssue structure from Sprint 2
-- Test on real documents before declaring "done"
-
-Start with US-3.1 (Markdown Validator). Build fixtures first, then validator, then tests.
+**Test Command**:
+```bash
+python -m pytest tests/core/validators/test_markdown_validator.py -v
 ```
 
----
-
-## Critical Files to Reference
-
-**Sprint Documentation**:
-- `Sprint_2_Summary.md` - Comprehensive insights and lessons learned
-- `VALIDATION_REPORT.md` - Real-world validation results from Sprint 2
-- `sprints/sprint-02-yaml-validation.md` - Completed sprint with retrospective
-- `sprints/BACKLOG.md` - Sprint 3 acceptance criteria
-
-**Architectural Context**:
-- `DECISIONS.md` - All 6 ADRs with rationale (especially ADR-002, ADR-006)
-- `docs/architecture-v1.0-validation.md` - Technical architecture
-- `docs/development-process-guide.md` - Now includes Sprint 2 lessons learned
-- `docs/user-guide.md` - Updated with YAML validation and auto-fix
-
-**Configuration**:
-- `config/config.yaml` - Updated to 3 required fields (ADR-001)
-
-**Existing Code to Study**:
-- `src/core/validators/yaml_validator.py` - Template for new validators
-- `src/core/auto_fixer.py` - Preview and backup patterns
-- `tests/core/validators/test_yaml_validator.py` - Testing approach
-- `tests/fixtures/yaml_test_documents/` - Fixture examples
-
----
-
-## Success Criteria for Sprint 3
-
-### Code Deliverables
-- [ ] `src/core/validators/markdown_validator.py` (~300 lines)
-- [ ] `src/core/validators/naming_validator.py` (~200 lines)
-- [ ] `src/core/conflict_detector.py` (~400 lines)
-- [ ] `src/core/semantic_analyzer.py` (~300 lines)
-- [ ] Corresponding test files for each (~200-300 lines each)
-- [ ] Test fixtures (markdown, naming, conflicts)
-
-### Quality Gates
-- [ ] All tests passing (target: 100+ new tests)
-- [ ] Test coverage > 80% on new modules
-- [ ] All functions have docstrings and type hints
-- [ ] PEP 8 compliant
-- [ ] Real document validation (test on Symphony Core docs)
-
-### Validation
-- [ ] Test markdown validator on actual docs
-- [ ] Test naming validator on real filenames
-- [ ] Test conflict detector on documents with known conflicts
-- [ ] Verify batch mode processes all documents (not just changed)
-
----
-
-## After Sprint 3 Completion
-
-**What should work**:
+**Real Test Data**:
 ```python
-# Markdown validation
-from src.core.validators.markdown_validator import MarkdownValidator
-validator = MarkdownValidator(config, logger)
-issues = validator.validate(Path("doc.md"))
+# Good structure examples
+test_good = [
+    Path("05-platform/platforms-config/claude-config-standard.md"),
+    Path("08-reference/glossary/pages/ai-glossary.md"),
+]
 
-# Naming validation
-from src.core.validators.naming_validator import NamingValidator
-validator = NamingValidator(config, logger)
-issues = validator.validate(Path("My Bad Name.md"))
-
-# Conflict detection
-from src.core.conflict_detector import ConflictDetector
-detector = ConflictDetector(config, logger)
-conflicts = detector.detect_conflicts([Path("doc1.md"), Path("doc2.md")])
+# Missing frontmatter examples
+test_no_frontmatter = [
+    Path("02-marketing-brand/website/homepage_copy.md"),
+    Path("03-sales/pricing-strategy/core_plans_pricing_copy.md"),
+]
 ```
 
-**Next Steps**:
-- Sprint 4: CLI + Reporting (21 points)
-- Integrate all validators
-- Build command-line interface
-- Generate comprehensive reports
+### Week 3: Conflict Detector (10 points) - HARDEST
+**Why Last**: Most complex, highest value, needs other validators complete
 
----
+**Sub-tasks**:
+- Day 1-2: Document grouping, metadata extraction
+- Day 3-4: Status/tag conflict detection
+- Day 5-6: Pricing extraction and comparison
+- Day 7-8: Cross-reference validation
+- Day 9-10: Testing, refinement, confidence scoring
 
-## Important Context: Why Sprint 3 Matters
-
-### Mission Critical Features
-
-**Conflict Detection** is THE reason Symphony Core exists:
-- **Business Risk**: Contradictory pricing = customer confusion = lost revenue
-- **Scaling Requirement**: Multiple contributors = inevitable conflicts
-- **User Quote**: "Without comprehensive conflict identification we will continue to face issues"
-
-**Real-World Scenarios**:
-1. **Pricing Conflict**: Product X priced at $99 in one doc, $149 in another
-2. **Policy Contradiction**: Refund policy says "30 days" in one doc, "14 days" in another
-3. **Duplicate SOPs**: Three different docs describe same onboarding process
-
-**Why Batch Mode** (ADR-006):
-- Pricing changes need comparison with ALL existing contracts
-- Can't risk missing conflicts by only checking changed files
-- Accuracy > Speed (batch/async acceptable)
-
----
-
-## Quick Reference: Project Stats
-
-**Total v1.0 Effort**: 52 story points (~125 hours)
-- Sprint 1: 8 points ✅ COMPLETE
-- Sprint 2: 13 points ✅ COMPLETE (exceeded expectations!)
-- Sprint 3: 18 points ⏳ READY (biggest sprint - includes conflict detection)
-- Sprint 4: 21 points 📋 PLANNED
-
-**Current Progress**:
-- Story Points: 21/52 completed (40%)
-- Test Coverage: 84-97% on Sprint 2 modules
-- Tests Passing: 73/73 (100%)
-- Real Documents Validated: 10/10 (100%)
-
-**Sprint 2 Velocity**: 13 points in 1 day (vs. estimated 3-5 days)
-
----
-
-## Sprint 3 Complexity Warnings
-
-### Don't Underestimate Conflict Detection (10 points)
-
-**Why it's complex**:
-1. **Semantic Understanding**: Detecting contradictions requires understanding MEANING
-2. **LLM Integration**: May need Anthropic API for semantic analysis
-3. **Performance**: Batch mode on 50+ documents takes time
-4. **False Positives**: Balance sensitivity vs. specificity
-
-**Mitigation**:
-- Start with simple rule-based detection (keywords, patterns)
-- Build comprehensive test fixtures with known conflicts
-- Add LLM enhancement progressively
-- Cache results aggressively
-- Implement tag-based filtering to reduce scope
-
-### Test Fixtures Are Critical
-
-**Build BEFORE coding**:
+**Test Command**:
+```bash
+python -m pytest tests/core/validators/test_conflict_detector.py -v
 ```
-tests/fixtures/markdown_test_documents/
-├── valid_headings.md
-├── skipped_h2.md
-├── missing_code_lang.md
-└── broken_links.md
 
-tests/fixtures/conflict_test_documents/
-├── pricing_conflict_pair/
-│   ├── doc1.md (Product X = $99)
-│   └── doc2.md (Product X = $149)
-├── policy_contradiction/
-└── duplicate_sop/
+**Real Test Data**:
+```python
+# Test status conflicts
+test_status_conflicts = [
+    # Mix of draft, "Draft", published, complete, etc.
+    all_docs_with_frontmatter  # ~100 files
+]
+
+# Test pricing conflicts
+test_pricing_conflicts = [
+    Path("03-sales/pricing-strategy/*.md"),
+    Path("02-marketing-brand/website/*.md"),
+]
 ```
 
 ---
 
-## Repository Structure (Current State)
+## Key Implementation Patterns (From Sprint 2)
 
-```
-sc-doc-mgmt-workflow/
-├── DECISIONS.md                    ⭐ 6 ADRs documented
-├── START_HERE.md                   ⭐ This file (Sprint 3 ready)
-├── Sprint_2_Summary.md             ⭐ Sprint 2 insights
-├── VALIDATION_REPORT.md            ✅ Real-world validation results
-├── README.md
-├── config/
-│   └── config.yaml                 ✅ Updated (3 required fields)
-├── src/
-│   ├── core/
-│   │   ├── change_detector.py      ✅ Sprint 1
-│   │   ├── validators/
-│   │   │   └── yaml_validator.py   ✅ Sprint 2 (97% coverage)
-│   │   └── auto_fixer.py           ✅ Sprint 2 (95% coverage)
-│   └── utils/
-│       ├── config.py               ✅ Sprint 1
-│       ├── cache.py                ✅ Sprint 1
-│       ├── logger.py               ✅ Sprint 1
-│       └── frontmatter.py          ✅ Sprint 2 (84% coverage)
-├── tests/                          ✅ 73 tests passing
-│   ├── core/
-│   │   ├── validators/
-│   │   │   └── test_yaml_validator.py  ✅ 20 tests
-│   │   └── test_auto_fixer.py          ✅ 20 tests
-│   ├── utils/
-│   │   └── test_frontmatter.py         ✅ 33 tests
-│   └── fixtures/
-│       └── yaml_test_documents/        ✅ 10 fixtures
-├── sprints/
-│   ├── BACKLOG.md                  ⭐ Sprint 3 details
-│   ├── sprint-01-foundation.md     ✅ Complete
-│   └── sprint-02-yaml-validation.md ✅ Complete with retrospective
-├── docs/
-│   ├── product-requirements-document.md
-│   ├── architecture-v1.0-validation.md
-│   ├── user-guide.md               ✅ Updated with Sprint 2 features
-│   └── development-process-guide.md ✅ Updated with Sprint 2 lessons
-├── validate_strategy_docs.py       ✅ Working validator script
-└── demo_auto_fix.py                ✅ Working demo script
+### Pattern 1: Graceful Degradation
+```python
+def validate(self, file_path: Path) -> List[ValidationIssue]:
+    issues = []
+
+    try:
+        # Attempt frontmatter extraction
+        metadata = parse_frontmatter(file_path)
+    except FrontmatterError:
+        # Don't crash - report and continue
+        issues.append(ValidationIssue(
+            rule_id='MD-001',
+            severity=ValidationSeverity.WARNING,
+            message='Missing YAML frontmatter',
+            suggestion='Add frontmatter block at top of file'
+        ))
+        metadata = {}  # Empty dict, validation continues
+
+    # Continue with markdown body validation
+    issues.extend(self._validate_markdown_body(file_path))
+    return issues
 ```
 
-**TO BUILD in Sprint 3**:
+### Pattern 2: Real Document Testing
+```python
+# Sprint 2 approach: Use actual Symphony Core docs
+class TestYAMLValidatorRealDocs:
+    @pytest.fixture
+    def real_docs_path(self):
+        return Path(r"C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents")
+
+    def test_validate_strategy_docs(self, validator, real_docs_path):
+        """Test against actual business strategy documents"""
+        strategy_docs = list((real_docs_path / "01-strategy").glob("**/*.md"))
+        assert len(strategy_docs) == 10  # From review
+
+        for doc in strategy_docs:
+            issues = validator.validate(doc)
+            # Most strategy docs should pass
+            critical_issues = [i for i in issues if i.severity == ValidationSeverity.ERROR]
+            assert len(critical_issues) == 0, f"{doc.name} has critical issues"
 ```
-src/core/validators/markdown_validator.py  🚧
-src/core/validators/naming_validator.py    🚧
-src/core/conflict_detector.py              🚧
-src/core/semantic_analyzer.py              🚧
-tests/core/validators/test_markdown_validator.py  🚧
-tests/core/validators/test_naming_validator.py    🚧
-tests/core/test_conflict_detector.py              🚧
-tests/fixtures/markdown_test_documents/           🚧
-tests/fixtures/naming_test_documents/             🚧
-tests/fixtures/conflict_test_documents/           🚧
+
+### Pattern 3: Configuration-Driven Validation
+```python
+# config.yaml
+validation:
+  naming:
+    enabled: true
+    allow_uppercase_files:
+      - "README.md"
+    allow_spaces_in_extensions:
+      - ".csv"
+    max_length: 50
+
+  markdown:
+    enabled: true
+    require_frontmatter: false  # Too many docs lack it currently
+    check_heading_hierarchy: true
+    check_code_block_language: true
+
+  conflicts:
+    enabled: true
+    allowed_status_values:
+      - draft
+      - review
+      - approved
+      - active
+      - archived
+      - deprecated
+    tag_synonyms:
+      ghl: gohighlevel
+      wp: wordpress
 ```
 
 ---
 
-## Estimated Effort for Sprint 3
+## Auto-Fix Opportunities (Prioritized)
 
-**Complexity Breakdown**:
-- US-3.1 Markdown Validator: 5 points (moderate - similar to YAML)
-- US-3.2 Naming Validator: 3 points (simple - pattern matching)
-- US-3.3 Conflict Detector: 10 points (complex - semantic analysis)
+### Priority 1: Missing Frontmatter (74 files)
+**Impact**: HIGH - Enables all other validation
 
-**Time Estimates**:
-- Best Case: 4-6 hours (if architecture flows smoothly)
-- Realistic: 6-8 hours (with conflict detection complexity)
-- With Buffer: 8-10 hours (including comprehensive testing)
+```python
+# Auto-fix approach
+def fix_missing_frontmatter(file_path: Path) -> AutoFixResult:
+    # Extract title from H1 heading
+    title = extract_title_from_h1(file_path)
 
-**Token Estimate**: ~40,000-50,000 tokens
-**Current Available**: ~64,000 tokens (plenty of room!)
+    # Suggest tags from file path
+    tags = suggest_tags_from_path(file_path)
+
+    # Default status
+    status = 'draft'
+
+    # Add frontmatter
+    frontmatter = {
+        'title': title,
+        'tags': tags,
+        'status': status
+    }
+
+    # Create backup first
+    backup_path = create_backup(file_path)
+
+    # Add frontmatter to file
+    add_frontmatter(file_path, frontmatter)
+
+    return AutoFixResult(
+        file_path=file_path,
+        fixes_applied=['Added YAML frontmatter', f'Extracted title: {title}'],
+        backup_path=backup_path
+    )
+```
+
+**Test Files**: All 74 files without frontmatter (see Appendix A in full report)
+
+### Priority 2: Status Normalization (100 files)
+**Impact**: MEDIUM - Enables conflict detection
+
+```python
+def normalize_status_value(status: str) -> str:
+    """Normalize status to standard vocabulary"""
+    # Remove quotes
+    status = status.strip('"').strip("'")
+
+    # Convert to lowercase
+    status = status.lower()
+
+    # Map non-standard to standard
+    mapping = {
+        'published': 'active',
+        'complete': 'approved',
+        'concepts': 'draft',
+    }
+
+    return mapping.get(status, status)
+```
+
+### Priority 3: Tag Normalization
+**Impact**: MEDIUM - Improves conflict detection
+
+```python
+def normalize_tags(tags: List[str]) -> List[str]:
+    """Normalize tag vocabulary"""
+    # Lowercase all
+    tags = [t.lower() for t in tags]
+
+    # Apply synonyms
+    synonyms = {
+        'ghl': 'gohighlevel',
+        'wp': 'wordpress',
+    }
+
+    tags = [synonyms.get(t, t) for t in tags]
+
+    # Remove duplicates, maintain order
+    return list(dict.fromkeys(tags))
+```
+
+### Priority 4: Filename Fixes (44 files)
+**Impact**: LOW-MEDIUM - Improves consistency
+
+Provide migration script, don't auto-fix (risk of breaking references).
 
 ---
 
-## Key Success Factors
+## Validation Exception Patterns
 
-### From Sprint 2 Experience
+Create `config/validation-exceptions.yaml`:
 
-✅ **Do This**:
-1. Build test fixtures FIRST (before writing validators)
-2. Follow YAML validator architecture (proven pattern)
-3. Target >80% coverage (achievable and valuable)
-4. Test on real documents before declaring "done"
-5. Use dataclasses for structured results
-6. Make errors actionable (include suggestions)
-7. Document as you go (don't defer to end)
+```yaml
+# Files/paths exempt from certain validations
 
-❌ **Avoid This**:
-1. Don't start coding before fixtures
-2. Don't skip edge cases in tests
-3. Don't make config changes without updating docs
-4. Don't underestimate conflict detection complexity
-5. Don't chase 100% coverage (diminishing returns)
+naming:
+  allow_uppercase:
+    - "README.md"
+    - "**/README.md"
 
-### For Conflict Detection Specifically
+  allow_spaces:
+    - "**/*.csv"  # CSV files use different conventions
 
-**Start Simple**:
-1. Rule-based detection first (keywords, patterns)
-2. Test with obvious conflicts
-3. Measure accuracy
-4. Add LLM if needed
+  ignore_paths:
+    - "_inbox/*"  # Drafts may have temporary names
+    - "docs/archive/*"
 
-**Test Thoroughly**:
-- Create document pairs with known conflicts
-- Test false positives (similar but not conflicting)
-- Test severity classification
-- Verify batch mode processes all documents
+frontmatter:
+  optional_for_paths:
+    - "_inbox/**/*.md"  # Drafts may lack complete metadata
+    - "docs/archive/**/*.md"
 
----
+  required_for_paths:
+    - "01-strategy/**/*.md"  # Business-critical
+    - "03-sales/pricing-strategy/**/*.md"  # Pricing must have metadata
+    - "05-platform/**/*.md"  # Platform docs must be tracked
 
-**Ready to Start? Use the prompt above!** 🚀
+conflicts:
+  ignore_deprecated_references_for_days: 90  # Allow 90-day migration period
 
-**Status**: ✅ All Sprint 1-2 code committed and pushed to GitHub
-**Last Commit**: 2601b4a - "feat: Complete Sprint 2 - YAML Validation + Auto-Fix"
-**Working Tree**: Clean
-**GitHub**: https://github.com/score-ra/sc-doc-mgmt-workflow.git
+  pricing_conflict_paths:
+    - "03-sales/pricing-strategy/**/*.md"
+    - "02-marketing-brand/website/**/*.md"
+```
 
 ---
 
-**Sprint 3 is the MISSION CRITICAL sprint. Conflict detection is why Symphony Core exists.** 🎯
+## Success Metrics for Sprint 3
+
+### Naming Validator
+- [ ] Flag all 34 uppercase directory violations
+- [ ] Flag all 10+ space-in-filename violations
+- [ ] Provide rename suggestions for all violations
+- [ ] Handle exceptions (README.md, *.csv)
+- [ ] 95%+ test coverage
+
+### Markdown Validator
+- [ ] Validate all 174 docs without crashing
+- [ ] Handle 74 docs without frontmatter gracefully
+- [ ] Identify heading hierarchy issues
+- [ ] Flag code blocks without language
+- [ ] Check link integrity (relative paths)
+- [ ] 95%+ test coverage
+
+### Conflict Detector
+- [ ] Detect all status vocabulary conflicts (10+)
+- [ ] Detect tag synonym conflicts (ghl vs gohighlevel)
+- [ ] Extract pricing mentions from sales/marketing docs
+- [ ] Flag pricing inconsistencies (if any)
+- [ ] Identify cross-references to deprecated docs
+- [ ] 90%+ test coverage (complexity allows 10% tolerance)
+
+### Overall Sprint 3
+- [ ] All 18 story points complete
+- [ ] 85+ tests passing (naming: 20, markdown: 25, conflicts: 40)
+- [ ] Real-world validation on 174 Symphony Core docs
+- [ ] Documentation updated (user-guide, development guide)
+- [ ] Ready for Sprint 4 (CLI + Reporting)
+
+---
+
+## Files to Reference During Sprint 3
+
+**Architecture & Standards**:
+- `C:\...\symphony-core-documents\symphony-core-documentation-architecture.md`
+- `C:\...\symphony-core-documents\08-reference\standards\sc-tagging-standard.md`
+- `C:\...\symphony-core-documents\08-reference\standards\sc-markdown-standard.md`
+
+**Test Data Sources**:
+- Strategy docs (clean): `C:\...\symphony-core-documents\01-strategy\**\*.md`
+- Platform docs (good structure): `C:\...\symphony-core-documents\05-platform\**\*.md`
+- Marketing docs (missing frontmatter): `C:\...\symphony-core-documents\02-marketing-brand\**\*.md`
+- Sales docs (pricing conflicts): `C:\...\symphony-core-documents\03-sales\**\*.md`
+
+**Sprint 2 Reference Code**:
+- `src/utils/frontmatter.py` - YAML parsing utilities
+- `src/core/validators/yaml_validator.py` - Validation pattern
+- `src/core/auto_fixer.py` - Auto-fix pattern
+- `tests/core/validators/test_yaml_validator.py` - Test pattern
+
+---
+
+## Common Pitfalls to Avoid (From Sprint 2)
+
+1. **Don't crash on edge cases** - Handle missing frontmatter, malformed YAML, empty files
+2. **Test with real docs early** - Don't wait until end to test on Symphony Core docs
+3. **Windows path handling** - Use `Path` objects, not string concatenation
+4. **Windows console encoding** - Avoid emoji in output, use ASCII
+5. **Actionable error messages** - Always provide suggestion for fix
+6. **Configuration-driven** - Don't hardcode business rules, use config.yaml
+7. **Create backups** - Any auto-fix must create timestamped backup first
+
+---
+
+## Ready to Start?
+
+**Prompt for Starting Sprint 3**:
+```
+I'm ready to start Sprint 3 implementation for the Symphony Core document validation system.
+
+Sprint 3 includes:
+- US-3.1: Markdown syntax validator (5 points)
+- US-3.2: File naming validator (3 points)
+- US-3.3: Semantic conflict detector (10 points)
+
+I have reviewed:
+- DOCUMENTATION_REVIEW_REPORT.md (full analysis of 174 docs)
+- SPRINT_3_QUICK_START.md (this guide)
+- Real documentation at C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents
+
+Key findings:
+- 42.5% of docs missing frontmatter (test graceful handling)
+- 44 naming violations (great test data)
+- Status/tag conflicts exist (real conflict scenarios)
+
+Let's start with the Naming Validator (easiest, 3 points) and work up to the Conflict Detector (hardest, 10 points).
+
+Ready to begin?
+```
+
+---
+
+**Status**: ✅ SPRINT 3 READY
+**Full Report**: `DOCUMENTATION_REVIEW_REPORT.md` (18 pages)
+**Last Updated**: November 8, 2025
+**Next Step**: Begin Sprint 3 implementation
