@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(for f in \"02-marketing-brand/website/issues-to-fix/steps to fix domain issue.md\" \"_inbox/drafts/ClickUp Changes.md\" \"02-marketing-brand/brand/gbp-description.md\")",
-      "Bash(do echo \"- $f\")"
+      "Bash(do echo \"- $f\")",
+      "Bash(find:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

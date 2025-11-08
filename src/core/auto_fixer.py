@@ -147,11 +147,31 @@ class AutoFixer:
             if needs_frontmatter:
                 metadata = {}
                 fixes_applied.append("Added YAML frontmatter block")
+
+                # When adding new frontmatter, automatically add required fields
+                # Extract title from content
+                title = self._extract_title_from_content(original_content)
+                if title:
+                    metadata['title'] = title
+                    fixes_applied.append(f"Added title from H1 heading: '{title}'")
+                else:
+                    metadata['title'] = file_path.stem.replace('-', ' ').replace('_', ' ').title()
+                    fixes_applied.append(f"Added title from filename: '{metadata['title']}'")
+
+                # Suggest tags from path
+                tags = self._suggest_tags_from_path(file_path)
+                metadata['tags'] = tags
+                fixes_applied.append(f"Added suggested tags: {tags}")
+
+                # Add default status
+                metadata['status'] = self.default_status
+                fixes_applied.append(f"Added default status: '{self.default_status}'")
+
             else:
                 metadata = parse_frontmatter(file_path)
 
-            # Fix missing required fields
-            if missing_fields_issues:
+            # Fix missing required fields (for docs that have frontmatter but missing fields)
+            if missing_fields_issues and not needs_frontmatter:
                 missing_fields = self._extract_missing_fields(missing_fields_issues)
 
                 for field in missing_fields:
