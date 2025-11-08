@@ -26,14 +26,19 @@ processing:
 validation:
   yaml:
     enabled: true
-    # Required fields for all documents
+    # Required fields for all documents (ADR-001: Simplified to 3 fields)
     required_fields:
       - title      # Document title (string, non-empty)
+      - tags       # List of tags (must be a list, not a string)
+      - status     # Document status
+    # Optional fields (nice-to-have but not required)
+    optional_fields:
       - version    # Semantic version (e.g., 1.0, 1.2.1)
       - date       # Last updated date (YYYY-MM-DD format)
-      - tags       # List of tags
-      - status     # Document status
-    # Date format validation
+      - author     # Document author
+      - category   # Document category
+      - audience   # Target audience
+    # Date format validation (for optional date field)
     date_format: "YYYY-MM-DD"
     # Allowed status values
     allowed_statuses:

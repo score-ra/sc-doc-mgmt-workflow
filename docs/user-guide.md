@@ -10,7 +10,7 @@ audience: end-users
 ## Document Validation System
 
 **Version**: 1.0-dev (MVP in development)
-**Status**: Sprint 1 complete, Sprint 2-4 upcoming
+**Status**: Sprint 1-2 complete, Sprint 3-4 upcoming
 
 ---
 
@@ -20,22 +20,24 @@ Symphony Core is an automated document validation system for business operations
 
 ### What Symphony Core Does
 
-**Current (Sprint 1 Complete):**
+**Current (Sprint 1-2 Complete):**
 - ✅ Detects which documents changed (incremental processing)
 - ✅ Caches results for fast re-runs
 - ✅ Configurable for different document types
+- ✅ **Validates YAML frontmatter** (3 required fields: title, tags, status)
+- ✅ **Auto-fixes common issues** with preview and backup
+- ✅ **Generates validation reports** with actionable suggestions
 
-**Coming Soon (Sprint 2-4):**
-- ⏳ Validates YAML frontmatter (fields, dates, status values)
+**Coming Soon (Sprint 3-4):**
 - ⏳ Validates markdown syntax (headings, links, code blocks)
 - ⏳ Validates file naming conventions
-- ⏳ Generates detailed validation reports
+- ⏳ Conflict detection across documents
 - ⏳ Command-line interface (CLI)
 
 **Future (v1.1+):**
 - 📋 Intelligent document routing
-- 📋 Automated tagging
-- 📋 Conflict detection
+- 📋 Automated tagging enhancement
+- 📋 Advanced conflict detection
 - 📋 FAQ generation
 
 ---
@@ -103,11 +105,12 @@ validation:
   yaml:
     enabled: true
     required_fields:
-      - title
-      - version
-      - date
-      - tags
-      - status
+      - title    # Required
+      - tags     # Required
+      - status   # Required
+    optional_fields:
+      - version  # Optional
+      - date     # Optional
   markdown:
     enabled: true
   naming:
@@ -158,23 +161,22 @@ python main.py --help
 
 ### What Gets Validated?
 
-#### 1. YAML Frontmatter ⏳ (Sprint 2)
+#### 1. YAML Frontmatter ✅ (Sprint 2 Complete)
 
 **Checks:**
 - YAML block present at start of file
-- Required fields included (title, version, date, tags, status)
-- Date format correct (YYYY-MM-DD)
-- Status from allowed list
+- Required fields included: **title, tags, status** (3 fields only)
+- Status from allowed list (draft, review, approved, active, deprecated)
 - Tags is a list (not a string)
 
 **Example Valid Frontmatter:**
 ```yaml
 ---
 title: Pricing Information for Product X
-version: 2.0
-date: 2025-11-07
 tags: [pricing, product-x, business-operations]
 status: approved
+version: 2.0          # Optional
+date: 2025-11-07      # Optional
 ---
 ```
 
@@ -184,6 +186,37 @@ status: approved
 - `approved` - Approved and ready for use
 - `active` - Currently in use
 - `deprecated` - No longer current but preserved
+
+**Auto-Fix Capabilities:** ✅
+
+Symphony Core can automatically fix common YAML issues:
+- ✅ Add missing YAML frontmatter block
+- ✅ Extract title from H1 heading (e.g., `# My Document` → `title: My Document`)
+- ✅ Suggest tags based on file path (e.g., `pricing/` → `tags: [pricing]`)
+- ✅ Set default status to 'draft'
+- ✅ Convert tags from string to list format
+
+**Safety Features:**
+- **Preview Mode**: Shows what will change before applying fixes
+- **Automatic Backups**: Creates timestamped backup before modifying files
+- **Validation**: Re-validates after auto-fix to ensure correctness
+
+**Example Usage:**
+```python
+# Preview fixes (shows changes without applying)
+from src.core.auto_fixer import AutoFixer
+from src.core.validators.yaml_validator import YAMLValidator
+
+validator = YAMLValidator(config, logger)
+fixer = AutoFixer(config, logger)
+
+issues = validator.validate(Path("document.md"))
+result = fixer.fix_document(Path("document.md"), issues, preview=True)
+
+# Apply fixes
+result = fixer.fix_document(Path("document.md"), issues, preview=False)
+# Backup created at: _meta/.backups/document_20251108_123456.md
+```
 
 #### 2. Markdown Syntax ⏳ (Sprint 3)
 

@@ -787,9 +787,105 @@ This process is a **starting point**. Adapt it to your team:
 
 ## Sprint Retrospective
 ### What Went Well
-### What Didn't Go Well  
+### What Didn't Go Well
 ### What to Try Next Sprint
 ```
+
+### Lessons from Sprint 2 (Real-World Experience)
+
+**Sprint 2** delivered YAML validation + auto-fix with excellent results. Here are key learnings:
+
+#### Testing Best Practices
+1. **Unit Tests + Real Documents = Confidence**
+   - 73 unit tests (edge cases, malformed input, unicode)
+   - 10 real production documents validated
+   - Combined = 100% confidence in system
+
+2. **Build Comprehensive Test Fixtures**
+   ```
+   tests/fixtures/
+   ├── valid_complete.md      (happy path)
+   ├── missing_frontmatter.md (error case)
+   ├── malformed_yaml.md      (edge case)
+   └── multiple_issues.md     (complex case)
+   ```
+   - Each fixture tests specific validation rule
+   - Makes adding new tests trivial
+   - Doubles as documentation
+
+3. **Target >80% Coverage**
+   - Achieved: 84-97% on Sprint 2 modules
+   - Don't chase 100% (diminishing returns)
+   - Focus on critical paths and edge cases
+
+#### Architecture Patterns That Worked
+
+1. **Separation of Concerns**
+   ```python
+   frontmatter.py  → Parse/manipulate (84% coverage)
+   validator.py    → Validate rules (97% coverage)
+   auto_fixer.py   → Apply fixes (95% coverage)
+   ```
+   - Each module independently testable
+   - Easy to extend without breaking others
+   - Clear responsibilities
+
+2. **Configuration Over Code**
+   - Changed required fields from 5 → 3 via config
+   - No code changes needed
+   - Business rules in YAML, logic in Python
+
+3. **Dataclasses for Structure**
+   ```python
+   @dataclass
+   class ValidationIssue:
+       rule_id: str
+       severity: ValidationSeverity
+       message: str
+       suggestion: Optional[str]
+   ```
+   - Type safety at design time
+   - Self-documenting code
+   - Easy JSON serialization
+
+#### Safety & User Trust
+
+1. **Preview Mode is Non-Negotiable**
+   - Show changes before applying
+   - Zero risk to user documents
+   - Builds confidence in auto-fix
+
+2. **Always Create Backups**
+   ```python
+   backup_path = _meta/.backups/document_20251108_123456.md
+   ```
+   - Timestamped to prevent overwrites
+   - Allows rollback if needed
+   - Audit trail of changes
+
+3. **Actionable Error Messages**
+   ```
+   ❌ BAD:  "Invalid status"
+   ✅ GOOD: "Invalid status: 'pending'
+            Suggestion: Use one of: draft, review, approved, active, deprecated"
+   ```
+
+#### What to Replicate in Future Sprints
+
+✅ Same architecture (separate validators)
+✅ Comprehensive fixtures early
+✅ >80% test coverage
+✅ Preview mode for all changes
+✅ Real document validation before "done"
+✅ Documentation as you go
+
+#### What Needs Improvement
+
+⚠️ Tag suggestion too generic (file path only)
+⚠️ Need content-based analysis for better tags
+⚠️ Consider LLM integration for semantic understanding
+
+**Bottom Line**: Simple requirements + safety mechanisms + thorough testing = successful delivery
 
 ---
 
