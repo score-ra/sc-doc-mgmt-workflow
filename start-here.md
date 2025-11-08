@@ -1,485 +1,654 @@
-# Sprint 3 Quick Start Guide
+---
+title: Sprint 4 Quick Start Guide
+tags: [sprint-4, cli, reporting, quick-start]
+status: active
+version: 1.0
+last_updated: 2025-11-08
+---
 
-**Based on**: Full Documentation Repository Review (Nov 8, 2025)
-**Full Report**: See `DOCUMENTATION_REVIEW_REPORT.md` for complete analysis
+# Sprint 4 Quick Start Guide
+
+**Based on**: Sprint 1-3 completion (76 tests passing, all validators operational)
+**Sprint Focus**: CLI interface and comprehensive reporting
+**Story Points**: 21 (estimated 50 hours)
 
 ---
 
-## TL;DR - What You Need to Know
+## TL;DR - Sprint 4 Objectives
 
-**Repository**: `C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents`
+**Build**: Command-line interface (CLI) for team collaboration + comprehensive reporting system
 
-**Key Stats**:
-- 174 markdown files across 9 sections
-- 42.5% (74 files) **missing YAML frontmatter** ← MAJOR ISSUE
-- 44 files with **naming violations** (uppercase dirs, spaces)
-- 10+ **status value conflicts** (draft vs Draft, non-standard values)
-- Strong sections: 01-strategy, 05-platform, 08-reference
-- Weak sections: 02-marketing-brand, 03-sales (missing metadata)
+**Key Deliverables**:
+1. **CLI Interface**: Practical commands using Click framework (ADR-004)
+2. **Validation Reports**: Human-readable reports with actionable suggestions
+3. **Conflict Reports**: Detailed conflict analysis with severity levels
+4. **Exit Codes**: CI/CD integration support
+5. **Help System**: Comprehensive help text and usage examples
+
+**What's Already Done** (Sprint 1-3):
+- ✅ All validators working (YAML, Naming, Markdown, Conflicts)
+- ✅ Auto-fix engine with preview mode
+- ✅ 76 tests passing (100%)
+- ✅ Validation scripts operational
+- ✅ Real documentation tested (161 files)
 
 ---
 
-## Critical Findings for Sprint 3
+## Sprint 1-3 Accomplishments
 
-### 1. Markdown Validator (US-3.1) Will Encounter
+### Sprint 1 ✅ COMPLETE (8 points)
+**Foundation Infrastructure**
+- Document change detection with SHA-256 hashing
+- Configuration management system (`config/config.yaml`)
+- Persistent caching for incremental processing
+- Logger utility with file rotation
 
-✅ **Good Test Data Available**:
-- `05-platform/platforms-config/*.md` - Well-structured docs
-- `08-reference/glossary/pages/*.md` - Consistent formatting
-- `01-strategy/business-plans/*.md` - Clean markdown
+**Files Created**:
+- `src/utils/config.py` (280 lines)
+- `src/utils/cache.py` (307 lines)
+- `src/utils/logger.py` (286 lines)
+- `src/core/change_detector.py` (311 lines)
 
-⚠️ **Challenges**:
-- **42.5% of files have NO frontmatter** - Must handle gracefully
-- Marketing/sales content has inconsistent formatting
-- Need to validate heading hierarchy, code blocks, links
-- Cross-references to deprecated docs exist
+### Sprint 2 ✅ COMPLETE (13 points)
+**YAML Validation + Auto-Fix**
+- YAML frontmatter validator (4 rules: YAML-001 to YAML-004)
+- Auto-fix engine with preview mode and backup
+- Frontmatter parsing utilities
+- 20 tests, 100% passing
 
-**Implementation Tip**: Don't crash on missing frontmatter. Validate markdown body separately from YAML metadata.
+**Files Created**:
+- `src/core/validators/yaml_validator.py` (325 lines)
+- `src/core/auto_fixer.py` (386 lines)
+- `src/utils/frontmatter.py` (292 lines)
+- `tests/core/validators/test_yaml_validator.py` (20 tests)
 
-### 2. Naming Validator (US-3.2) Will Encounter
+**Real Results**: Fixed 64 documents, achieved 100% frontmatter coverage
 
-❌ **44 Known Violations** (excellent test data!):
-- **34 files** in uppercase directories:
-  ```
-  08-reference/platforms/Extendly/  → should be: extendly/
-  08-reference/platforms/GHL/       → should be: ghl/
-  ```
-- **10+ files** with spaces in names:
-  ```
-  steps to fix domain issue.md
-  automation ecosystem map.md
-  CV - B-000 Foundations.csv
-  ```
+### Sprint 3 ✅ COMPLETE (18 points)
+**Naming, Markdown, Conflict Detection**
+- Naming convention validator (5 rules: NAME-001 to NAME-005)
+- Markdown syntax validator (5 rules: MD-001 to MD-005)
+- Conflict detector (4 types: CONFLICT-001 to CONFLICT-004)
+- 56 tests, 100% passing
 
-**Implementation Tip**: Create rename suggestion function. Provide migration script for bulk fixes.
+**Files Created**:
+- `src/core/validators/naming_validator.py` (295 lines)
+- `src/core/validators/markdown_validator.py` (362 lines)
+- `src/core/validators/conflict_detector.py` (379 lines)
+- `scripts/validate_naming.py`, `validate_markdown.py`, `detect_conflicts.py`
+- `tests/core/validators/` (56 tests)
 
-**Exception Handling**:
-- README.md files: Allow uppercase ✅
-- *.csv files: Different rules (document this)
+**Real Results**:
+- Naming: 89.4% pass rate (25 violations in 161 docs)
+- Markdown: 39.1% pass rate (1,093 violations in 161 docs)
+- Conflicts: 8 conflicts detected (status, tags, pricing)
 
-### 3. Conflict Detector (US-3.3) Will Encounter
+---
 
-🔥 **Real Conflicts to Test Against**:
+## Sprint 4 Scope & Requirements
 
-**Status Conflicts**:
+### User Stories (from ADR-004)
+
+**US-4.1: CLI Interface (10 points)**
+Implement command-line interface using Click framework with essential commands:
+
+```bash
+# Basic validation
+python main.py validate                    # Validate all documents
+python main.py validate --path operations/ # Validate specific folder
+python main.py validate --tags pricing     # Validate by tag
+python main.py validate --force            # Ignore cache, revalidate all
+
+# Auto-fix operations
+python main.py validate --auto-fix         # Apply auto-fixes
+python main.py validate --auto-fix --preview  # Preview auto-fixes
+
+# Conflict detection
+python main.py validate --conflicts        # Run conflict detection only
+
+# Help and version
+python main.py --help                      # Show help
+python main.py --version                   # Show version
+```
+
+**US-4.2: Validation Reporting (6 points)**
+Generate comprehensive validation reports:
+- Summary statistics (files passed/failed, violations by rule)
+- Detailed issue listings with file paths and line numbers
+- Actionable suggestions for each violation
+- Multiple output formats (console, markdown, JSON)
+- Exit codes for CI/CD integration (0 = pass, 1 = fail)
+
+**US-4.3: Conflict Reporting (5 points)**
+Generate detailed conflict analysis reports:
+- Conflict summary by type (status, tags, pricing, cross-references)
+- Severity levels (error, warning, info)
+- Impact assessment (number of documents affected)
+- Recommendations for resolution
+- Batch/async execution support (per ADR-006)
+
+---
+
+## Architecture & Design Patterns
+
+### CLI Framework: Click
+
+**Why Click?**
+- Industry standard for Python CLIs
+- Automatic help generation
+- Command grouping and nesting
+- Parameter validation
+- Progress bars and styling
+
+**Basic Structure**:
+```python
+import click
+from pathlib import Path
+from src.utils.config import Config
+from src.utils.logger import Logger
+from src.core.validators.yaml_validator import YAMLValidator
+from src.core.validators.naming_validator import NamingValidator
+from src.core.validators.markdown_validator import MarkdownValidator
+from src.core.validators.conflict_detector import ConflictDetector
+
+@click.group()
+@click.version_option(version='1.0.0')
+def cli():
+    """Symphony Core Document Management Workflow"""
+    pass
+
+@cli.command()
+@click.option('--path', type=click.Path(exists=True), help='Validate specific folder')
+@click.option('--tags', help='Validate documents with specific tag')
+@click.option('--force', is_flag=True, help='Ignore cache, revalidate all')
+@click.option('--auto-fix', is_flag=True, help='Auto-fix issues')
+@click.option('--preview', is_flag=True, help='Preview auto-fixes without applying')
+@click.option('--conflicts', is_flag=True, help='Run conflict detection only')
+def validate(path, tags, force, auto_fix, preview, conflicts):
+    """Validate markdown documents"""
+    # Implementation here
+    pass
+
+if __name__ == '__main__':
+    cli()
+```
+
+### Report Generation Pattern
+
+**Console Output** (default):
+```
+================================================================================
+SYMPHONY CORE - VALIDATION REPORT
+================================================================================
+
+Documents Scanned: 161
+Passed: 144 (89.4%)
+Failed: 17 (10.6%)
+
+VIOLATIONS BY RULE:
+  NAME-001: 16 (Uppercase in filenames/directories)
+  NAME-002:  9 (Spaces in filenames)
+
+FAILED DOCUMENTS:
+  02-marketing-brand/website/steps to fix domain issue.md
+    [ERROR] NAME-002: Filename contains spaces
+    Suggestion: Rename to 'steps-to-fix-domain-issue.md'
+...
+```
+
+**Markdown Output** (`--format markdown`):
+```markdown
+# Symphony Core Validation Report
+
+**Date**: 2025-11-08
+**Documents**: 161 scanned
+
+## Summary
+- Passed: 144 (89.4%)
+- Failed: 17 (10.6%)
+
+## Violations by Rule
+| Rule ID | Count | Description |
+|---------|-------|-------------|
+| NAME-001 | 16 | Uppercase in filenames/directories |
+| NAME-002 | 9 | Spaces in filenames |
+...
+```
+
+**JSON Output** (`--format json`):
+```json
+{
+  "timestamp": "2025-11-08T10:30:00Z",
+  "summary": {
+    "total": 161,
+    "passed": 144,
+    "failed": 17
+  },
+  "violations": [
+    {
+      "file": "02-marketing-brand/website/steps to fix domain issue.md",
+      "rule_id": "NAME-002",
+      "severity": "error",
+      "message": "Filename contains spaces",
+      "suggestion": "Rename to 'steps-to-fix-domain-issue.md'"
+    }
+  ]
+}
+```
+
+---
+
+## Implementation Roadmap
+
+### Week 1: Core CLI Structure (5 points)
+
+**Day 1-2: Setup**
+- Install Click: `pip install click`
+- Create `src/cli.py` and `src/main.py`
+- Implement basic command structure
+- Add `--help` and `--version` options
+
+**Day 3-4: Validate Command**
+- Implement `validate` command with basic options
+- Add path filtering (`--path`)
+- Add tag filtering (`--tags`)
+- Add force mode (`--force`)
+
+**Day 5: Testing**
+- Write CLI tests using Click's testing utilities
+- Test all command combinations
+- Test error handling
+
+**Files to Create**:
+- `src/cli.py` (main CLI interface)
+- `src/main.py` (entry point)
+- `tests/test_cli.py` (CLI tests)
+
+### Week 2: Reporting System (6 points)
+
+**Day 6-7: Console Reporter**
+- Create `src/reporting/console_reporter.py`
+- Implement summary statistics
+- Implement detailed issue listings
+- Add color support (optional, use Click.echo with styles)
+
+**Day 8-9: Markdown Reporter**
+- Create `src/reporting/markdown_reporter.py`
+- Generate markdown tables
+- Include statistics and charts
+- Save to `_meta/reports/` directory
+
+**Day 10: JSON Reporter**
+- Create `src/reporting/json_reporter.py`
+- Structured JSON output
+- Machine-readable format for CI/CD
+
+**Files to Create**:
+- `src/reporting/__init__.py`
+- `src/reporting/console_reporter.py`
+- `src/reporting/markdown_reporter.py`
+- `src/reporting/json_reporter.py`
+- `tests/reporting/test_reporters.py`
+
+### Week 3: Conflict Reporting + Integration (5 points)
+
+**Day 11-12: Conflict Reporter**
+- Enhance `ConflictDetector.generate_conflict_report()`
+- Add severity levels
+- Add impact assessment
+- Group by conflict type
+
+**Day 13: Auto-fix Integration**
+- Add `--auto-fix` flag to CLI
+- Add `--preview` flag
+- Integrate with AutoFixer from Sprint 2
+- Show before/after in reports
+
+**Day 14-15: Polish & Testing**
+- Exit code handling (0 = pass, 1 = fail)
+- Progress bars for long operations
+- Comprehensive integration tests
+- Update documentation (README, user-guide)
+
+**Files to Create/Update**:
+- `src/reporting/conflict_reporter.py`
+- Update `src/core/conflict_detector.py`
+- Update `tests/test_cli.py` (integration tests)
+- Update `docs/user-guide.md`
+
+---
+
+## Testing Strategy
+
+### Unit Tests
+Test individual CLI commands and reporters:
+```python
+from click.testing import CliRunner
+from src.cli import cli
+
+def test_validate_command():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['validate', '--help'])
+    assert result.exit_code == 0
+    assert 'Validate markdown documents' in result.output
+
+def test_validate_with_path():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['validate', '--path', 'tests/fixtures'])
+    assert result.exit_code == 0
+```
+
+### Integration Tests
+Test end-to-end workflows:
+```python
+def test_validate_and_report():
+    """Test full validation pipeline with reporting"""
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        'validate',
+        '--path', 'tests/fixtures',
+        '--format', 'json',
+        '--output', 'test-report.json'
+    ])
+    assert result.exit_code == 0
+    assert Path('test-report.json').exists()
+```
+
+### Real Documentation Tests
+Test on actual Symphony Core documentation:
+```python
+def test_validate_real_docs():
+    """Test validation on real documentation repository"""
+    docs_path = Path(r"C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents")
+    if not docs_path.exists():
+        pytest.skip("Real docs not available")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['validate', '--path', str(docs_path / '09-clients')])
+    # 09-clients folder has 100% pass rate, should return exit code 0
+    assert result.exit_code == 0
+```
+
+---
+
+## Key Implementation Patterns
+
+### 1. Exit Code Strategy (ADR-004, CI/CD Integration)
+
+```python
+def validate(path, tags, force, auto_fix, preview, conflicts):
+    """Validate markdown documents"""
+    # Run validation
+    issues = run_validation(...)
+
+    # Generate report
+    generate_report(issues)
+
+    # Exit with appropriate code
+    if has_errors(issues):
+        sys.exit(1)  # CI/CD will fail
+    else:
+        sys.exit(0)  # CI/CD will pass
+```
+
+### 2. Incremental vs. Full Validation (ADR-006)
+
+```python
+if force:
+    # Full validation (ignore cache)
+    documents = find_all_documents(path)
+elif conflicts:
+    # Conflict detection always uses all documents (ADR-006)
+    documents = find_all_documents(path)
+else:
+    # Incremental validation (use cache)
+    documents = find_changed_documents(path)
+```
+
+### 3. Report Format Selection
+
+```python
+def generate_report(issues, format='console'):
+    """Generate report in specified format"""
+    if format == 'console':
+        reporter = ConsoleReporter()
+    elif format == 'markdown':
+        reporter = MarkdownReporter()
+    elif format == 'json':
+        reporter = JSONReporter()
+
+    return reporter.generate(issues)
+```
+
+### 4. Progress Indication (for long operations)
+
+```python
+import click
+
+with click.progressbar(documents, label='Validating documents') as bar:
+    for doc in bar:
+        validate_document(doc)
+```
+
+---
+
+## Configuration Reference
+
+All CLI behavior should respect `config/config.yaml`:
+
 ```yaml
-status: draft          # Lowercase, no quotes
-status: "Draft"        # Capitalized, quoted ❌
-status: published      # Non-standard value ❌
-status: complete       # Non-standard value ❌
-```
+# CLI Configuration
+cli:
+  default_format: console
+  report_output_dir: _meta/reports/
+  progress_bar: true
+  color_output: true
 
-**Tag Conflicts** (synonyms):
-```yaml
-tags: [gohighlevel, ...]
-tags: [ghl, ...]            # Same platform, different tag
-tags: [GoHighLevel, ...]    # Case conflict
-```
-
-**Pricing Conflicts** (CRITICAL - test this!):
-- Pricing info scattered across:
-  - `03-sales/pricing-strategy/*.md`
-  - `02-marketing-brand/website/*.md`
-- **Risk**: Inconsistent pricing across marketing and sales docs
-- **Detection**: Regex extract $X/month mentions, compare
-
-**Deprecated Doc References**:
-- Some active docs reference deprecated content
-- Need cross-reference validation
-
-**Implementation Tip**: Start with status/tag conflicts (easier). Build to pricing conflicts (harder). Use tag normalization dictionary.
-
----
-
-## Sprint 3 Recommended Approach
-
-### Week 1: Naming Validator (3 points) - EASIEST
-**Why Start Here**: Immediate impact, clear test cases, low complexity
-
-1. Implement directory case checker
-2. Implement filename space checker
-3. Generate rename suggestions
-4. Test on 44 known violations
-5. **Success**: Flag all violations, provide fixes
-
-**Test Command**:
-```bash
-python -m pytest tests/core/validators/test_naming_validator.py -v
-```
-
-**Real Test Data**:
-```python
-# Use actual violating files from review
-test_files = [
-    Path("08-reference/platforms/Extendly/training-docs/automation ecosystem map.md"),
-    Path("02-marketing-brand/website/issues-to-fix/steps to fix domain issue.md"),
-]
-```
-
-### Week 2: Markdown Validator (5 points) - MODERATE
-**Why Second**: Builds on frontmatter work from Sprint 2, moderate complexity
-
-1. Handle docs without frontmatter gracefully
-2. Implement heading hierarchy checker
-3. Implement code block validator
-4. Implement link integrity checker
-5. **Success**: Validate all 174 docs without crashing
-
-**Test Command**:
-```bash
-python -m pytest tests/core/validators/test_markdown_validator.py -v
-```
-
-**Real Test Data**:
-```python
-# Good structure examples
-test_good = [
-    Path("05-platform/platforms-config/claude-config-standard.md"),
-    Path("08-reference/glossary/pages/ai-glossary.md"),
-]
-
-# Missing frontmatter examples
-test_no_frontmatter = [
-    Path("02-marketing-brand/website/homepage_copy.md"),
-    Path("03-sales/pricing-strategy/core_plans_pricing_copy.md"),
-]
-```
-
-### Week 3: Conflict Detector (10 points) - HARDEST
-**Why Last**: Most complex, highest value, needs other validators complete
-
-**Sub-tasks**:
-- Day 1-2: Document grouping, metadata extraction
-- Day 3-4: Status/tag conflict detection
-- Day 5-6: Pricing extraction and comparison
-- Day 7-8: Cross-reference validation
-- Day 9-10: Testing, refinement, confidence scoring
-
-**Test Command**:
-```bash
-python -m pytest tests/core/validators/test_conflict_detector.py -v
-```
-
-**Real Test Data**:
-```python
-# Test status conflicts
-test_status_conflicts = [
-    # Mix of draft, "Draft", published, complete, etc.
-    all_docs_with_frontmatter  # ~100 files
-]
-
-# Test pricing conflicts
-test_pricing_conflicts = [
-    Path("03-sales/pricing-strategy/*.md"),
-    Path("02-marketing-brand/website/*.md"),
-]
-```
-
----
-
-## Key Implementation Patterns (From Sprint 2)
-
-### Pattern 1: Graceful Degradation
-```python
-def validate(self, file_path: Path) -> List[ValidationIssue]:
-    issues = []
-
-    try:
-        # Attempt frontmatter extraction
-        metadata = parse_frontmatter(file_path)
-    except FrontmatterError:
-        # Don't crash - report and continue
-        issues.append(ValidationIssue(
-            rule_id='MD-001',
-            severity=ValidationSeverity.WARNING,
-            message='Missing YAML frontmatter',
-            suggestion='Add frontmatter block at top of file'
-        ))
-        metadata = {}  # Empty dict, validation continues
-
-    # Continue with markdown body validation
-    issues.extend(self._validate_markdown_body(file_path))
-    return issues
-```
-
-### Pattern 2: Real Document Testing
-```python
-# Sprint 2 approach: Use actual Symphony Core docs
-class TestYAMLValidatorRealDocs:
-    @pytest.fixture
-    def real_docs_path(self):
-        return Path(r"C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents")
-
-    def test_validate_strategy_docs(self, validator, real_docs_path):
-        """Test against actual business strategy documents"""
-        strategy_docs = list((real_docs_path / "01-strategy").glob("**/*.md"))
-        assert len(strategy_docs) == 10  # From review
-
-        for doc in strategy_docs:
-            issues = validator.validate(doc)
-            # Most strategy docs should pass
-            critical_issues = [i for i in issues if i.severity == ValidationSeverity.ERROR]
-            assert len(critical_issues) == 0, f"{doc.name} has critical issues"
-```
-
-### Pattern 3: Configuration-Driven Validation
-```python
-# config.yaml
+# Validation toggles
 validation:
-  naming:
+  yaml:
     enabled: true
-    allow_uppercase_files:
-      - "README.md"
-    allow_spaces_in_extensions:
-      - ".csv"
-    max_length: 50
-
   markdown:
     enabled: true
-    require_frontmatter: false  # Too many docs lack it currently
-    check_heading_hierarchy: true
-    check_code_block_language: true
-
+  naming:
+    enabled: true
   conflicts:
     enabled: true
-    allowed_status_values:
-      - draft
-      - review
-      - approved
-      - active
-      - archived
-      - deprecated
-    tag_synonyms:
-      ghl: gohighlevel
-      wp: wordpress
+
+# Reporting configuration
+reporting:
+  format: console
+  output_dir: _meta/reports/
+  verbose: true
+  include_suggestions: true
+  report_levels:
+    - error
+    - warning
+    - info
 ```
 
 ---
 
-## Auto-Fix Opportunities (Prioritized)
+## Example Usage Scenarios
 
-### Priority 1: Missing Frontmatter (74 files)
-**Impact**: HIGH - Enables all other validation
+### Scenario 1: Daily Team Validation
+**Use Case**: Sarah (Documentation Manager) validates new docs before committing
 
-```python
-# Auto-fix approach
-def fix_missing_frontmatter(file_path: Path) -> AutoFixResult:
-    # Extract title from H1 heading
-    title = extract_title_from_h1(file_path)
+```bash
+# Check what changed
+python main.py validate
 
-    # Suggest tags from file path
-    tags = suggest_tags_from_path(file_path)
+# If issues found, see detailed report
+python main.py validate --format markdown --output daily-report.md
 
-    # Default status
-    status = 'draft'
-
-    # Add frontmatter
-    frontmatter = {
-        'title': title,
-        'tags': tags,
-        'status': status
-    }
-
-    # Create backup first
-    backup_path = create_backup(file_path)
-
-    # Add frontmatter to file
-    add_frontmatter(file_path, frontmatter)
-
-    return AutoFixResult(
-        file_path=file_path,
-        fixes_applied=['Added YAML frontmatter', f'Extracted title: {title}'],
-        backup_path=backup_path
-    )
+# Auto-fix safe issues
+python main.py validate --auto-fix --preview
+python main.py validate --auto-fix  # Apply fixes
 ```
 
-**Test Files**: All 74 files without frontmatter (see Appendix A in full report)
+### Scenario 2: Domain-Specific Validation
+**Use Case**: Mike (Content Contributor) validates only his domain
 
-### Priority 2: Status Normalization (100 files)
-**Impact**: MEDIUM - Enables conflict detection
+```bash
+# Validate operations docs
+python main.py validate --path 04-operations/
 
-```python
-def normalize_status_value(status: str) -> str:
-    """Normalize status to standard vocabulary"""
-    # Remove quotes
-    status = status.strip('"').strip("'")
-
-    # Convert to lowercase
-    status = status.lower()
-
-    # Map non-standard to standard
-    mapping = {
-        'published': 'active',
-        'complete': 'approved',
-        'concepts': 'draft',
-    }
-
-    return mapping.get(status, status)
+# Validate all pricing docs
+python main.py validate --tags pricing
 ```
 
-### Priority 3: Tag Normalization
-**Impact**: MEDIUM - Improves conflict detection
+### Scenario 3: Pre-Release Conflict Check
+**Use Case**: Team lead checks for conflicts before release
 
-```python
-def normalize_tags(tags: List[str]) -> List[str]:
-    """Normalize tag vocabulary"""
-    # Lowercase all
-    tags = [t.lower() for t in tags]
+```bash
+# Run comprehensive conflict detection
+python main.py validate --conflicts --force
 
-    # Apply synonyms
-    synonyms = {
-        'ghl': 'gohighlevel',
-        'wp': 'wordpress',
-    }
-
-    tags = [synonyms.get(t, t) for t in tags]
-
-    # Remove duplicates, maintain order
-    return list(dict.fromkeys(tags))
+# Generate detailed conflict report
+python main.py validate --conflicts --format markdown --output conflicts-report.md
 ```
 
-### Priority 4: Filename Fixes (44 files)
-**Impact**: LOW-MEDIUM - Improves consistency
-
-Provide migration script, don't auto-fix (risk of breaking references).
-
----
-
-## Validation Exception Patterns
-
-Create `config/validation-exceptions.yaml`:
+### Scenario 4: CI/CD Integration
+**Use Case**: GitHub Actions validates on every PR
 
 ```yaml
-# Files/paths exempt from certain validations
-
-naming:
-  allow_uppercase:
-    - "README.md"
-    - "**/README.md"
-
-  allow_spaces:
-    - "**/*.csv"  # CSV files use different conventions
-
-  ignore_paths:
-    - "_inbox/*"  # Drafts may have temporary names
-    - "docs/archive/*"
-
-frontmatter:
-  optional_for_paths:
-    - "_inbox/**/*.md"  # Drafts may lack complete metadata
-    - "docs/archive/**/*.md"
-
-  required_for_paths:
-    - "01-strategy/**/*.md"  # Business-critical
-    - "03-sales/pricing-strategy/**/*.md"  # Pricing must have metadata
-    - "05-platform/**/*.md"  # Platform docs must be tracked
-
-conflicts:
-  ignore_deprecated_references_for_days: 90  # Allow 90-day migration period
-
-  pricing_conflict_paths:
-    - "03-sales/pricing-strategy/**/*.md"
-    - "02-marketing-brand/website/**/*.md"
+# .github/workflows/validate-docs.yml
+- name: Validate Documentation
+  run: |
+    python main.py validate --format json --output validation-report.json
+    # Exit code 1 will fail the build if validation fails
 ```
 
 ---
 
-## Success Metrics for Sprint 3
+## Files to Create (Sprint 4)
 
-### Naming Validator
-- [ ] Flag all 34 uppercase directory violations
-- [ ] Flag all 10+ space-in-filename violations
-- [ ] Provide rename suggestions for all violations
-- [ ] Handle exceptions (README.md, *.csv)
-- [ ] 95%+ test coverage
+### Core CLI
+- `src/cli.py` (~200 lines) - Main CLI interface with Click
+- `src/main.py` (~20 lines) - Entry point
+- `setup.py` or `pyproject.toml` - Package configuration for CLI entry point
 
-### Markdown Validator
-- [ ] Validate all 174 docs without crashing
-- [ ] Handle 74 docs without frontmatter gracefully
-- [ ] Identify heading hierarchy issues
-- [ ] Flag code blocks without language
-- [ ] Check link integrity (relative paths)
-- [ ] 95%+ test coverage
+### Reporting System
+- `src/reporting/__init__.py`
+- `src/reporting/base_reporter.py` (~100 lines) - Abstract base class
+- `src/reporting/console_reporter.py` (~150 lines) - Console output
+- `src/reporting/markdown_reporter.py` (~200 lines) - Markdown reports
+- `src/reporting/json_reporter.py` (~100 lines) - JSON output
+- `src/reporting/conflict_reporter.py` (~150 lines) - Conflict-specific reports
 
-### Conflict Detector
-- [ ] Detect all status vocabulary conflicts (10+)
-- [ ] Detect tag synonym conflicts (ghl vs gohighlevel)
-- [ ] Extract pricing mentions from sales/marketing docs
-- [ ] Flag pricing inconsistencies (if any)
-- [ ] Identify cross-references to deprecated docs
-- [ ] 90%+ test coverage (complexity allows 10% tolerance)
+### Tests
+- `tests/test_cli.py` (~300 lines) - CLI unit and integration tests
+- `tests/reporting/test_console_reporter.py` (~150 lines)
+- `tests/reporting/test_markdown_reporter.py` (~150 lines)
+- `tests/reporting/test_json_reporter.py` (~100 lines)
 
-### Overall Sprint 3
-- [ ] All 18 story points complete
-- [ ] 85+ tests passing (naming: 20, markdown: 25, conflicts: 40)
-- [ ] Real-world validation on 174 Symphony Core docs
-- [ ] Documentation updated (user-guide, development guide)
-- [ ] Ready for Sprint 4 (CLI + Reporting)
+### Documentation
+- Update `docs/user-guide.md` - Add CLI usage section
+- Update `README.md` - Add quick start with CLI commands
+- Create `docs/cli-reference.md` - Complete CLI command reference
+
+**Estimated Total**: ~2,000 lines of production code + ~700 lines of tests
 
 ---
 
-## Files to Reference During Sprint 3
+## Success Criteria
 
-**Architecture & Standards**:
-- `C:\...\symphony-core-documents\symphony-core-documentation-architecture.md`
-- `C:\...\symphony-core-documents\08-reference\standards\sc-tagging-standard.md`
-- `C:\...\symphony-core-documents\08-reference\standards\sc-markdown-standard.md`
+**Sprint 4 Complete When**:
+- [ ] CLI accepts all commands from ADR-004
+- [ ] Reports generate in console, markdown, and JSON formats
+- [ ] Exit codes work correctly (0 = pass, 1 = fail)
+- [ ] Auto-fix integrated with `--auto-fix` and `--preview` flags
+- [ ] Conflict detection accessible via `--conflicts` flag
+- [ ] Path and tag filtering work correctly
+- [ ] Help text comprehensive and accurate
+- [ ] 90%+ test coverage on CLI and reporting modules
+- [ ] User guide updated with CLI examples
+- [ ] Can be installed as package: `pip install -e .`
+- [ ] Works in CI/CD environment (GitHub Actions tested)
 
-**Test Data Sources**:
-- Strategy docs (clean): `C:\...\symphony-core-documents\01-strategy\**\*.md`
-- Platform docs (good structure): `C:\...\symphony-core-documents\05-platform\**\*.md`
-- Marketing docs (missing frontmatter): `C:\...\symphony-core-documents\02-marketing-brand\**\*.md`
-- Sales docs (pricing conflicts): `C:\...\symphony-core-documents\03-sales\**\*.md`
-
-**Sprint 2 Reference Code**:
-- `src/utils/frontmatter.py` - YAML parsing utilities
-- `src/core/validators/yaml_validator.py` - Validation pattern
-- `src/core/auto_fixer.py` - Auto-fix pattern
-- `tests/core/validators/test_yaml_validator.py` - Test pattern
+**Quality Metrics**:
+- All existing tests still pass (76 tests from Sprint 1-3)
+- New CLI tests: 25+ tests covering all commands
+- New reporter tests: 15+ tests covering all formats
+- Integration tests: 5+ end-to-end scenarios
+- **Total target**: 120+ tests passing
 
 ---
 
-## Common Pitfalls to Avoid (From Sprint 2)
+## Common Pitfalls to Avoid
 
-1. **Don't crash on edge cases** - Handle missing frontmatter, malformed YAML, empty files
-2. **Test with real docs early** - Don't wait until end to test on Symphony Core docs
-3. **Windows path handling** - Use `Path` objects, not string concatenation
-4. **Windows console encoding** - Avoid emoji in output, use ASCII
-5. **Actionable error messages** - Always provide suggestion for fix
-6. **Configuration-driven** - Don't hardcode business rules, use config.yaml
-7. **Create backups** - Any auto-fix must create timestamped backup first
+1. **Don't over-engineer**: Stick to ADR-004 scope, avoid enterprise features
+2. **Validate early**: Use Click's built-in validation (paths, choices, etc.)
+3. **Handle interrupts**: Catch Ctrl+C gracefully (KeyboardInterrupt)
+4. **Test with real data**: Use 09-clients folder (100% pass rate) as test fixture
+5. **Color carefully**: Windows console has limitations, use Click.echo with fallbacks
+6. **Exit codes matter**: CI/CD relies on correct exit codes (0/1)
+7. **Progress for long ops**: Show progress bar when validating 100+ documents
+8. **Cache invalidation**: `--force` must truly ignore cache (test this!)
 
 ---
 
 ## Ready to Start?
 
-**Prompt for Starting Sprint 3**:
-```
-I'm ready to start Sprint 3 implementation for the Symphony Core document validation system.
+**Recommended Approach**:
 
-Sprint 3 includes:
-- US-3.1: Markdown syntax validator (5 points)
-- US-3.2: File naming validator (3 points)
-- US-3.3: Semantic conflict detector (10 points)
+1. **Setup** (Day 1):
+   ```bash
+   pip install click pytest-click
+   python -m pytest tests/core/validators/ -v  # Verify all 76 tests pass
+   ```
 
-I have reviewed:
-- DOCUMENTATION_REVIEW_REPORT.md (full analysis of 174 docs)
-- SPRINT_3_QUICK_START.md (this guide)
-- Real documentation at C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents
+2. **Implement Basic CLI** (Day 1-2):
+   - Create `src/cli.py` with basic structure
+   - Add `validate` command with `--help`
+   - Test with Click's CliRunner
 
-Key findings:
-- 42.5% of docs missing frontmatter (test graceful handling)
-- 44 naming violations (great test data)
-- Status/tag conflicts exist (real conflict scenarios)
+3. **Add Validation Logic** (Day 3-4):
+   - Wire up existing validators
+   - Implement path filtering
+   - Implement tag filtering
+   - Test on real docs
 
-Let's start with the Naming Validator (easiest, 3 points) and work up to the Conflict Detector (hardest, 10 points).
+4. **Build Reporting** (Day 6-10):
+   - Console reporter first (most used)
+   - Markdown reporter second (for documentation)
+   - JSON reporter last (for CI/CD)
 
-Ready to begin?
+5. **Polish & Test** (Day 11-15):
+   - Conflict reporting integration
+   - Auto-fix integration
+   - Comprehensive testing
+   - Documentation updates
+
+**First Command to Build**:
+```bash
+python main.py validate --path tests/fixtures --format console
 ```
 
 ---
 
-**Status**: ✅ SPRINT 3 READY
-**Full Report**: `DOCUMENTATION_REVIEW_REPORT.md` (18 pages)
-**Last Updated**: November 8, 2025
-**Next Step**: Begin Sprint 3 implementation
+## Resources & References
+
+**From Sprint 1-3**:
+- Validator implementations: `src/core/validators/*.py`
+- Test patterns: `tests/core/validators/*.py`
+- Configuration: `config/config.yaml`
+- Real test data: `C:\Users\Rohit\...\symphony-core-documents\09-clients` (100% pass)
+
+**Architectural Decisions**:
+- ADR-004: Practical CLI Scope (see `decisions.md`)
+- ADR-006: Accuracy Over Speed (conflict detection always full scan)
+
+**External Documentation**:
+- Click docs: https://click.palletsprojects.com/
+- Click testing: https://click.palletsprojects.com/en/8.1.x/testing/
+- Python packaging: https://packaging.python.org/
+
+---
+
+**Status**: ✅ READY TO START SPRINT 4
+**Prerequisites**: ✅ All validators operational (76 tests passing)
+**Next Step**: Create `src/cli.py` and implement basic command structure
+
+**Last Updated**: 2025-11-08
+**Maintained By**: Engineering Team
