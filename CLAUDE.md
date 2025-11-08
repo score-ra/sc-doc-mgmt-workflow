@@ -1,3 +1,11 @@
+---
+title: Claude Code Instructions - Symphony Core Document Management Workflow
+tags: [claude-code, development, project-instructions]
+status: active
+version: 1.0
+last_updated: 2025-11-08
+---
+
 # Claude Code Instructions - Symphony Core Document Management Workflow
 
 ## Project Overview
@@ -33,7 +41,7 @@ Symphony Core is an automated document processing system that ensures consistenc
 - Comments only for "why", not "what"
 
 ### Project Structure
-```
+```text
 src/
 ├── core/           # Core processing logic
 │   ├── change_detector.py    # File change detection

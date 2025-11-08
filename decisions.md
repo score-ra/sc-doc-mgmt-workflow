@@ -1,3 +1,11 @@
+---
+title: Symphony Core - Architectural Decisions Record
+tags: [adr, decisions, architecture, planning]
+status: active
+version: 1.0
+last_updated: 2025-11-08
+---
+
 # Symphony Core - Architectural Decisions Record
 
 This document tracks all major architectural and scope decisions for the Symphony Core Document Management Workflow project. Each decision is recorded with context, rationale, and impact to ensure continuity across development sessions.

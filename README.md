@@ -16,11 +16,11 @@ Automated document validation system that ensures consistency and standards comp
 - Configuration management system
 - Persistent caching for incremental processing
 
-**Sprint 2** ⏳ READY (13 pts):
+**Sprint 2** ✅ COMPLETE (13 pts):
 - YAML frontmatter validation (3 required fields: title, tags, status)
 - **Auto-fix engine with preview** ⭐ (moved from v1.1)
 
-**Sprint 3** ⏳ PLANNED (18 pts):
+**Sprint 3** ✅ COMPLETE (18 pts):
 - Markdown syntax validation
 - Naming convention validation
 - **Conflict detection** ⭐ (pricing, policies, duplicates - moved from v1.1)

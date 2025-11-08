@@ -1,8 +1,9 @@
 ---
 title: Symphony Core - User Guide
+tags: [user-guide, documentation, validation]
 version: 1.0-dev
-last_updated: 2025-11-07
-status: in-progress
+last_updated: 2025-11-08
+status: active
 audience: end-users
 ---
 
@@ -10,29 +11,30 @@ audience: end-users
 ## Document Validation System
 
 **Version**: 1.0-dev (MVP in development)
-**Status**: Sprint 1-2 complete, Sprint 3-4 upcoming
+**Status**: Sprint 1-3 complete, Sprint 4 upcoming
 
 ---
 
 ## Overview
 
-Symphony Core is an automated document validation system for business operations documentation. It ensures markdown documents meet quality standards by validating YAML frontmatter, markdown syntax, and naming conventions. Symphony Core helps teams maintain consistent, high-quality documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures.
+Symphony Core is an automated document validation system for business operations documentation. It ensures markdown documents meet quality standards by validating YAML frontmatter, markdown syntax, naming conventions, and detecting conflicts across documents. Symphony Core helps teams maintain consistent, high-quality documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures.
 
 ### What Symphony Core Does
 
-**Current (Sprint 1-2 Complete):**
+**Current (Sprint 1-3 Complete):**
 - ✅ Detects which documents changed (incremental processing)
 - ✅ Caches results for fast re-runs
 - ✅ Configurable for different document types
 - ✅ **Validates YAML frontmatter** (3 required fields: title, tags, status)
 - ✅ **Auto-fixes common issues** with preview and backup
+- ✅ **Validates markdown syntax** (headings, links, code blocks)
+- ✅ **Validates naming conventions** (lowercase-with-hyphens)
+- ✅ **Detects conflicts** across documents (pricing, status values, tag synonyms)
 - ✅ **Generates validation reports** with actionable suggestions
 
-**Coming Soon (Sprint 3-4):**
-- ⏳ Validates markdown syntax (headings, links, code blocks)
-- ⏳ Validates file naming conventions
-- ⏳ Conflict detection across documents
-- ⏳ Command-line interface (CLI)
+**Coming Soon (Sprint 4):**
+- ⏳ Command-line interface (CLI) with practical commands
+- ⏳ Comprehensive reporting system
 
 **Future (v1.1+):**
 - 📋 Intelligent document routing

@@ -1,10 +1,11 @@
 ---
 title: Symphony Core v1.0 - Architecture & Solution Design
 subtitle: Document Validation System (MVP)
+tags: [architecture, design, v1.0]
 version: 1.0
 author: Engineering Team
-last_updated: 2025-11-07
-status: approved
+last_updated: 2025-11-08
+status: active
 related_docs:
   - product-requirements-document.md
   - architecture-future-vision.md
@@ -19,17 +20,19 @@ related_docs:
 
 **Purpose**: Technical architecture for Symphony Core v1.0 MVP - a document validation system for markdown files.
 
-**Scope**: v1.0 focuses ONLY on validation:
+**Scope**: v1.0 focuses on validation and conflict detection:
 - YAML frontmatter validation
 - Markdown syntax validation
 - Naming convention validation
+- Conflict detection (pricing, status values, tag synonyms)
 - Change detection (incremental processing)
+- Auto-fix with preview
 - Validation reporting
 
 **Out of Scope for v1.0**:
 - Intelligent document routing (v1.1)
 - Automated tagging (v1.1)
-- Conflict detection (v1.1+)
+- Advanced semantic conflict detection with LLM (v1.1+)
 - FAQ generation (v2.0)
 
 **Related Documents**:
