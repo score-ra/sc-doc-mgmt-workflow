@@ -7,24 +7,39 @@ Automated document validation system that ensures consistency and standards comp
 ## Project Status
 
 **Current Version**: 1.0.0-dev (MVP in development)
-**Focus**: Document validation and standards enforcement
+**Focus**: Document validation, conflict detection, and auto-fix
 
-### v1.0 MVP Features (Current Sprint)
-- ✅ Document change detection with SHA-256 hashing
-- ✅ Configuration management system
-- ✅ Persistent caching for incremental processing
-- ⏳ YAML frontmatter validation (Sprint 2)
-- ⏳ Markdown syntax validation (Sprint 3)
-- ⏳ Naming convention validation (Sprint 3)
-- ⏳ CLI interface (Sprint 4)
-- ⏳ Validation reporting (Sprint 4)
+### v1.0 MVP Features (Revised 2025-11-07)
+
+**Sprint 1** ✅ COMPLETE:
+- Document change detection with SHA-256 hashing
+- Configuration management system
+- Persistent caching for incremental processing
+
+**Sprint 2** ⏳ READY (13 pts):
+- YAML frontmatter validation (3 required fields: title, tags, status)
+- **Auto-fix engine with preview** ⭐ (moved from v1.1)
+
+**Sprint 3** ⏳ PLANNED (18 pts):
+- Markdown syntax validation
+- Naming convention validation
+- **Conflict detection** ⭐ (pricing, policies, duplicates - moved from v1.1)
+
+**Sprint 4** ⏳ PLANNED (21 pts):
+- CLI interface (practical commands for team collaboration)
+- Validation & conflict reporting
+
+**Key Scope Changes** (see `DECISIONS.md`):
+- ✅ Simplified: 3 required YAML fields (was 5)
+- ✅ Enhanced: Conflict detection in v1.0 (was v1.1) - mission critical for scaling
+- ✅ Enhanced: Auto-fix with preview in v1.0 (was v1.1)
+- Total: 52 story points (~125 hours)
 
 ### Future Features (v1.1+)
 - Intelligent document routing
 - Automated tagging system
-- Conflict detection
+- Advanced conflict detection (semantic analysis with LLM)
 - FAQ generation
-- Auto-fix capabilities
 
 See [Product Requirements Document](docs/product-requirements-document.md) for full roadmap.
 

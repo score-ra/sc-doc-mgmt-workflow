@@ -14,18 +14,55 @@ last_updated: 2025-11-07
 | Sprint | Dates | Goal | Status | Points |
 |--------|-------|------|--------|--------|
 | Sprint 1 | Nov 7-13 | Foundation | ✅ Complete | 8/8 |
-| Sprint 2 | Nov 11-15 | YAML Validation | ⏳ Next | 11 |
-| Sprint 3 | Nov 18-22 | Markdown & Naming | 📋 Planned | 13 |
-| Sprint 4 | Nov 25-29 | CLI & Polish | 📋 Planned | 18 |
+| Sprint 2 | Nov 11-15 | YAML Validation + Auto-Fix | ⏳ Next | 13 |
+| Sprint 3 | Nov 18-22 | Markdown + Naming + Conflicts | 📋 Planned | 18 |
+| Sprint 4 | Nov 25-29 | CLI & Reporting | 📋 Planned | 21 |
 
-**Total v1.0 Effort**: ~50 story points (~120 hours)
+**Total v1.0 Effort**: ~52 story points (~125 hours)
 
 ---
 
-## Sprint 2: YAML Validation (11 points)
+## Scope Changes Based on User Decisions (2025-11-07)
+
+### Context
+Following Pareto principle analysis and scaling SaaS platform requirements, the following scope adjustments were approved. See `DECISIONS.md` for complete architectural decision records.
+
+### Simplifications (ADR-001, ADR-005)
+
+**Required YAML Fields**: Reduced from 5 to 3
+- ✅ Keep: `title`, `tags`, `status`
+- ❌ Remove: `version`, `date` (now optional)
+- Impact: -2 story points in Sprint 2
+
+**Configuration**: Single shared config (no domain overrides)
+- Impact: -1 story point in implementation
+
+### Enhancements (ADR-002, ADR-003)
+
+**Conflict Detection**: Moved to v1.0 (was v1.1)
+- Pricing conflicts detection
+- Policy contradiction detection
+- Duplicate SOP detection
+- Batch mode for full-corpus comparison
+- Impact: +5 story points in Sprint 3
+
+**Auto-Fix with Preview**: Added to v1.0 (was v1.1)
+- Auto-fix safe changes (YAML, naming)
+- Preview before applying
+- Backup originals
+- Impact: +2 story points in Sprint 2, +3 in Sprint 4
+
+### Net Change
+- Original v1.0: 50 points
+- Revised v1.0: 52 points (+2)
+- Rationale: Mission-critical features for scaling SaaS platform
+
+---
+
+## Sprint 2: YAML Validation + Auto-Fix (13 points)
 
 ### Sprint Goal
-Implement complete YAML frontmatter validation system with parser and validator.
+Implement YAML frontmatter validation WITH auto-fix capabilities for safe changes.
 
 ### User Stories
 
@@ -58,7 +95,7 @@ Implement complete YAML frontmatter validation system with parser and validator.
 
 ---
 
-#### US-2.2: YAML Validator Implementation (8 points)
+#### US-2.2: YAML Validator Implementation (5 points)
 **Priority**: P0
 
 **As a** documentation manager
@@ -66,11 +103,9 @@ Implement complete YAML frontmatter validation system with parser and validator.
 **So that** all documents have correct and complete metadata
 
 **Acceptance Criteria**:
-- [ ] Validates required fields (title, version, date, tags, status)
-- [ ] Checks date formats (YYYY-MM-DD)
+- [ ] Validates required fields: **title, tags, status** (3 fields only - ADR-001)
 - [ ] Validates status from allowed list
 - [ ] Validates tags is a list (not a string)
-- [ ] Validates version format (semantic versioning)
 - [ ] Generates ValidationIssue objects with line numbers
 - [ ] Clear error messages with suggestions
 
@@ -89,26 +124,79 @@ Implement complete YAML frontmatter validation system with parser and validator.
 - `tests/core/validators/test_yaml_validator.py`
 - `tests/fixtures/yaml_test_documents/` (test files)
 
-**Validation Rules**:
+**Validation Rules** (SIMPLIFIED - ADR-001):
 | Rule ID | Description |
 |---------|-------------|
 | YAML-001 | YAML block present |
-| YAML-002 | Required fields present (title, version, date, tags, status) |
-| YAML-003 | Date format (YYYY-MM-DD) |
-| YAML-004 | Status in allowed list |
-| YAML-005 | Tags is a list |
-| YAML-006 | Version format (semantic) |
+| YAML-002 | Required fields present (title, tags, status) |
+| YAML-003 | Status in allowed list |
+| YAML-004 | Tags is a list |
 
 ---
 
-## Sprint 3: Markdown & Naming (13 points)
+#### US-2.3: Auto-Fix Engine (NEW - 5 points) ⭐
+**Priority**: P0
+
+**As a** documentation manager
+**I want** safe changes auto-fixed with preview
+**So that** I can scale documentation without manual bottlenecks
+
+**Acceptance Criteria**:
+- [ ] Auto-add missing YAML frontmatter to files
+- [ ] Auto-populate title from markdown H1 heading
+- [ ] Suggest tags based on file path/content
+- [ ] Default status to 'draft' for new documents
+- [ ] Preview all changes before applying (--preview flag)
+- [ ] Backup original file before modifications
+- [ ] Generate auto-fix report showing all changes made
+
+**Safe Auto-Fix Operations** (ADR-003):
+- Add missing YAML block
+- Add missing required fields (title, tags, status)
+- Fix field name typos (e.g., `Title` → `title`)
+- Standardize tag format (string → list)
+- Extract title from H1 if missing
+
+**Requires Manual Review**:
+- Content modifications
+- Changes to existing metadata values
+- Heading structure changes
+- Link modifications
+
+**Tasks**:
+- [ ] Create `src/core/auto_fixer.py`
+- [ ] Implement AutoFixer class
+- [ ] Auto-add YAML frontmatter
+- [ ] Extract title from H1
+- [ ] Suggest tags from file path/folder
+- [ ] Implement preview mode
+- [ ] Create backup mechanism
+- [ ] Write comprehensive tests
+- [ ] Document auto-fix operations
+
+**Files to Create**:
+- `src/core/auto_fixer.py` (~300 lines)
+- `tests/core/test_auto_fixer.py` (~200 lines)
+
+**CLI Usage**:
+```bash
+# Preview auto-fixes without applying
+python main.py validate --auto-fix --preview
+
+# Apply auto-fixes
+python main.py validate --auto-fix
+```
+
+---
+
+## Sprint 3: Markdown + Naming + Conflict Detection (18 points)
 
 ### Sprint Goal
-Implement markdown syntax and naming convention validation.
+Complete validation engine WITH conflict detection for mission-critical scaling.
 
 ### User Stories
 
-#### US-3.1: Markdown Syntax Validator (8 points)
+#### US-3.1: Markdown Syntax Validator (5 points)
 **Priority**: P0
 
 **As a** documentation manager
@@ -142,7 +230,7 @@ Implement markdown syntax and naming convention validation.
 
 ---
 
-#### US-3.2: Naming Convention Validator (5 points)
+#### US-3.2: Naming Convention Validator (3 points)
 **Priority**: P0
 
 **As a** documentation manager
@@ -171,10 +259,82 @@ Implement markdown syntax and naming convention validation.
 
 ---
 
-## Sprint 4: CLI & Polish (18 points)
+#### US-3.3: Conflict Detection Engine (NEW - 10 points) ⭐
+**Priority**: P0 - MISSION CRITICAL
+
+**As an** operations manager
+**I want** pricing and policy conflicts detected automatically
+**So that** we avoid contradictory information across documents
+
+**Acceptance Criteria**:
+- [ ] Detects pricing conflicts across documents (same product, different prices)
+- [ ] Identifies policy contradictions (conflicting statements)
+- [ ] Finds duplicate SOPs (>80% content similarity)
+- [ ] Batch mode validates ALL docs (not just changed - ADR-006)
+- [ ] Severity classification (CRITICAL, HIGH, MEDIUM, LOW)
+- [ ] Generates conflict report with document references and line numbers
+- [ ] Tag-based filtering support (e.g., `--tags pricing`)
+- [ ] Integration with main validation workflow
+
+**Conflict Types** (ADR-002):
+
+**1. Pricing Conflicts**:
+- Same product with different prices
+- Conflicting discount policies
+- Currency inconsistencies
+- Effective date mismatches
+
+**2. Policy Contradictions**:
+- Conflicting refund policies
+- Contradictory terms of service
+- Misaligned SLAs
+- Contact information discrepancies
+
+**3. Duplicate SOPs**:
+- Multiple documents describing same process
+- Content similarity threshold >80%
+- Recommendation to consolidate
+
+**Batch Processing Mode** (ADR-006):
+- Always processes FULL document corpus for conflicts
+- Not limited to changed files
+- Accuracy > Speed
+- Tag-based filtering reduces scope when needed
+
+**Tasks**:
+- [ ] Create `src/core/conflict_detector.py`
+- [ ] Implement ConflictDetector class
+- [ ] Create semantic analyzer for content comparison
+- [ ] Implement pricing conflict detection
+- [ ] Implement policy contradiction detection
+- [ ] Implement duplicate SOP detection (similarity algorithm)
+- [ ] Add severity classification logic
+- [ ] Implement batch mode (all-document processing)
+- [ ] Add tag-based filtering
+- [ ] Write comprehensive tests
+- [ ] Create conflict test fixtures
+- [ ] Document conflict detection rules
+
+**Files to Create**:
+- `src/core/conflict_detector.py` (~400 lines)
+- `src/core/semantic_analyzer.py` (~300 lines)
+- `tests/core/test_conflict_detector.py` (~300 lines)
+- `tests/fixtures/conflict_test_documents/` (test files with conflicts)
+
+**Severity Levels**:
+| Severity | Example | Action Required |
+|----------|---------|-----------------|
+| CRITICAL | Pricing mismatch for same product | Immediate fix |
+| HIGH | Policy contradiction | Fix before release |
+| MEDIUM | Duplicate SOP | Consolidate when possible |
+| LOW | Minor inconsistencies | Review and update |
+
+---
+
+## Sprint 4: CLI & Reporting (21 points)
 
 ### Sprint Goal
-Complete the MVP with CLI interface, reporting, and documentation.
+Complete MVP with CLI, conflict reporting, auto-fix preview, and documentation.
 
 ### User Stories
 
@@ -186,8 +346,9 @@ Complete the MVP with CLI interface, reporting, and documentation.
 **So that** documents are validated completely
 
 **Acceptance Criteria**:
-- [ ] Integrates YAML, Markdown, and Naming validators
+- [ ] Integrates YAML, Markdown, Naming, and **Conflict validators**
 - [ ] Processes documents through all validators
+- [ ] Batch mode for conflict detection (all documents)
 - [ ] Aggregates results into ValidationResult objects
 - [ ] Updates cache with validation status
 - [ ] Handles errors gracefully
@@ -210,13 +371,14 @@ Complete the MVP with CLI interface, reporting, and documentation.
 **Priority**: P0
 
 **As a** documentation manager
-**I want** comprehensive validation reports
+**I want** comprehensive validation and conflict reports
 **So that** I can quickly understand and fix issues
 
 **Acceptance Criteria**:
 - [ ] Generates markdown format reports
 - [ ] Shows summary statistics
 - [ ] Groups issues by file and validator
+- [ ] **Conflict report section with severity levels**
 - [ ] Includes line numbers and suggestions
 - [ ] Exports to configured directory
 - [ ] Optional JSON format
@@ -235,22 +397,34 @@ Complete the MVP with CLI interface, reporting, and documentation.
 
 ---
 
-#### US-4.3: CLI Interface (5 points)
+#### US-4.3: CLI Interface (8 points)
 **Priority**: P0
 
 **As a** user
-**I want** a friendly CLI interface
-**So that** I can easily run validations
+**I want** a practical CLI interface with essential options
+**So that** I can validate docs by domain, auto-fix issues, and detect conflicts
 
-**Acceptance Criteria**:
+**Acceptance Criteria** (ADR-004):
 - [ ] Click-based CLI with clear commands
 - [ ] `validate` command with options
-- [ ] `--file` flag for single file
+- [ ] `--path` flag for folder/domain-specific validation
+- [ ] `--tags` flag for tag-based validation (e.g., `--tags pricing`)
 - [ ] `--force` flag to ignore cache
-- [ ] `--verbose` for detailed output
-- [ ] Progress indicators for long operations
+- [ ] **`--auto-fix` flag with `--preview` option**
+- [ ] **`--conflicts` flag for conflict-only detection**
+- [ ] Progress indicators for batch operations
 - [ ] Proper exit codes (0=success, 1=failures)
 - [ ] Help text for all commands
+
+**CLI Commands** (ADR-004):
+```bash
+python main.py validate                    # All docs
+python main.py validate --path operations/ # Specific folder
+python main.py validate --tags pricing     # By tag
+python main.py validate --force            # Ignore cache
+python main.py validate --auto-fix --preview  # Preview auto-fixes
+python main.py validate --conflicts        # Conflict detection only
+```
 
 **Tasks**:
 - [ ] Create `src/cli.py`
