@@ -13,6 +13,7 @@ from typing import Optional
 
 from src.utils.config import Config
 from src.utils.logger import Logger
+from src.utils.cache import DocumentCache
 from src.core.validators.yaml_validator import YAMLValidator
 from src.core.validators.naming_validator import NamingValidator
 from src.core.validators.markdown_validator import MarkdownValidator
@@ -180,13 +181,16 @@ def validate(
         conflict_detector = ConflictDetector(config, logger)
 
         # Find documents to process
+        change_detector = None  # Will be set if using incremental mode
         if conflicts or force:
             # Conflict detection and force mode process all documents
             documents = _find_all_documents(path, tag_list)
         else:
             # Incremental validation uses change detection
-            change_detector = ChangeDetector(config)
-            documents = change_detector.get_files_to_process(
+            cache_file = Path(config.get('paths.cache_file', '_meta/.document-cache.json'))
+            cache = DocumentCache(cache_file)
+            change_detector = ChangeDetector(cache, logger)
+            documents, change_summary = change_detector.get_files_to_process(
                 path,
                 force_reprocess=False
             )
@@ -221,7 +225,8 @@ def validate(
                 markdown_validator,
                 documents,
                 format,
-                output
+                output,
+                change_detector
             )
 
     except Exception as e:
@@ -272,10 +277,12 @@ def _run_validation(
     markdown_validator,
     documents: list,
     format: str,
-    output: Optional[Path]
+    output: Optional[Path],
+    change_detector = None
 ):
     """Run full validation on documents."""
     all_issues = []
+    issues_by_doc = {}  # Track issues per document for cache updates
 
     with click.progressbar(
         documents,
@@ -283,17 +290,40 @@ def _run_validation(
         show_pos=True
     ) as bar:
         for doc in bar:
+            doc_issues = []
+
             # YAML validation
             yaml_issues = yaml_validator.validate(doc)
             all_issues.extend(yaml_issues)
+            doc_issues.extend(yaml_issues)
 
             # Naming validation
             naming_issues = naming_validator.validate(doc)
             all_issues.extend(naming_issues)
+            doc_issues.extend(naming_issues)
 
             # Markdown validation
             markdown_issues = markdown_validator.validate(doc)
             all_issues.extend(markdown_issues)
+            doc_issues.extend(markdown_issues)
+
+            issues_by_doc[doc] = doc_issues
+
+            # Update cache if using incremental mode
+            if change_detector:
+                error_count = sum(1 for issue in doc_issues if issue.severity == 'error')
+                warning_count = sum(1 for issue in doc_issues if issue.severity == 'warning')
+                validation_status = 'passed' if error_count == 0 else 'failed'
+                change_detector.update_cache_for_file(
+                    doc,
+                    validation_status=validation_status,
+                    error_count=error_count,
+                    warning_count=warning_count
+                )
+
+    # Save cache if using incremental mode
+    if change_detector:
+        change_detector.save_cache()
 
     click.echo()
 
