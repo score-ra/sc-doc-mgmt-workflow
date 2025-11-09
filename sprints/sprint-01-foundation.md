@@ -2,10 +2,11 @@
 title: Sprint 1 - Foundation
 sprint_number: 1
 duration: November 7-13, 2025
-status: completed
+status: approved
 team_size: 2-3 people
 story_points_committed: 8
 story_points_completed: 8
+last_updated: 2025-11-09
 ---
 
 # Sprint 1: Foundation
