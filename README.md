@@ -25,9 +25,10 @@ Automated document validation system that ensures consistency and standards comp
 - Naming convention validation
 - **Conflict detection** ⭐ (pricing, policies, duplicates - moved from v1.1)
 
-**Sprint 4** ⏳ PLANNED (21 pts):
-- CLI interface (practical commands for team collaboration)
-- Validation & conflict reporting
+**Sprint 4** 🔄 IN PROGRESS (10/21 pts complete):
+- ✅ CLI interface (practical commands using Click framework)
+- ✅ Advanced reporting system (console, markdown, JSON)
+- ⏳ Enhanced conflict reporting (in progress)
 
 **Key Scope Changes** (see `DECISIONS.md`):
 - ✅ Simplified: 3 required YAML fields (was 5)
@@ -102,23 +103,42 @@ Symphony Core is an automated document validation system for business operations
    pytest
    ```
 
-## Usage (v1.0 MVP)
+## Usage
 
-### Basic Validation (Coming in Sprint 2-4)
+### Command-Line Interface
 
 ```bash
-# Validate all documents in current directory
-python main.py validate
-
-# Validate specific file
-python main.py validate --file docs/my-document.md
-
-# Force reprocess all documents (ignore cache)
-python main.py validate --force
-
 # Get help
 python main.py --help
+python main.py validate --help
+
+# Basic validation
+python main.py validate
+
+# Validate specific folder
+python main.py validate --path docs/
+
+# Force full validation (ignore cache)
+python main.py validate --force
+
+# Auto-fix issues
+python main.py validate --auto-fix
+python main.py validate --auto-fix --preview
+
+# Run conflict detection
+python main.py validate --conflicts
+
+# Generate reports
+python main.py validate --format console  # Default
+python main.py validate --format json --output report.json
+python main.py validate --format markdown --output report.md
 ```
+
+### Reporting Formats
+
+**Console** (default) - Human-readable terminal output
+**JSON** - Machine-readable for CI/CD integration
+**Markdown** - Formatted reports for documentation
 
 ### Configuration
 

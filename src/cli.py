@@ -19,6 +19,12 @@ from src.core.validators.markdown_validator import MarkdownValidator
 from src.core.validators.conflict_detector import ConflictDetector
 from src.core.auto_fixer import AutoFixer
 from src.core.change_detector import ChangeDetector
+from src.reporting import (
+    ReportData,
+    ConsoleReporter,
+    MarkdownReporter,
+    JSONReporter
+)
 
 
 # Version information
@@ -383,7 +389,7 @@ def _generate_validation_report(
     format: str,
     output: Optional[Path]
 ):
-    """Generate validation report in specified format."""
+    """Generate validation report in specified format using reporter classes."""
     # Group issues by file
     issues_by_file = {}
     for issue in issues:
@@ -405,127 +411,50 @@ def _generate_validation_report(
                         if (hasattr(i.severity, 'value') and i.severity.value == 'warning')
                         or str(i.severity) == 'warning')
 
-    # Generate console report (default)
+    # Calculate rule counts
+    rule_counts = {}
+    for issue in issues:
+        rule_id = issue.rule_id
+        if rule_id not in rule_counts:
+            rule_counts[rule_id] = 0
+        rule_counts[rule_id] += 1
+
+    # Create report data
+    report_data = ReportData(
+        total_documents=total_docs,
+        passed_documents=passed_docs,
+        failed_documents=failed_docs,
+        total_errors=total_errors,
+        total_warnings=total_warnings,
+        issues_by_file=issues_by_file,
+        all_issues=issues,
+        rule_counts=rule_counts,
+        scan_mode="validation"
+    )
+
+    # Select and use appropriate reporter
     if format == 'console':
-        click.echo("=" * 80)
-        click.echo("VALIDATION REPORT")
-        click.echo("=" * 80)
-        click.echo()
-        click.echo(f"Documents Scanned: {total_docs}")
-        click.echo(f"Passed: {passed_docs} ({passed_docs/total_docs*100:.1f}%)")
-        click.echo(f"Failed: {failed_docs} ({failed_docs/total_docs*100:.1f}%)")
-        click.echo()
-        click.echo(f"Total Errors: {total_errors}")
-        click.echo(f"Total Warnings: {total_warnings}")
-        click.echo()
-
-        if issues:
-            click.echo("VIOLATIONS BY RULE:")
-            rule_counts = {}
-            for issue in issues:
-                rule_id = issue.rule_id
-                if rule_id not in rule_counts:
-                    rule_counts[rule_id] = 0
-                rule_counts[rule_id] += 1
-
-            for rule_id, count in sorted(rule_counts.items()):
-                click.echo(f"  {rule_id}: {count}")
-
-            click.echo()
-            click.echo("FAILED DOCUMENTS:")
-            for file_path, file_issues in sorted(issues_by_file.items()):
-                click.echo(f"\n  {file_path}")
-                for issue in file_issues:
-                    # Handle both string and Enum severity
-                    severity_label = issue.severity.value.upper() if hasattr(issue.severity, 'value') else str(issue.severity).upper()
-                    click.echo(f"    [{severity_label}] {issue.rule_id}: {issue.message}")
-                    if issue.suggestion:
-                        click.echo(f"    Suggestion: {issue.suggestion}")
-
-        click.echo()
-        click.echo("=" * 80)
+        reporter = ConsoleReporter()
+        report = reporter.generate(report_data)
+        click.echo(report)
 
     elif format == 'json':
-        import json
-        report_data = {
-            'summary': {
-                'total': total_docs,
-                'passed': passed_docs,
-                'failed': failed_docs,
-                'errors': total_errors,
-                'warnings': total_warnings
-            },
-            'violations': [
-                {
-                    'file': str(issue.file_path),
-                    'rule_id': issue.rule_id,
-                    'severity': issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity),
-                    'message': issue.message,
-                    'line': getattr(issue, 'line', None) or getattr(issue, 'line_number', None),
-                    'suggestion': issue.suggestion
-                }
-                for issue in issues
-            ]
-        }
-
-        report_json = json.dumps(report_data, indent=2)
-
+        reporter = JSONReporter()
+        report = reporter.generate(report_data)
         if output:
-            output.write_text(report_json, encoding='utf-8')
+            reporter.save(report, output)
             click.echo(f"Report saved to: {output}")
         else:
-            click.echo(report_json)
+            click.echo(report)
 
     elif format == 'markdown':
-        lines = [
-            "# Symphony Core Validation Report",
-            "",
-            "## Summary",
-            f"- **Documents Scanned**: {total_docs}",
-            f"- **Passed**: {passed_docs} ({passed_docs/total_docs*100:.1f}%)",
-            f"- **Failed**: {failed_docs} ({failed_docs/total_docs*100:.1f}%)",
-            f"- **Total Errors**: {total_errors}",
-            f"- **Total Warnings**: {total_warnings}",
-            "",
-        ]
-
-        if issues:
-            lines.append("## Violations by Rule")
-            lines.append("")
-            lines.append("| Rule ID | Count |")
-            lines.append("|---------|-------|")
-
-            rule_counts = {}
-            for issue in issues:
-                rule_id = issue.rule_id
-                if rule_id not in rule_counts:
-                    rule_counts[rule_id] = 0
-                rule_counts[rule_id] += 1
-
-            for rule_id, count in sorted(rule_counts.items()):
-                lines.append(f"| {rule_id} | {count} |")
-
-            lines.append("")
-            lines.append("## Failed Documents")
-            lines.append("")
-
-            for file_path, file_issues in sorted(issues_by_file.items()):
-                lines.append(f"### {file_path}")
-                lines.append("")
-                for issue in file_issues:
-                    severity_label = issue.severity.value.upper() if hasattr(issue.severity, 'value') else str(issue.severity).upper()
-                    lines.append(f"- **[{severity_label}]** {issue.rule_id}: {issue.message}")
-                    if issue.suggestion:
-                        lines.append(f"  - Suggestion: {issue.suggestion}")
-                lines.append("")
-
-        report_md = '\n'.join(lines)
-
+        reporter = MarkdownReporter()
+        report = reporter.generate(report_data)
         if output:
-            output.write_text(report_md, encoding='utf-8')
+            reporter.save(report, output)
             click.echo(f"Report saved to: {output}")
         else:
-            click.echo(report_md)
+            click.echo(report)
 
 
 def _generate_autofix_report(
