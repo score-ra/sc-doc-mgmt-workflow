@@ -24,7 +24,8 @@ from src.reporting import (
     ReportData,
     ConsoleReporter,
     MarkdownReporter,
-    JSONReporter
+    JSONReporter,
+    ConflictReporter
 )
 
 
@@ -347,21 +348,33 @@ def _run_conflict_detection(
     """Run conflict detection on documents."""
     click.echo("Running conflict detection...")
 
+    # Detect conflicts
     conflicts = conflict_detector.detect_conflicts(documents)
 
     click.echo()
 
-    # Generate report
-    report = conflict_detector.generate_conflict_report(conflicts)
+    # Analyze conflicts with enhanced reporter
+    reporter = ConflictReporter()
+    conflict_data = reporter.analyze_conflicts(conflicts)
 
+    # Generate report based on format
+    if format == 'json':
+        report = reporter.generate_json_report(conflict_data)
+    elif format == 'markdown':
+        report = reporter.generate_markdown_report(conflict_data)
+    else:  # console (default)
+        report = reporter.generate_console_report(conflict_data)
+
+    # Output report
     if output:
         output.write_text(report, encoding='utf-8')
         click.echo(f"Report saved to: {output}")
     else:
         click.echo(report)
 
-    # Exit with appropriate code
-    if len(conflicts) > 0:
+    # Exit with appropriate code based on critical conflicts
+    total_conflicts = sum(len(issues) for issues in conflicts.values())
+    if total_conflicts > 0:
         sys.exit(1)
     else:
         sys.exit(0)
