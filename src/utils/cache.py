@@ -10,8 +10,14 @@ import hashlib
 from pathlib import Path
 from typing import Dict, Optional, Any
 from datetime import datetime
-import fcntl
 import os
+
+# Conditional import for Unix-only file locking module
+try:
+    import fcntl
+except ImportError:
+    # fcntl not available on Windows - file locking will be skipped
+    fcntl = None
 
 
 class CacheError(Exception):
@@ -73,13 +79,13 @@ class DocumentCache:
 
         try:
             with open(self.cache_file, 'r', encoding='utf-8') as f:
-                # Acquire shared lock for reading
-                if os.name != 'nt':  # Unix-like systems
+                # Acquire shared lock for reading (Unix-like systems only)
+                if fcntl is not None and os.name != 'nt':
                     fcntl.flock(f.fileno(), fcntl.LOCK_SH)
 
                 loaded_data = json.load(f)
 
-                if os.name != 'nt':
+                if fcntl is not None and os.name != 'nt':
                     fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
             # Validate cache version
@@ -126,15 +132,15 @@ class DocumentCache:
 
         try:
             with open(temp_file, 'w', encoding='utf-8') as f:
-                # Acquire exclusive lock for writing
-                if os.name != 'nt':  # Unix-like systems
+                # Acquire exclusive lock for writing (Unix-like systems only)
+                if fcntl is not None and os.name != 'nt':
                     fcntl.flock(f.fileno(), fcntl.LOCK_EX)
 
                 json.dump(self.cache_data, f, indent=2, ensure_ascii=False)
                 f.flush()
                 os.fsync(f.fileno())
 
-                if os.name != 'nt':
+                if fcntl is not None and os.name != 'nt':
                     fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
             # Atomic rename
