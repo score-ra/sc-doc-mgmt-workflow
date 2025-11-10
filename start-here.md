@@ -1,8 +1,8 @@
 ---
 title: Sprint 4 Quick Start Guide
-tags: [sprint-4, cli, reporting, quick-start, complete]
-status: complete
-version: 2.0
+tags: [sprint-4, cli, reporting, quick-start, complete, file-validation]
+status: active
+version: 2.1
 last_updated: 2025-11-09
 ---
 
@@ -11,6 +11,56 @@ last_updated: 2025-11-09
 **Based on**: Sprint 1-3 completion (all validators operational)
 **Sprint Focus**: CLI interface and comprehensive reporting
 **Story Points**: 21 → **21/21 COMPLETE (100%)** ✅
+
+---
+
+## 🆕 NEW Feature - File-Specific Validation (2025-11-09)
+
+### What's New: --file Option
+
+**Capability Added**: Validate specific files instead of entire directories
+
+**Use Cases**:
+1. ✅ Validate a single file quickly
+2. ✅ Validate multiple specific files
+3. ✅ **Compare two files for conflicts** (primary use case)
+4. ✅ Auto-fix specific files only
+5. ✅ Focus validation on changed files
+
+**Usage Examples**:
+```bash
+# Validate single file
+python main.py validate --file document.md
+
+# Validate multiple files
+python main.py validate --file doc1.md --file doc2.md
+
+# Compare two files for conflicts
+python main.py validate --file doc1.md --file doc2.md --conflicts
+
+# Auto-fix specific file with preview
+python main.py validate --file document.md --auto-fix --preview
+
+# Generate JSON report for specific files
+python main.py validate --file doc1.md --file doc2.md --format json --output report.json
+```
+
+**Implementation**:
+- Commit: `6a59f21`
+- Location: `src/cli.py` (lines 64-70, 110, 149-151, 176-179, 204-211)
+- Tests: All 215 existing tests pass (81.36% coverage maintained)
+
+**Testing Status**:
+- ✅ Single file validation tested successfully
+- ⏳ Two file comparison - needs additional testing
+- ⏳ CLI tests for --file option - pending
+- ⏳ Documentation updates - pending
+
+**Pending Work**:
+1. Add CLI tests for --file option in `tests/test_cli.py`
+2. Test two-file conflict comparison thoroughly
+3. Update User Guide (`docs/user-guide.md`) with --file examples
+4. Update README.md with --file capability
 
 ---
 
@@ -722,10 +772,78 @@ python main.py validate --path tests/fixtures --format console
 
 ---
 
-**Status**: ✅ **SPRINT 4 COMPLETE** (21/21 points) - PRODUCTION READY
-**Prerequisites**: ✅ All validators operational, ✅ CLI functional, ✅ Reporting system complete, ✅ Conflict reporting enhanced
-**Current State**: 215 tests passing (17 new), 82.01% coverage, production-ready
+## 📋 After Running /compact - Action Items
 
+When resuming work after conversation history is compacted, complete these pending tasks:
+
+### 1. Complete --file Feature Testing
+```bash
+# Test two-file conflict comparison
+python main.py validate --file doc1.md --file doc2.md --conflicts --format json --output test-result.json
+
+# Test with different file combinations
+python main.py validate --file tests/fixtures/valid-doc.md --file tests/fixtures/invalid-doc.md
+```
+
+### 2. Add CLI Tests for --file Option
+Location: `tests/test_cli.py`
+
+**Tests to add**:
+- `test_validate_single_file()` - Validate one file works
+- `test_validate_multiple_files()` - Validate multiple files works
+- `test_file_and_path_mutually_exclusive()` - Cannot use both --file and --path
+- `test_file_must_be_markdown()` - Non-.md files rejected
+- `test_file_conflict_comparison()` - Two files with --conflicts flag
+
+### 3. Update Documentation
+**Files to update**:
+- `docs/user-guide.md` - Add --file examples to CLI section
+- `README.md` - Add --file capability to Usage section
+
+**Content to add**:
+```markdown
+### File-Specific Validation
+
+Validate individual files instead of directories:
+
+\```bash
+# Single file
+python main.py validate --file document.md
+
+# Multiple files
+python main.py validate --file doc1.md --file doc2.md
+
+# Compare two files for conflicts
+python main.py validate --file pricing-v1.md --file pricing-v2.md --conflicts
+\```
+```
+
+### 4. Source of Truth for Capability Readiness
+
+**Primary Documentation**: `docs/user-guide.md`
+- This is the comprehensive end-user documentation
+- All features must be documented here with examples
+- If it's not in the User Guide, it's not officially released
+
+**Secondary Documentation**: `README.md`
+- Quick reference and getting started
+- Should list all major capabilities
+
+**Implementation Reference**: `src/cli.py`
+- Command help text (accessed via `--help`)
+- Shows all available options
+
+**Testing Reference**: `tests/test_cli.py`
+- If a feature has tests, it's considered implemented
+- Test coverage indicates feature completeness
+
+---
+
+**Status**: ✅ **SPRINT 4 COMPLETE** + 🆕 File Validation Feature
+**Prerequisites**: ✅ All validators operational, ✅ CLI functional, ✅ Reporting system complete, ✅ Conflict reporting enhanced, ✅ File-specific validation
+**Current State**: 215 tests passing, 81.36% coverage, production-ready
+
+**🎯 CURRENT WORK**: Complete --file feature (testing + documentation)
 **🎯 NEXT MILESTONE**: v1.1 Features (see BACKLOG_FEATURES.md)
 
 **Sprint 4 Deliverables** (All Complete):
@@ -733,22 +851,30 @@ python main.py validate --path tests/fixtures --format console
 - ✅ US-4.2: Advanced Reporting (6 points)
 - ✅ US-4.3: Enhanced Conflict Reporting (5 points)
 
+**Post-Sprint Enhancements** (2025-11-09):
+- ✅ **File-specific validation** - --file option implemented (commit 6a59f21)
+- ⏳ CLI tests for --file - pending
+- ⏳ Documentation updates - pending
+
 **Recent Accomplishments** (2025-11-09):
 - ✅ **Sprint 4 COMPLETE** - all 21 story points delivered
 - ✅ **Enhanced Conflict Reporting** - severity levels, impact assessment, recommendations
 - ✅ **Incremental mode bug fixed** - cache integration working perfectly
+- ✅ **File validation capability** - validate specific files, compare two files
 - ✅ Advanced reporting system (console, JSON, markdown formats)
 - ✅ Comprehensive testing on real documentation
-- ✅ 17 new ConflictReporter tests (all passing, 98% coverage)
 - ✅ System 100% functional and production-ready
 
 **Test Summary**:
-- Total Tests: 215 (198 original + 17 new)
-- Coverage: 82.01% (exceeds 80% requirement)
+- Total Tests: 215 passing
+- Coverage: 81.36% (exceeds 80% requirement)
 - Status: All passing ✅
 
-**Known Issues**:
-- None - all critical bugs resolved
+**Pending Items**:
+1. Add CLI tests for --file option
+2. Test two-file conflict comparison thoroughly
+3. Update User Guide with --file examples
+4. Update README with --file capability
 
-**Last Updated**: 2025-11-09
+**Last Updated**: 2025-11-09 (Evening session)
 **Maintained By**: Engineering Team
