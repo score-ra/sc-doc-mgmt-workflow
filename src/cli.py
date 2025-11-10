@@ -62,6 +62,13 @@ def cli(ctx):
     help='Validate specific folder (default: current directory)'
 )
 @click.option(
+    '--file',
+    'files',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+    multiple=True,
+    help='Validate specific file(s) - can be specified multiple times'
+)
+@click.option(
     '--tags',
     help='Validate documents with specific tag (comma-separated for multiple)'
 )
@@ -100,6 +107,7 @@ def cli(ctx):
 def validate(
     ctx,
     path: Optional[Path],
+    files: tuple,
     tags: Optional[str],
     force: bool,
     auto_fix: bool,
@@ -118,6 +126,13 @@ def validate(
 
         # Validate specific folder
         python main.py validate --path operations/
+
+        # Validate specific file(s)
+        python main.py validate --file doc1.md
+        python main.py validate --file doc1.md --file doc2.md
+
+        # Compare two files for conflicts
+        python main.py validate --file doc1.md --file doc2.md --conflicts
 
         # Validate documents with specific tag
         python main.py validate --tags pricing
@@ -138,8 +153,12 @@ def validate(
         click.echo("Error: --preview requires --auto-fix", err=True)
         sys.exit(1)
 
+    if path and files:
+        click.echo("Error: Cannot specify both --path and --file", err=True)
+        sys.exit(1)
+
     # Set default path to docs directory from config or current directory
-    if path is None:
+    if path is None and not files:
         path = Path(config.get('paths.docs_root', '.'))
 
     click.echo("=" * 80)
@@ -161,7 +180,12 @@ def validate(
     else:
         click.echo("Mode: Validation")
 
-    click.echo(f"Path: {path}")
+    if files:
+        click.echo(f"Files: {len(files)} file(s) specified")
+        for f in files:
+            click.echo(f"  - {f}")
+    else:
+        click.echo(f"Path: {path}")
     click.echo(f"Force: {'Yes' if force else 'No (incremental)'}")
     click.echo()
 
@@ -183,7 +207,16 @@ def validate(
 
         # Find documents to process
         change_detector = None  # Will be set if using incremental mode
-        if conflicts or force:
+
+        if files:
+            # Use specified files
+            documents = [Path(f) for f in files]
+            # Validate that all files are markdown
+            for doc in documents:
+                if doc.suffix.lower() != '.md':
+                    click.echo(f"Error: {doc} is not a markdown file (.md)", err=True)
+                    sys.exit(1)
+        elif conflicts or force:
             # Conflict detection and force mode process all documents
             documents = _find_all_documents(path, tag_list)
         else:
