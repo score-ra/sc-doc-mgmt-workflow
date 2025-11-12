@@ -10,6 +10,11 @@ pathlib>=1.0.1; python_version < '3.11'
 markdown-it-py>=3.0.0
 mdit-py-plugins>=0.4.0
 
+# HTML extraction and conversion (Sprint 5)
+beautifulsoup4>=4.12.2
+html2text>=2020.1.16
+lxml>=4.9.3
+
 # Future: API clients (v1.1+)
 anthropic>=0.25.0
 
