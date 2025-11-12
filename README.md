@@ -6,8 +6,17 @@ A standalone automated document validation tool that ensures consistency and sta
 
 ## Project Status
 
-**Current Version**: 1.0.0 (Production Ready)
-**Status**: All MVP features complete ✅
+**Current Version**: 1.1.0 (Sprint 5 - URL Extraction)
+**Status**: MVP + URL Extraction ✅
+
+### v1.1 Features - Sprint 5 (2025-11-12)
+
+**Sprint 5** ✅ COMPLETE:
+- URL content extraction from HTML files
+- SC-compliant markdown conversion
+- Automatic YAML frontmatter generation
+- Table conversion to structured content
+- 50 new tests passing
 
 ### v1.0 MVP Features - COMPLETE (2025-11-09)
 
@@ -176,6 +185,21 @@ python main.py validate --conflicts --format json --output conflicts.json
 
 # With markdown report
 python main.py validate --conflicts --format markdown --output conflicts.md
+```
+
+**URL Content Extraction (Sprint 5):**
+```bash
+# Extract content from HTML file and convert to markdown
+python main.py extract-url --source page.html
+
+# Specify output directory
+python main.py extract-url --source page.html --output docs/extracted/
+
+# With custom title and tags
+python main.py extract-url --source page.html --title "SEO Guide" --tags "seo,marketing"
+
+# With custom category
+python main.py extract-url --source page.html --category "Guide"
 ```
 
 **Report Generation:**

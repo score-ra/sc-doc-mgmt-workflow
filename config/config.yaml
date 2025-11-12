@@ -90,6 +90,34 @@ reporting:
     - warning
     - info
 
+# URL Extraction Configuration (Sprint 5)
+extraction:
+  enabled: true
+  # Default output directory for extracted content
+  default_output_dir: "_output"
+  # Default status for extracted documents
+  default_status: "draft"
+  # Default category for extracted documents
+  default_category: "KB Article"
+  # Default author name
+  default_author: "Web Content Extractor"
+  # Default tags for extracted documents
+  default_tags:
+    - web-content
+    - extracted
+  # Frontmatter options
+  frontmatter:
+    include_source_url: true
+    include_extracted_date: true
+    include_extraction_method: true
+  # Conversion options
+  conversion:
+    remove_navigation: true
+    remove_footer: true
+    remove_ads: true
+    convert_tables_to_structured: true
+    preserve_links: true
+
 # Logging configuration
 logging:
   # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL

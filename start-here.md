@@ -1,880 +1,739 @@
 ---
-title: Sprint 4 Quick Start Guide
-tags: [sprint-4, cli, reporting, quick-start, complete, file-validation]
-status: active
-version: 2.1
-last_updated: 2025-11-09
+title: Sprint 5 - URL Content Extraction (IN PROGRESS)
+tags: [sprint-5, url-extraction, html-to-markdown, in-progress]
+status: in-progress
+version: 3.0
+last_updated: 2025-11-12
 ---
 
-# Sprint 4 Quick Start Guide
+# Sprint 5: URL Content Extraction - Implementation Guide
 
-**Based on**: Sprint 1-3 completion (all validators operational)
-**Sprint Focus**: CLI interface and comprehensive reporting
-**Story Points**: 21 → **21/21 COMPLETE (100%)** ✅
+**Status**: 🟡 IN PROGRESS - Setup Complete, Implementation Pending
+**Branch**: `claude/extract-website-content-011CV4UGNJQdeHBNFPnEdaD3`
+**Story Points**: 13 (Medium-Large)
+**Progress**: **2/13 points complete (15%)** - Planning & Setup done
 
 ---
 
-## 🆕 NEW Feature - File-Specific Validation (2025-11-09)
+## 🎯 CURRENT STATE (2025-11-12)
 
-### What's New: --file Option
+### ✅ What's Complete
+1. ✅ Sprint 5 planning document created (`sprints/sprint-05-url-extraction.md`)
+2. ✅ Feature branch created and checked out
+3. ✅ Dependencies added to `requirements.txt`:
+   - `beautifulsoup4>=4.12.2` - HTML parsing
+   - `html2text>=2020.1.16` - HTML to markdown conversion
+   - `lxml>=4.9.3` - XML/HTML parser backend
+4. ✅ Dependencies installed successfully
+5. ✅ Requirements analyzed and approved by user
 
-**Capability Added**: Validate specific files instead of entire directories
+### 🔨 What Needs to Be Done
+- [ ] Create `src/core/extractors/` module structure (3 files + __init__.py)
+- [ ] Implement `HTMLExtractor` class (~150 lines)
+- [ ] Implement `MarkdownConverter` class (~150 lines)
+- [ ] Implement `FrontmatterGenerator` class (~100 lines)
+- [ ] Add `extract-url` command to `src/cli.py` (~100 lines)
+- [ ] Create `_output/` directory structure
+- [ ] Write comprehensive tests (~400-500 lines)
+- [ ] Test with provided HTML file (`_input/webpage/Comprehensive SEO Packages.html`)
+- [ ] Update documentation (README, user-guide, config)
+- [ ] Final testing and bug fixes
+- [ ] Push to branch
 
-**Use Cases**:
-1. ✅ Validate a single file quickly
-2. ✅ Validate multiple specific files
-3. ✅ **Compare two files for conflicts** (primary use case)
-4. ✅ Auto-fix specific files only
-5. ✅ Focus validation on changed files
+**Estimated Remaining Effort**: 11 story points (~2-3 days)
 
-**Usage Examples**:
+---
+
+## 📋 FEATURE OVERVIEW
+
+### Goal
+Add capability to extract website content from HTML files and convert to Symphony Core-compliant markdown documents with proper YAML frontmatter.
+
+### Test Case
+- **HTML File**: `_input/webpage/Comprehensive SEO Packages.html`
+- **Source**: go.symphonycore.com/add-on-seo-packages
+- **Expected Output**: SC-compliant markdown in `_output/extracted-{timestamp}/`
+
+### CLI Command Design (Approved)
 ```bash
-# Validate single file
-python main.py validate --file document.md
+# Basic usage
+python main.py extract-url --source <html-file>
 
-# Validate multiple files
-python main.py validate --file doc1.md --file doc2.md
+# With output directory
+python main.py extract-url --source page.html --output <dir>
 
-# Compare two files for conflicts
-python main.py validate --file doc1.md --file doc2.md --conflicts
-
-# Auto-fix specific file with preview
-python main.py validate --file document.md --auto-fix --preview
-
-# Generate JSON report for specific files
-python main.py validate --file doc1.md --file doc2.md --format json --output report.json
+# Full example
+python main.py extract-url --source _input/webpage/page.html --output _output/docs/
 ```
 
-**Implementation**:
-- Commit: `6a59f21`
-- Location: `src/cli.py` (lines 64-70, 110, 149-151, 176-179, 204-211)
-- Tests: All 215 existing tests pass (81.36% coverage maintained)
-
-**Testing Status**:
-- ✅ Single file validation tested successfully
-- ⏳ Two file comparison - needs additional testing
-- ⏳ CLI tests for --file option - pending
-- ⏳ Documentation updates - pending
-
-**Pending Work**:
-1. Add CLI tests for --file option in `tests/test_cli.py`
-2. Test two-file conflict comparison thoroughly
-3. Update User Guide (`docs/user-guide.md`) with --file examples
-4. Update README.md with --file capability
-
 ---
 
-## ✅ Latest Update - Incremental Mode Fixed!
+## 🏗️ ARCHITECTURE & IMPLEMENTATION PLAN
 
-### Bug Fix Completed (2025-11-09)
+### Module Structure to Create
 
-**What was fixed**: Incremental validation mode now fully functional
+```
+src/core/extractors/               # NEW MODULE (create this)
+├── __init__.py                    # Module exports
+├── html_extractor.py              # HTML parsing & content extraction
+├── markdown_converter.py          # HTML → Markdown conversion (SC-compliant)
+└── frontmatter_generator.py       # YAML frontmatter generation
 
-**The Problem**:
-- ChangeDetector was initialized with wrong parameters (config instead of cache)
-- Cache wasn't being saved after validation
-- Tuple unpacking error in get_files_to_process call
+tests/core/extractors/             # NEW TEST MODULE (create this)
+├── __init__.py
+├── test_html_extractor.py         # ~150 lines
+├── test_markdown_converter.py     # ~150 lines
+└── test_frontmatter_generator.py  # ~100 lines
 
-**The Solution** (commit 82cd7d3):
-- Added DocumentCache import and proper initialization
-- Fixed ChangeDetector initialization with cache and logger
-- Integrated cache updates during validation
-- Cache now saves after processing documents
+tests/fixtures/                    # Test data
+└── html_samples/                  # Sample HTML files for testing
+    ├── simple.html
+    ├── complex.html
+    └── malformed.html
 
-**Verification**:
-- ✅ All 198 tests passing (81.12% coverage)
-- ✅ Incremental mode: First run processes all, second run shows 0 documents
-- ✅ Force mode: Still processes all documents correctly
-- ✅ Tested on real documentation (client-onboarding, 4 docs)
-
-**Impact**:
-- 🚀 Incremental validation 5-10x faster for unchanged documents
-- ✅ System now 100% functional
-- ✅ Sprint 1 deliverable (incremental processing) fully restored
-- ✅ Ready for US-4.3 (Enhanced Conflict Reporting)
-
----
-
-## Testing Results Summary (2025-11-09)
-
-### ✅ Comprehensive Testing Completed
-
-**Test Target**: Real documentation (client-onboarding, 4 documents)
-**Test Types**: Validation, Reporting, Conflict Detection, Performance, Incremental Processing
-
-**What Works Perfectly**:
-- ✅ Validation engine (YAML, Markdown, Naming) - 100% accurate
-- ✅ Console reporting - professional output
-- ✅ JSON reporting - perfect for CI/CD
-- ✅ Markdown reporting - documentation ready
-- ✅ Conflict detection - 0 false positives
-- ✅ **Incremental mode - working perfectly** (first run caches, second run skips unchanged)
-- ✅ Force mode validation - fast and reliable
-- ✅ Exit codes - CI/CD ready (0=pass, 1=fail)
-- ✅ All 198 tests passing (81.12% coverage)
-
-**Test Results**:
-- Documents: 4 validated
-- Violations found: 91 (68 warnings, 22 info, 1 error)
-- Performance: < 2 seconds (force mode), instant (incremental mode cached)
-- Reports generated: Console, JSON, Markdown (all perfect)
-- Conflicts detected: 0 (as expected)
-- Cache integration: Working (documents properly cached and reused)
-
-**Confidence Level**: 95% - Production Ready
-
-**Documentation Quality Issues** (client-onboarding):
-- ℹ️ 68 code blocks missing language specification (easy fix with auto-fixer)
-- ℹ️ 22 lines with trailing whitespace (trivial cleanup)
-- ℹ️ 1 README missing frontmatter (5-minute fix)
-
----
-
-## TL;DR - Sprint 4 Complete!
-
-**Build**: Command-line interface (CLI) for team collaboration + comprehensive reporting system
-
-**Progress**: 21/21 story points (100% complete) ✅
-
-| User Story | Points | Status |
-|------------|--------|--------|
-| US-4.1: CLI Interface | 10 | ✅ Complete |
-| US-4.2: Advanced Reporting | 6 | ✅ Complete |
-| US-4.3: Enhanced Conflict Reporting | 5 | ✅ Complete |
-
-**Key Deliverables Completed**:
-1. ✅ **CLI Interface**: Full Click framework implementation
-2. ✅ **Validation Reports**: Console, JSON, Markdown formats
-3. ✅ **Reporter Architecture**: Extensible, clean separation of concerns
-4. ✅ **Exit Codes**: CI/CD integration support
-5. ✅ **Help System**: Comprehensive help text
-
-**What's Already Done** (Sprint 1-4 Phase 2):
-- ✅ All validators working (YAML, Naming, Markdown, Conflicts)
-- ✅ Auto-fix engine with preview mode
-- ✅ 198 tests passing (was 174, added 24 reporter tests)
-- ✅ CLI with all planned commands
-- ✅ Professional reporting system (3 formats)
-- ✅ Real documentation tested (4 client-onboarding docs)
-- ✅ 80.99% test coverage
-
----
-
-## Sprint 1-3 Accomplishments
-
-### Sprint 1 ✅ COMPLETE (8 points)
-**Foundation Infrastructure**
-- Document change detection with SHA-256 hashing
-- Configuration management system (`config/config.yaml`)
-- Persistent caching for incremental processing
-- Logger utility with file rotation
-
-**Files Created**:
-- `src/utils/config.py` (280 lines)
-- `src/utils/cache.py` (307 lines)
-- `src/utils/logger.py` (286 lines)
-- `src/core/change_detector.py` (311 lines)
-
-### Sprint 2 ✅ COMPLETE (13 points)
-**YAML Validation + Auto-Fix**
-- YAML frontmatter validator (4 rules: YAML-001 to YAML-004)
-- Auto-fix engine with preview mode and backup
-- Frontmatter parsing utilities
-- 20 tests, 100% passing
-
-**Files Created**:
-- `src/core/validators/yaml_validator.py` (325 lines)
-- `src/core/auto_fixer.py` (386 lines)
-- `src/utils/frontmatter.py` (292 lines)
-- `tests/core/validators/test_yaml_validator.py` (20 tests)
-
-**Real Results**: Fixed 64 documents, achieved 100% frontmatter coverage
-
-### Sprint 3 ✅ COMPLETE (18 points)
-**Naming, Markdown, Conflict Detection**
-- Naming convention validator (5 rules: NAME-001 to NAME-005)
-- Markdown syntax validator (5 rules: MD-001 to MD-005)
-- Conflict detector (4 types: CONFLICT-001 to CONFLICT-004)
-- 56 tests, 100% passing
-
-**Files Created**:
-- `src/core/validators/naming_validator.py` (295 lines)
-- `src/core/validators/markdown_validator.py` (362 lines)
-- `src/core/validators/conflict_detector.py` (379 lines)
-- `scripts/validate_naming.py`, `validate_markdown.py`, `detect_conflicts.py`
-- `tests/core/validators/` (56 tests)
-
-**Real Results**:
-- Naming: 89.4% pass rate (25 violations in 161 docs)
-- Markdown: 39.1% pass rate (1,093 violations in 161 docs)
-- Conflicts: 8 conflicts detected (status, tags, pricing)
-
----
-
-## Sprint 4 Scope & Requirements
-
-### User Stories (from ADR-004)
-
-**US-4.1: CLI Interface (10 points)**
-Implement command-line interface using Click framework with essential commands:
-
-```bash
-# Basic validation
-python main.py validate                    # Validate all documents
-python main.py validate --path operations/ # Validate specific folder
-python main.py validate --tags pricing     # Validate by tag
-python main.py validate --force            # Ignore cache, revalidate all
-
-# Auto-fix operations
-python main.py validate --auto-fix         # Apply auto-fixes
-python main.py validate --auto-fix --preview  # Preview auto-fixes
-
-# Conflict detection
-python main.py validate --conflicts        # Run conflict detection only
-
-# Help and version
-python main.py --help                      # Show help
-python main.py --version                   # Show version
+_output/                           # NEW OUTPUT DIRECTORY (create this)
+├── .gitignore                     # Ignore all contents
+└── extracted-{timestamp}/         # Timestamped output folders
+    └── *.md                       # Converted markdown files
 ```
 
-**US-4.2: Validation Reporting (6 points)**
-Generate comprehensive validation reports:
-- Summary statistics (files passed/failed, violations by rule)
-- Detailed issue listings with file paths and line numbers
-- Actionable suggestions for each violation
-- Multiple output formats (console, markdown, JSON)
-- Exit codes for CI/CD integration (0 = pass, 1 = fail)
+---
 
-**US-4.3: Conflict Reporting (5 points)**
-Generate detailed conflict analysis reports:
-- Conflict summary by type (status, tags, pricing, cross-references)
-- Severity levels (error, warning, info)
-- Impact assessment (number of documents affected)
-- Recommendations for resolution
-- Batch/async execution support (per ADR-006)
+## 📖 DETAILED IMPLEMENTATION GUIDE
+
+### Step 1: Create Module Structure
+
+**Create directories**:
+```bash
+mkdir -p src/core/extractors
+mkdir -p tests/core/extractors
+mkdir -p tests/fixtures/html_samples
+mkdir -p _output
+```
+
+**Create `_output/.gitignore`**:
+```
+# Ignore all extracted content
+*
+!.gitignore
+```
+
+**Create empty `__init__.py` files**:
+- `src/core/extractors/__init__.py`
+- `tests/core/extractors/__init__.py`
 
 ---
 
-## Architecture & Design Patterns
+### Step 2: Implement HTMLExtractor
 
-### CLI Framework: Click
+**File**: `src/core/extractors/html_extractor.py`
 
-**Why Click?**
-- Industry standard for Python CLIs
-- Automatic help generation
-- Command grouping and nesting
-- Parameter validation
-- Progress bars and styling
+**Purpose**: Extract structured content from HTML files using BeautifulSoup
 
-**Basic Structure**:
+**Key Methods**:
 ```python
-import click
+class HTMLExtractor:
+    """Extract structured content from HTML files."""
+
+    def __init__(self, logger: Logger = None):
+        """Initialize with optional logger."""
+
+    def extract_main_content(self, html_path: Path) -> dict:
+        """
+        Extract main content from HTML file.
+
+        Returns:
+            dict: {
+                'title': str,           # From H1 or <title>
+                'html_content': str,    # Clean HTML for conversion
+                'metadata': dict        # meta tags, description, etc.
+            }
+        """
+
+    def _find_main_content(self, soup: BeautifulSoup) -> Tag:
+        """Find main content area (avoid nav, footer, sidebar)."""
+
+    def _extract_title(self, soup: BeautifulSoup) -> str:
+        """Extract title from H1 or <title> tag."""
+```
+
+**Key Requirements**:
+- Use BeautifulSoup4 with lxml parser
+- Find main content intelligently (look for `<main>`, `<article>`, or largest content block)
+- Extract clean HTML (remove nav, footer, sidebar, scripts, styles)
+- Handle malformed HTML gracefully
+- Return structured data for conversion
+
+**Implementation Hints**:
+```python
 from pathlib import Path
-from src.utils.config import Config
-from src.utils.logger import Logger
-from src.core.validators.yaml_validator import YAMLValidator
-from src.core.validators.naming_validator import NamingValidator
-from src.core.validators.markdown_validator import MarkdownValidator
-from src.core.validators.conflict_detector import ConflictDetector
+from bs4 import BeautifulSoup
+from typing import Optional, Dict
+import logging
 
-@click.group()
-@click.version_option(version='1.0.0')
-def cli():
-    """Symphony Core Document Management Workflow"""
-    pass
+class HTMLExtractor:
+    def __init__(self, logger: Optional[logging.Logger] = None):
+        self.logger = logger or logging.getLogger(__name__)
 
+    def extract_main_content(self, html_path: Path) -> Dict:
+        try:
+            with open(html_path, 'r', encoding='utf-8') as f:
+                html = f.read()
+
+            soup = BeautifulSoup(html, 'lxml')
+
+            # Remove unwanted elements
+            for element in soup(['script', 'style', 'nav', 'footer']):
+                element.decompose()
+
+            # Find main content
+            main_content = self._find_main_content(soup)
+            title = self._extract_title(soup)
+
+            return {
+                'title': title,
+                'html_content': str(main_content),
+                'metadata': self._extract_metadata(soup)
+            }
+        except Exception as e:
+            self.logger.error(f"Failed to extract content: {e}")
+            raise
+```
+
+---
+
+### Step 3: Implement MarkdownConverter
+
+**File**: `src/core/extractors/markdown_converter.py`
+
+**Purpose**: Convert HTML to SC-compliant markdown (following sc-markdown-standard.md)
+
+**Key Methods**:
+```python
+class MarkdownConverter:
+    """Convert HTML content to SC-compliant markdown."""
+
+    def __init__(self, config: Config = None):
+        """Initialize with optional config."""
+
+    def convert_to_markdown(self, html_content: str) -> str:
+        """
+        Convert HTML to markdown following SC standards.
+
+        Post-processes:
+        - Remove markdown tables, convert to structured content
+        - Remove checkbox symbols (☐, ✓, ✅, ❌)
+        - Ensure proper heading hierarchy
+        - Clean up extra whitespace
+        - Preserve links in markdown format
+        """
+
+    def _convert_tables_to_structured(self, markdown: str) -> str:
+        """Convert markdown tables to SC-compliant structured content."""
+
+    def _remove_checkboxes(self, markdown: str) -> str:
+        """Replace checkbox symbols with text alternatives."""
+```
+
+**SC Standard Compliance Checklist**:
+- ❌ NO markdown tables - convert to structured content
+- ❌ NO checkbox symbols (☐, ✓, ✅, ❌) - use text alternatives
+- ❌ NO square brackets for placeholders
+- ✅ YES proper heading hierarchy
+- ✅ YES code blocks with language specification
+- ✅ YES relative links
+- ✅ YES descriptive link text
+
+**Implementation Hints**:
+```python
+import html2text
+import re
+from typing import Optional
+
+class MarkdownConverter:
+    def __init__(self, config: Optional[dict] = None):
+        self.config = config or {}
+        self.h2t = html2text.HTML2Text()
+        self.h2t.ignore_links = False
+        self.h2t.body_width = 0  # No wrapping
+
+    def convert_to_markdown(self, html_content: str) -> str:
+        # Base conversion
+        markdown = self.h2t.handle(html_content)
+
+        # SC compliance post-processing
+        markdown = self._convert_tables_to_structured(markdown)
+        markdown = self._remove_checkboxes(markdown)
+        markdown = self._clean_whitespace(markdown)
+
+        return markdown
+
+    def _convert_tables_to_structured(self, markdown: str) -> str:
+        # Detect markdown tables (lines with |)
+        # Convert to structured format:
+        # ## Table Title
+        # ### Column 1
+        # Value
+        # ### Column 2
+        # Value
+        pass
+```
+
+---
+
+### Step 4: Implement FrontmatterGenerator
+
+**File**: `src/core/extractors/frontmatter_generator.py`
+
+**Purpose**: Generate SC-compliant YAML frontmatter
+
+**Key Methods**:
+```python
+class FrontmatterGenerator:
+    """Generate YAML frontmatter for extracted documents."""
+
+    def generate(
+        self,
+        title: str,
+        tags: list = None,
+        status: str = "draft",
+        category: str = "KB Article",
+        source_url: str = None,
+        **kwargs
+    ) -> str:
+        """
+        Generate SC-compliant YAML frontmatter.
+
+        Required fields:
+        - title, version, author, last_updated, category, tags, status
+
+        Optional fields:
+        - source_url, extracted_date, extraction_method
+        """
+```
+
+**Required Frontmatter Template**:
+```yaml
+---
+title: [Document Title]
+version: 1.0
+author: Web Content Extractor
+last_updated: [YYYY-MM-DD]
+category: KB Article
+tags: [web-content, extracted]
+status: draft
+source_url: [original URL if available]
+extracted_date: [YYYY-MM-DD HH:MM:SS]
+extraction_method: html_file
+---
+```
+
+**Implementation Hints**:
+```python
+from datetime import datetime
+import yaml
+
+class FrontmatterGenerator:
+    def generate(
+        self,
+        title: str,
+        tags: list = None,
+        status: str = "draft",
+        category: str = "KB Article",
+        source_url: str = None,
+        **kwargs
+    ) -> str:
+        frontmatter = {
+            'title': title,
+            'version': '1.0',
+            'author': 'Web Content Extractor',
+            'last_updated': datetime.now().strftime('%Y-%m-%d'),
+            'category': category,
+            'tags': tags or ['web-content', 'extracted'],
+            'status': status
+        }
+
+        # Add optional fields
+        if source_url:
+            frontmatter['source_url'] = source_url
+
+        frontmatter['extracted_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        frontmatter['extraction_method'] = 'html_file'
+
+        # Format as YAML (no language identifier!)
+        yaml_str = yaml.dump(frontmatter, default_flow_style=False, sort_keys=False)
+        return f"---\n{yaml_str}---\n"
+```
+
+---
+
+### Step 5: Add CLI Command
+
+**File**: `src/cli.py`
+
+**Add to existing CLI** (around line 200+):
+
+```python
 @cli.command()
-@click.option('--path', type=click.Path(exists=True), help='Validate specific folder')
-@click.option('--tags', help='Validate documents with specific tag')
-@click.option('--force', is_flag=True, help='Ignore cache, revalidate all')
-@click.option('--auto-fix', is_flag=True, help='Auto-fix issues')
-@click.option('--preview', is_flag=True, help='Preview auto-fixes without applying')
-@click.option('--conflicts', is_flag=True, help='Run conflict detection only')
-def validate(path, tags, force, auto_fix, preview, conflicts):
-    """Validate markdown documents"""
-    # Implementation here
-    pass
+@click.option(
+    '--source',
+    type=click.Path(exists=True),
+    required=True,
+    help='Path to HTML file to extract'
+)
+@click.option(
+    '--output',
+    type=click.Path(),
+    default='_output',
+    help='Output directory for converted markdown (default: _output/)'
+)
+@click.option(
+    '--title',
+    type=str,
+    default=None,
+    help='Custom title (default: extracted from HTML)'
+)
+@click.option(
+    '--tags',
+    type=str,
+    default=None,
+    help='Comma-separated tags (default: web-content,extracted)'
+)
+def extract_url(source, output, title, tags):
+    """Extract content from HTML file and convert to markdown.
 
-if __name__ == '__main__':
-    cli()
+    Examples:
+        python main.py extract-url --source page.html
+        python main.py extract-url --source page.html --output docs/
+        python main.py extract-url --source page.html --title "Guide"
+    """
+    from pathlib import Path
+    from datetime import datetime
+    from src.core.extractors.html_extractor import HTMLExtractor
+    from src.core.extractors.markdown_converter import MarkdownConverter
+    from src.core.extractors.frontmatter_generator import FrontmatterGenerator
+    from src.utils.logger import Logger
+
+    logger = Logger()
+
+    try:
+        click.echo(f"\n{'='*60}")
+        click.echo("URL CONTENT EXTRACTION")
+        click.echo(f"{'='*60}\n")
+
+        # Extract HTML content
+        click.echo(f"📄 Extracting content from: {source}")
+        extractor = HTMLExtractor(logger)
+        content_data = extractor.extract_main_content(Path(source))
+
+        # Convert to markdown
+        click.echo("🔄 Converting to markdown...")
+        converter = MarkdownConverter()
+        markdown_content = converter.convert_to_markdown(content_data['html_content'])
+
+        # Generate frontmatter
+        click.echo("📝 Generating frontmatter...")
+        fm_generator = FrontmatterGenerator()
+        title_to_use = title or content_data['title']
+        tags_list = tags.split(',') if tags else ['web-content', 'extracted']
+
+        frontmatter = fm_generator.generate(
+            title=title_to_use,
+            tags=tags_list,
+            source_url=content_data['metadata'].get('url')
+        )
+
+        # Create output directory
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        output_dir = Path(output) / f"extracted-{timestamp}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Generate filename from title
+        filename = title_to_use.lower().replace(' ', '-')
+        filename = re.sub(r'[^a-z0-9-]', '', filename)[:50] + '.md'
+        output_file = output_dir / filename
+
+        # Write markdown file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(frontmatter)
+            f.write(markdown_content)
+
+        click.echo(f"\n✅ Success!")
+        click.echo(f"📁 Output file: {output_file}")
+        click.echo(f"📊 Size: {output_file.stat().st_size} bytes\n")
+
+    except Exception as e:
+        click.echo(f"\n❌ Error: {str(e)}", err=True)
+        logger.error(f"Extraction failed: {e}")
+        sys.exit(1)
 ```
 
-### Report Generation Pattern
+---
 
-**Console Output** (default):
+### Step 6: Write Tests
+
+**Create test files** in `tests/core/extractors/`:
+
+1. **test_html_extractor.py** (~150 lines):
+   - Test extracting title from H1
+   - Test extracting title from `<title>` tag
+   - Test finding main content
+   - Test handling malformed HTML
+   - Test ignoring nav/footer
+
+2. **test_markdown_converter.py** (~150 lines):
+   - Test HTML to markdown conversion
+   - Test table conversion to structured content
+   - Test checkbox removal
+   - Test link preservation
+   - Test heading hierarchy
+
+3. **test_frontmatter_generator.py** (~100 lines):
+   - Test required fields generation
+   - Test optional fields
+   - Test YAML formatting
+   - Test date formatting
+
+**Example test structure**:
+```python
+import pytest
+from pathlib import Path
+from src.core.extractors.html_extractor import HTMLExtractor
+
+class TestHTMLExtractor:
+    def test_extract_title_from_h1(self, tmp_path):
+        html_file = tmp_path / "test.html"
+        html_file.write_text("<html><body><h1>Test Title</h1></body></html>")
+
+        extractor = HTMLExtractor()
+        result = extractor.extract_main_content(html_file)
+
+        assert result['title'] == "Test Title"
+
+    def test_extract_main_content(self, tmp_path):
+        # Test main content extraction
+        pass
 ```
-================================================================================
-SYMPHONY CORE - VALIDATION REPORT
-================================================================================
 
-Documents Scanned: 161
-Passed: 144 (89.4%)
-Failed: 17 (10.6%)
+---
 
-VIOLATIONS BY RULE:
-  NAME-001: 16 (Uppercase in filenames/directories)
-  NAME-002:  9 (Spaces in filenames)
+### Step 7: Test with Real HTML
 
-FAILED DOCUMENTS:
-  02-marketing-brand/website/steps to fix domain issue.md
-    [ERROR] NAME-002: Filename contains spaces
-    Suggestion: Rename to 'steps-to-fix-domain-issue.md'
-...
+**Test file**: `_input/webpage/Comprehensive SEO Packages.html`
+
+**Test command**:
+```bash
+python main.py extract-url --source "_input/webpage/Comprehensive SEO Packages.html"
 ```
 
-**Markdown Output** (`--format markdown`):
+**Expected output**:
+- File created in `_output/extracted-{timestamp}/seo-packages.md`
+- Valid YAML frontmatter
+- SC-compliant markdown
+- No markdown tables
+- No checkbox symbols
+- Proper heading hierarchy
+
+---
+
+### Step 8: Update Documentation
+
+**Update files**:
+
+1. **README.md** - Add to features list:
 ```markdown
-# Symphony Core Validation Report
-
-**Date**: 2025-11-08
-**Documents**: 161 scanned
-
-## Summary
-- Passed: 144 (89.4%)
-- Failed: 17 (10.6%)
-
-## Violations by Rule
-| Rule ID | Count | Description |
-|---------|-------|-------------|
-| NAME-001 | 16 | Uppercase in filenames/directories |
-| NAME-002 | 9 | Spaces in filenames |
-...
+### URL Content Extraction (Sprint 5) ✅
+```bash
+# Extract HTML to markdown
+python main.py extract-url --source page.html
 ```
 
-**JSON Output** (`--format json`):
-```json
-{
-  "timestamp": "2025-11-08T10:30:00Z",
-  "summary": {
-    "total": 161,
-    "passed": 144,
-    "failed": 17
-  },
-  "violations": [
-    {
-      "file": "02-marketing-brand/website/steps to fix domain issue.md",
-      "rule_id": "NAME-002",
-      "severity": "error",
-      "message": "Filename contains spaces",
-      "suggestion": "Rename to 'steps-to-fix-domain-issue.md'"
-    }
-  ]
-}
+2. **docs/user-guide.md** - Add new section:
+```markdown
+## URL Content Extraction
+
+Extract HTML content and convert to SC-compliant markdown...
+```
+
+3. **config/config.yaml** - Add extraction config:
+```yaml
+# URL Extraction Configuration
+extraction:
+  default_output_dir: "_output"
+  default_status: "draft"
+  default_category: "KB Article"
 ```
 
 ---
 
-## Implementation Roadmap
+## 🧪 TESTING CHECKLIST
 
-### Week 1: Core CLI Structure (5 points)
-
-**Day 1-2: Setup**
-- Install Click: `pip install click`
-- Create `src/cli.py` and `src/main.py`
-- Implement basic command structure
-- Add `--help` and `--version` options
-
-**Day 3-4: Validate Command**
-- Implement `validate` command with basic options
-- Add path filtering (`--path`)
-- Add tag filtering (`--tags`)
-- Add force mode (`--force`)
-
-**Day 5: Testing**
-- Write CLI tests using Click's testing utilities
-- Test all command combinations
-- Test error handling
-
-**Files to Create**:
-- `src/cli.py` (main CLI interface)
-- `src/main.py` (entry point)
-- `tests/test_cli.py` (CLI tests)
-
-### Week 2: Reporting System (6 points)
-
-**Day 6-7: Console Reporter**
-- Create `src/reporting/console_reporter.py`
-- Implement summary statistics
-- Implement detailed issue listings
-- Add color support (optional, use Click.echo with styles)
-
-**Day 8-9: Markdown Reporter**
-- Create `src/reporting/markdown_reporter.py`
-- Generate markdown tables
-- Include statistics and charts
-- Save to `_meta/reports/` directory
-
-**Day 10: JSON Reporter**
-- Create `src/reporting/json_reporter.py`
-- Structured JSON output
-- Machine-readable format for CI/CD
-
-**Files to Create**:
-- `src/reporting/__init__.py`
-- `src/reporting/console_reporter.py`
-- `src/reporting/markdown_reporter.py`
-- `src/reporting/json_reporter.py`
-- `tests/reporting/test_reporters.py`
-
-### Week 3: Conflict Reporting + Integration (5 points)
-
-**Day 11-12: Conflict Reporter**
-- Enhance `ConflictDetector.generate_conflict_report()`
-- Add severity levels
-- Add impact assessment
-- Group by conflict type
-
-**Day 13: Auto-fix Integration**
-- Add `--auto-fix` flag to CLI
-- Add `--preview` flag
-- Integrate with AutoFixer from Sprint 2
-- Show before/after in reports
-
-**Day 14-15: Polish & Testing**
-- Exit code handling (0 = pass, 1 = fail)
-- Progress bars for long operations
-- Comprehensive integration tests
-- Update documentation (README, user-guide)
-
-**Files to Create/Update**:
-- `src/reporting/conflict_reporter.py`
-- Update `src/core/conflict_detector.py`
-- Update `tests/test_cli.py` (integration tests)
-- Update `docs/user-guide.md`
-
----
-
-## Testing Strategy
+Before completing Sprint 5:
 
 ### Unit Tests
-Test individual CLI commands and reporters:
-```python
-from click.testing import CliRunner
-from src.cli import cli
-
-def test_validate_command():
-    runner = CliRunner()
-    result = runner.invoke(cli, ['validate', '--help'])
-    assert result.exit_code == 0
-    assert 'Validate markdown documents' in result.output
-
-def test_validate_with_path():
-    runner = CliRunner()
-    result = runner.invoke(cli, ['validate', '--path', 'tests/fixtures'])
-    assert result.exit_code == 0
-```
+- [ ] All HTMLExtractor tests pass
+- [ ] All MarkdownConverter tests pass
+- [ ] All FrontmatterGenerator tests pass
+- [ ] Test coverage > 80% for new modules
 
 ### Integration Tests
-Test end-to-end workflows:
-```python
-def test_validate_and_report():
-    """Test full validation pipeline with reporting"""
-    runner = CliRunner()
-    result = runner.invoke(cli, [
-        'validate',
-        '--path', 'tests/fixtures',
-        '--format', 'json',
-        '--output', 'test-report.json'
-    ])
-    assert result.exit_code == 0
-    assert Path('test-report.json').exists()
+- [ ] CLI command runs without errors
+- [ ] Output file created in correct location
+- [ ] Frontmatter has all required fields
+- [ ] Markdown follows SC standards
+- [ ] Test with provided HTML file succeeds
+
+### Manual Testing
+- [ ] Run: `python main.py extract-url --source "_input/webpage/Comprehensive SEO Packages.html"`
+- [ ] Verify output file exists
+- [ ] Verify frontmatter structure
+- [ ] Verify markdown compliance
+- [ ] Verify no markdown tables
+- [ ] Verify no checkbox symbols
+
+### Quality Gates
+- [ ] All 215+ tests passing
+- [ ] No linting errors (flake8)
+- [ ] Code formatted (black)
+- [ ] Type hints present
+- [ ] Docstrings complete
+
+---
+
+## 📝 KEY DECISIONS & CONTEXT
+
+### User-Approved Decisions
+1. ✅ CLI command: `extract-url` (vs html-to-md or other options)
+2. ✅ Output directory: `_output/` with timestamped subdirectories
+3. ✅ Default status: `draft`
+4. ✅ Content scope: main content, links, tables (no nav/footer/ads)
+5. ✅ Future integration: Auto-validation, auto-tagging (Sprint 6+)
+
+### SC Markdown Standard Requirements
+**Source**: `C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\08-reference\standards\sc-markdown-standard.md`
+
+**Critical Rules**:
+- ❌ NO markdown tables - convert to structured content
+- ❌ NO checkbox symbols - use text alternatives
+- ❌ NO language identifier with frontmatter fences
+- ❌ NO square brackets for placeholders
+- ✅ Required frontmatter: title, version, author, last_updated, category, tags, status
+- ✅ Lowercase-with-hyphens file naming
+- ✅ Proper heading hierarchy (no skipped levels)
+
+### Dependencies Installed
 ```
-
-### Real Documentation Tests
-Test on actual Symphony Core documentation:
-```python
-def test_validate_real_docs():
-    """Test validation on real documentation repository"""
-    docs_path = Path(r"C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents")
-    if not docs_path.exists():
-        pytest.skip("Real docs not available")
-
-    runner = CliRunner()
-    result = runner.invoke(cli, ['validate', '--path', str(docs_path / '09-clients')])
-    # 09-clients folder has 100% pass rate, should return exit code 0
-    assert result.exit_code == 0
+beautifulsoup4>=4.12.2    # HTML parsing
+html2text>=2020.1.16      # HTML to markdown base conversion
+lxml>=4.9.3               # Fast HTML parser backend
 ```
 
 ---
 
-## Key Implementation Patterns
+## 🚀 NEXT STEPS FOR CLAUDE CODE
 
-### 1. Exit Code Strategy (ADR-004, CI/CD Integration)
+When resuming this work:
 
-```python
-def validate(path, tags, force, auto_fix, preview, conflicts):
-    """Validate markdown documents"""
-    # Run validation
-    issues = run_validation(...)
+1. **Verify branch**: `git status` should show branch `claude/extract-website-content-011CV4UGNJQdeHBNFPnEdaD3`
 
-    # Generate report
-    generate_report(issues)
+2. **Read Sprint 5 plan**: `sprints/sprint-05-url-extraction.md` has full details
 
-    # Exit with appropriate code
-    if has_errors(issues):
-        sys.exit(1)  # CI/CD will fail
-    else:
-        sys.exit(0)  # CI/CD will pass
-```
+3. **Start implementation**:
+   - Create module structure (Step 1)
+   - Implement HTMLExtractor (Step 2)
+   - Implement MarkdownConverter (Step 3)
+   - Implement FrontmatterGenerator (Step 4)
+   - Add CLI command (Step 5)
+   - Write tests (Step 6)
+   - Test with real HTML (Step 7)
+   - Update docs (Step 8)
 
-### 2. Incremental vs. Full Validation (ADR-006)
+4. **Test thoroughly** with: `_input/webpage/Comprehensive SEO Packages.html`
 
-```python
-if force:
-    # Full validation (ignore cache)
-    documents = find_all_documents(path)
-elif conflicts:
-    # Conflict detection always uses all documents (ADR-006)
-    documents = find_all_documents(path)
-else:
-    # Incremental validation (use cache)
-    documents = find_changed_documents(path)
-```
-
-### 3. Report Format Selection
-
-```python
-def generate_report(issues, format='console'):
-    """Generate report in specified format"""
-    if format == 'console':
-        reporter = ConsoleReporter()
-    elif format == 'markdown':
-        reporter = MarkdownReporter()
-    elif format == 'json':
-        reporter = JSONReporter()
-
-    return reporter.generate(issues)
-```
-
-### 4. Progress Indication (for long operations)
-
-```python
-import click
-
-with click.progressbar(documents, label='Validating documents') as bar:
-    for doc in bar:
-        validate_document(doc)
-```
+5. **Commit and push** when complete
 
 ---
 
-## Configuration Reference
+## 📊 SPRINT 5 PROGRESS TRACKER
 
-All CLI behavior should respect `config/config.yaml`:
+**Phase 1: Setup & Planning** ✅ COMPLETE (2/13 points)
+- [x] Sprint planning document
+- [x] Feature branch created
+- [x] Dependencies installed
+- [x] Requirements approved
 
-```yaml
-# CLI Configuration
-cli:
-  default_format: console
-  report_output_dir: _meta/reports/
-  progress_bar: true
-  color_output: true
+**Phase 2: Core Implementation** 🔲 PENDING (5/13 points)
+- [ ] HTMLExtractor class
+- [ ] MarkdownConverter class
+- [ ] FrontmatterGenerator class
+- [ ] Module structure
+- [ ] Unit tests
 
-# Validation toggles
-validation:
-  yaml:
-    enabled: true
-  markdown:
-    enabled: true
-  naming:
-    enabled: true
-  conflicts:
-    enabled: true
+**Phase 3: CLI Integration** 🔲 PENDING (3/13 points)
+- [ ] extract-url command
+- [ ] Output directory handling
+- [ ] Integration tests
+- [ ] Real HTML test
 
-# Reporting configuration
-reporting:
-  format: console
-  output_dir: _meta/reports/
-  verbose: true
-  include_suggestions: true
-  report_levels:
-    - error
-    - warning
-    - info
-```
+**Phase 4: Documentation** 🔲 PENDING (3/13 points)
+- [ ] README update
+- [ ] User guide update
+- [ ] Config updates
+- [ ] Final testing
 
 ---
 
-## Example Usage Scenarios
+## 📚 REFERENCE DOCUMENTS
 
-### Scenario 1: Daily Team Validation
-**Use Case**: Sarah (Documentation Manager) validates new docs before committing
+**Essential Reading**:
+1. `sprints/sprint-05-url-extraction.md` - Full sprint plan
+2. `_input/input-prompt.md` - Original requirements & answers
+3. `C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\08-reference\standards\sc-markdown-standard.md` - SC standards
 
-```bash
-# Check what changed
-python main.py validate
+**Test Data**:
+- `_input/webpage/Comprehensive SEO Packages.html` - Test HTML file
+- `_input/webpage/Comprehensive SEO Packages_files/` - Assets
 
-# If issues found, see detailed report
-python main.py validate --format markdown --output daily-report.md
-
-# Auto-fix safe issues
-python main.py validate --auto-fix --preview
-python main.py validate --auto-fix  # Apply fixes
-```
-
-### Scenario 2: Domain-Specific Validation
-**Use Case**: Mike (Content Contributor) validates only his domain
-
-```bash
-# Validate operations docs
-python main.py validate --path 04-operations/
-
-# Validate all pricing docs
-python main.py validate --tags pricing
-```
-
-### Scenario 3: Pre-Release Conflict Check
-**Use Case**: Team lead checks for conflicts before release
-
-```bash
-# Run comprehensive conflict detection
-python main.py validate --conflicts --force
-
-# Generate detailed conflict report
-python main.py validate --conflicts --format markdown --output conflicts-report.md
-```
-
-### Scenario 4: CI/CD Integration
-**Use Case**: GitHub Actions validates on every PR
-
-```yaml
-# .github/workflows/validate-docs.yml
-- name: Validate Documentation
-  run: |
-    python main.py validate --format json --output validation-report.json
-    # Exit code 1 will fail the build if validation fails
-```
+**Key Files to Edit**:
+- `src/core/extractors/*.py` (NEW - create these)
+- `src/cli.py` (add extract-url command)
+- `tests/core/extractors/*.py` (NEW - create tests)
+- `config/config.yaml` (add extraction config)
+- `docs/user-guide.md` (add extraction section)
+- `README.md` (add feature to list)
 
 ---
 
-## Files to Create (Sprint 4)
-
-### Core CLI
-- `src/cli.py` (~200 lines) - Main CLI interface with Click
-- `src/main.py` (~20 lines) - Entry point
-- `setup.py` or `pyproject.toml` - Package configuration for CLI entry point
-
-### Reporting System
-- `src/reporting/__init__.py`
-- `src/reporting/base_reporter.py` (~100 lines) - Abstract base class
-- `src/reporting/console_reporter.py` (~150 lines) - Console output
-- `src/reporting/markdown_reporter.py` (~200 lines) - Markdown reports
-- `src/reporting/json_reporter.py` (~100 lines) - JSON output
-- `src/reporting/conflict_reporter.py` (~150 lines) - Conflict-specific reports
-
-### Tests
-- `tests/test_cli.py` (~300 lines) - CLI unit and integration tests
-- `tests/reporting/test_console_reporter.py` (~150 lines)
-- `tests/reporting/test_markdown_reporter.py` (~150 lines)
-- `tests/reporting/test_json_reporter.py` (~100 lines)
-
-### Documentation
-- Update `docs/user-guide.md` - Add CLI usage section
-- Update `README.md` - Add quick start with CLI commands
-- Create `docs/cli-reference.md` - Complete CLI command reference
-
-**Estimated Total**: ~2,000 lines of production code + ~700 lines of tests
+**Sprint Status**: 🟡 **IN PROGRESS** (15% complete)
+**Next Action**: Begin Phase 2 - Core Implementation
+**Branch**: `claude/extract-website-content-011CV4UGNJQdeHBNFPnEdaD3`
+**Estimated Completion**: 2-3 days of development work
 
 ---
 
-## Success Criteria
+## 🔄 PREVIOUS SPRINTS STATUS
 
-**Sprint 4 Complete When**:
-- [ ] CLI accepts all commands from ADR-004
-- [ ] Reports generate in console, markdown, and JSON formats
-- [ ] Exit codes work correctly (0 = pass, 1 = fail)
-- [ ] Auto-fix integrated with `--auto-fix` and `--preview` flags
-- [ ] Conflict detection accessible via `--conflicts` flag
-- [ ] Path and tag filtering work correctly
-- [ ] Help text comprehensive and accurate
-- [ ] 90%+ test coverage on CLI and reporting modules
-- [ ] User guide updated with CLI examples
-- [ ] Can be installed as package: `pip install -e .`
-- [ ] Works in CI/CD environment (GitHub Actions tested)
+### Sprint 4: CLI & Reporting ✅ COMPLETE (100%)
+**Status**: All features delivered, 215 tests passing, 82% coverage
+**Last Updated**: 2025-11-09
 
-**Quality Metrics**:
-- All existing tests still pass (76 tests from Sprint 1-3)
-- New CLI tests: 25+ tests covering all commands
-- New reporter tests: 15+ tests covering all formats
-- Integration tests: 5+ end-to-end scenarios
-- **Total target**: 120+ tests passing
+**Delivered Features**:
+- ✅ CLI interface with Click framework
+- ✅ Validation reports (console, JSON, markdown)
+- ✅ Enhanced conflict reporting
+- ✅ File-specific validation (--file option)
+- ✅ Exit codes for CI/CD
+
+### Sprint 1-3: Foundation & Validation ✅ COMPLETE
+- ✅ Document validation (YAML, Markdown, Naming)
+- ✅ Auto-fix engine
+- ✅ Conflict detection
+- ✅ Change detection & caching
+- ✅ 215 tests, 82% coverage
 
 ---
 
-## Common Pitfalls to Avoid
-
-1. **Don't over-engineer**: Stick to ADR-004 scope, avoid enterprise features
-2. **Validate early**: Use Click's built-in validation (paths, choices, etc.)
-3. **Handle interrupts**: Catch Ctrl+C gracefully (KeyboardInterrupt)
-4. **Test with real data**: Use 09-clients folder (100% pass rate) as test fixture
-5. **Color carefully**: Windows console has limitations, use Click.echo with fallbacks
-6. **Exit codes matter**: CI/CD relies on correct exit codes (0/1)
-7. **Progress for long ops**: Show progress bar when validating 100+ documents
-8. **Cache invalidation**: `--force` must truly ignore cache (test this!)
-
----
-
-## Ready to Start?
-
-**Recommended Approach**:
-
-1. **Setup** (Day 1):
-   ```bash
-   pip install click pytest-click
-   python -m pytest tests/core/validators/ -v  # Verify all 76 tests pass
-   ```
-
-2. **Implement Basic CLI** (Day 1-2):
-   - Create `src/cli.py` with basic structure
-   - Add `validate` command with `--help`
-   - Test with Click's CliRunner
-
-3. **Add Validation Logic** (Day 3-4):
-   - Wire up existing validators
-   - Implement path filtering
-   - Implement tag filtering
-   - Test on real docs
-
-4. **Build Reporting** (Day 6-10):
-   - Console reporter first (most used)
-   - Markdown reporter second (for documentation)
-   - JSON reporter last (for CI/CD)
-
-5. **Polish & Test** (Day 11-15):
-   - Conflict reporting integration
-   - Auto-fix integration
-   - Comprehensive testing
-   - Documentation updates
-
-**First Command to Build**:
-```bash
-python main.py validate --path tests/fixtures --format console
-```
-
----
-
-## Resources & References
-
-**From Sprint 1-3**:
-- Validator implementations: `src/core/validators/*.py`
-- Test patterns: `tests/core/validators/*.py`
-- Configuration: `config/config.yaml`
-- Real test data: `C:\Users\Rohit\...\symphony-core-documents\09-clients` (100% pass)
-
-**Architectural Decisions**:
-- ADR-004: Practical CLI Scope (see `decisions.md`)
-- ADR-006: Accuracy Over Speed (conflict detection always full scan)
-
-**External Documentation**:
-- Click docs: https://click.palletsprojects.com/
-- Click testing: https://click.palletsprojects.com/en/8.1.x/testing/
-- Python packaging: https://packaging.python.org/
-
----
-
-## 📋 After Running /compact - Action Items
-
-When resuming work after conversation history is compacted, complete these pending tasks:
-
-### 1. Complete --file Feature Testing
-```bash
-# Test two-file conflict comparison
-python main.py validate --file doc1.md --file doc2.md --conflicts --format json --output test-result.json
-
-# Test with different file combinations
-python main.py validate --file tests/fixtures/valid-doc.md --file tests/fixtures/invalid-doc.md
-```
-
-### 2. Add CLI Tests for --file Option
-Location: `tests/test_cli.py`
-
-**Tests to add**:
-- `test_validate_single_file()` - Validate one file works
-- `test_validate_multiple_files()` - Validate multiple files works
-- `test_file_and_path_mutually_exclusive()` - Cannot use both --file and --path
-- `test_file_must_be_markdown()` - Non-.md files rejected
-- `test_file_conflict_comparison()` - Two files with --conflicts flag
-
-### 3. Update Documentation
-**Files to update**:
-- `docs/user-guide.md` - Add --file examples to CLI section
-- `README.md` - Add --file capability to Usage section
-
-**Content to add**:
-```markdown
-### File-Specific Validation
-
-Validate individual files instead of directories:
-
-\```bash
-# Single file
-python main.py validate --file document.md
-
-# Multiple files
-python main.py validate --file doc1.md --file doc2.md
-
-# Compare two files for conflicts
-python main.py validate --file pricing-v1.md --file pricing-v2.md --conflicts
-\```
-```
-
-### 4. Source of Truth for Capability Readiness
-
-**Primary Documentation**: `docs/user-guide.md`
-- This is the comprehensive end-user documentation
-- All features must be documented here with examples
-- If it's not in the User Guide, it's not officially released
-
-**Secondary Documentation**: `README.md`
-- Quick reference and getting started
-- Should list all major capabilities
-
-**Implementation Reference**: `src/cli.py`
-- Command help text (accessed via `--help`)
-- Shows all available options
-
-**Testing Reference**: `tests/test_cli.py`
-- If a feature has tests, it's considered implemented
-- Test coverage indicates feature completeness
-
----
-
-**Status**: ✅ **SPRINT 4 COMPLETE** + 🆕 File Validation Feature
-**Prerequisites**: ✅ All validators operational, ✅ CLI functional, ✅ Reporting system complete, ✅ Conflict reporting enhanced, ✅ File-specific validation
-**Current State**: 215 tests passing, 81.36% coverage, production-ready
-
-**🎯 CURRENT WORK**: Complete --file feature (testing + documentation)
-**🎯 NEXT MILESTONE**: v1.1 Features (see BACKLOG_FEATURES.md)
-
-**Sprint 4 Deliverables** (All Complete):
-- ✅ US-4.1: CLI Interface (10 points)
-- ✅ US-4.2: Advanced Reporting (6 points)
-- ✅ US-4.3: Enhanced Conflict Reporting (5 points)
-
-**Post-Sprint Enhancements** (2025-11-09):
-- ✅ **File-specific validation** - --file option implemented (commit 6a59f21)
-- ⏳ CLI tests for --file - pending
-- ⏳ Documentation updates - pending
-
-**Recent Accomplishments** (2025-11-09):
-- ✅ **Sprint 4 COMPLETE** - all 21 story points delivered
-- ✅ **Enhanced Conflict Reporting** - severity levels, impact assessment, recommendations
-- ✅ **Incremental mode bug fixed** - cache integration working perfectly
-- ✅ **File validation capability** - validate specific files, compare two files
-- ✅ Advanced reporting system (console, JSON, markdown formats)
-- ✅ Comprehensive testing on real documentation
-- ✅ System 100% functional and production-ready
-
-**Test Summary**:
-- Total Tests: 215 passing
-- Coverage: 81.36% (exceeds 80% requirement)
-- Status: All passing ✅
-
-**Pending Items**:
-1. Add CLI tests for --file option
-2. Test two-file conflict comparison thoroughly
-3. Update User Guide with --file examples
-4. Update README with --file capability
-
-**Last Updated**: 2025-11-09 (Evening session)
+**Document Version**: 3.0
+**Last Updated**: 2025-11-12
 **Maintained By**: Engineering Team
+**Status**: 🟡 Sprint 5 In Progress

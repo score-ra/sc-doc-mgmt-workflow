@@ -556,5 +556,145 @@ def _generate_autofix_report(
         click.echo("=" * 80)
 
 
+@cli.command()
+@click.option(
+    '--source',
+    type=click.Path(exists=True),
+    required=True,
+    help='Path to HTML file to extract content from'
+)
+@click.option(
+    '--output',
+    type=click.Path(),
+    default='_output',
+    help='Output directory for converted markdown (default: _output/)'
+)
+@click.option(
+    '--title',
+    type=str,
+    default=None,
+    help='Custom title (default: extracted from HTML)'
+)
+@click.option(
+    '--tags',
+    type=str,
+    default=None,
+    help='Comma-separated tags (default: web-content,extracted)'
+)
+@click.option(
+    '--category',
+    type=str,
+    default='KB Article',
+    help='Document category (default: KB Article)'
+)
+def extract_url(source, output, title, tags, category):
+    """
+    Extract content from HTML file and convert to SC-compliant markdown.
+
+    Extracts main content from an HTML file, converts it to markdown following
+    Symphony Core standards, and adds proper YAML frontmatter.
+
+    Examples:
+
+        \b
+        # Basic extraction
+        python main.py extract-url --source page.html
+
+        \b
+        # With custom output directory
+        python main.py extract-url --source page.html --output docs/extracted/
+
+        \b
+        # With custom title and tags
+        python main.py extract-url --source page.html --title "SEO Guide" --tags "seo,marketing"
+    """
+    from datetime import datetime
+    from src.core.extractors.html_extractor import HTMLExtractor
+    from src.core.extractors.markdown_converter import MarkdownConverter
+    from src.core.extractors.frontmatter_generator import FrontmatterGenerator
+
+    logger = Logger()
+
+    try:
+        click.echo(f"\n{'='*60}")
+        click.echo("URL CONTENT EXTRACTION")
+        click.echo(f"{'='*60}\n")
+
+        source_path = Path(source)
+
+        # Extract HTML content
+        click.echo(f"[1/4] Extracting content from: {source_path.name}")
+        extractor = HTMLExtractor(logger)
+        content_data = extractor.extract_main_content(source_path)
+
+        extracted_title = content_data['title']
+        click.echo(f"      Title: {extracted_title}")
+
+        # Convert to markdown
+        click.echo("[2/4] Converting to SC-compliant markdown...")
+        converter = MarkdownConverter()
+        markdown_content = converter.convert_to_markdown(content_data['html_content'])
+
+        # Generate frontmatter
+        click.echo("[3/4] Generating YAML frontmatter...")
+        fm_generator = FrontmatterGenerator()
+        title_to_use = title or extracted_title
+        tags_list = tags.split(',') if tags else ['web-content', 'extracted']
+        tags_list = [tag.strip() for tag in tags_list]  # Clean whitespace
+
+        frontmatter = fm_generator.generate(
+            title=title_to_use,
+            tags=tags_list,
+            category=category,
+            source_url=content_data['metadata'].get('url')
+        )
+
+        # Create output directory
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        output_dir = Path(output) / f"extracted-{timestamp}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Generate filename from title (lowercase-with-hyphens)
+        import re
+        filename = title_to_use.lower().replace(' ', '-')
+        filename = re.sub(r'[^a-z0-9-]', '', filename)[:50]
+        if not filename:  # Fallback if title becomes empty after cleaning
+            filename = 'extracted-document'
+        filename = filename + '.md'
+
+        output_file = output_dir / filename
+
+        # Write markdown file
+        click.echo(f"[4/4] Writing to file: {filename}")
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(frontmatter)
+            f.write("\n")
+            f.write(markdown_content)
+
+        # Success message
+        file_size = output_file.stat().st_size
+        click.echo(f"\n{'='*60}")
+        click.echo("SUCCESS - EXTRACTION COMPLETE")
+        click.echo(f"{'='*60}")
+        click.echo(f"Output file: {output_file}")
+        click.echo(f"File size: {file_size:,} bytes")
+        click.echo(f"Title: {title_to_use}")
+        click.echo(f"Tags: {', '.join(tags_list)}")
+        click.echo(f"Category: {category}")
+        click.echo(f"Status: draft")
+        click.echo(f"{'='*60}\n")
+
+        sys.exit(0)
+
+    except FileNotFoundError as e:
+        click.echo(f"\nERROR: {str(e)}", err=True)
+        sys.exit(1)
+
+    except Exception as e:
+        click.echo(f"\nERROR: Extraction failed: {str(e)}", err=True)
+        logger.error(f"Extraction failed: {e}")
+        sys.exit(1)
+
+
 if __name__ == '__main__':
     cli(obj={})
