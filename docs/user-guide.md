@@ -102,12 +102,17 @@ Symphony Core is an automated document validation system for business operations
 
 ### Quick Start
 
+This tool validates **external document repositories**. Point it to any folder containing markdown documents:
+
 ```bash
-# Validate documents in current directory
+# Validate external document repository
+python main.py validate --path /path/to/your/documentation
+
+# Validate current directory (if you're in a docs folder)
 python main.py validate
 
-# Validate specific folder
-python main.py validate --path docs/
+# Validate specific external folder (Windows example)
+python main.py validate --path C:\Users\YourName\Documents\your-docs
 
 # Force full validation (ignore cache)
 python main.py validate --force
@@ -143,11 +148,14 @@ python main.py validate --help
 #### Basic Validation
 
 ```bash
-# Validate all documents (incremental - only changed files)
+# Validate external document repository (full path)
+python main.py validate --path /path/to/your/docs
+
+# Validate all documents in current directory (if you're already in docs folder)
 python main.py validate
 
-# Validate specific folder
-python main.py validate --path operations/
+# Validate specific external folder
+python main.py validate --path C:\workspace\project-docs\operations
 
 # Force full validation (ignore cache)
 python main.py validate --force
@@ -172,8 +180,8 @@ python main.py validate --auto-fix --preview
 # Apply auto-fixes
 python main.py validate --auto-fix
 
-# Auto-fix specific folder
-python main.py validate --path docs/ --auto-fix
+# Auto-fix specific external folder
+python main.py validate --path /path/to/your/docs --auto-fix
 ```
 
 #### Conflict Detection

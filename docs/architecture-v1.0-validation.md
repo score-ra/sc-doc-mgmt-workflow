@@ -18,9 +18,9 @@ related_docs:
 
 ## 1. Document Overview
 
-**Purpose**: Technical architecture for Symphony Core v1.0 MVP - a document validation system for markdown files.
+**Purpose**: Technical architecture for Symphony Core v1.0 MVP - a standalone validation tool for external markdown document repositories.
 
-**Scope**: v1.0 focuses on validation and conflict detection:
+**Scope**: v1.0 focuses on validating external document repositories:
 - YAML frontmatter validation
 - Markdown syntax validation
 - Naming convention validation
@@ -28,6 +28,7 @@ related_docs:
 - Change detection (incremental processing)
 - Auto-fix with preview
 - Validation reporting
+- Path-based targeting of external repositories
 
 **Out of Scope for v1.0**:
 - Intelligent document routing (v1.1)
@@ -796,11 +797,17 @@ pytest
 ### 10.2 Usage Commands (v1.0)
 
 ```bash
-# Validate all documents in current directory
+# Validate external document repository (recommended)
+python main.py validate --path /path/to/your/docs
+
+# Validate current directory (if you're in a docs folder)
 python main.py validate
 
-# Validate specific file
-python main.py validate --file docs/my-doc.md
+# Validate specific file in external repository
+python main.py validate --file /path/to/your/docs/my-doc.md
+
+# Windows path example
+python main.py validate --path C:\workspace\project-docs
 
 # Force reprocess (ignore cache)
 python main.py validate --force

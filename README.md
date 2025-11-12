@@ -2,7 +2,7 @@
 
 **Continuous document intelligence for small teams**
 
-Automated document validation system that ensures consistency and standards compliance for markdown documentation across Symphony Core repository and business documents.
+A standalone automated document validation tool that ensures consistency and standards compliance for markdown documentation in any document repository. This tool is designed to validate external documentation folders and business document repositories.
 
 ## Project Status
 
@@ -45,7 +45,7 @@ See [Product Requirements Document](docs/product-requirements-document.md) for f
 
 ## Overview
 
-Symphony Core is an automated document validation system for business operations documentation. It helps teams maintain high-quality, consistent markdown documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures.
+Symphony Core Document Management Workflow is an automated document validation tool designed to validate external document repositories. It helps teams maintain high-quality, consistent markdown documentation for pricing, policies, product specifications, support guides, billing information, and operational procedures across any documentation folder or repository.
 
 **Key Benefits:**
 - Reduce document review time from 4 hours/week to 30 minutes/week
@@ -104,6 +104,26 @@ Symphony Core is an automated document validation system for business operations
 
 ## Usage
 
+### Working with Document Repositories
+
+This tool is designed to validate **external document repositories**. You can:
+- Point it to any folder containing markdown documents
+- Validate documents in other repositories without modifying this tool's code
+- Run it from this tool's directory while targeting external paths
+- Use relative or absolute paths to your documentation
+
+**Example workflow:**
+```bash
+# Navigate to the tool's directory
+cd C:\Users\Rohit\workspace\Work\software\sc-doc-mgmt-workflow
+
+# Validate an external document repository
+python main.py validate --path C:\path\to\your\documentation
+
+# Or use relative paths
+python main.py validate --path ..\..\..\docs\your-doc-repo
+```
+
 ### Command-Line Interface
 
 **Basic Commands:**
@@ -112,11 +132,16 @@ Symphony Core is an automated document validation system for business operations
 python main.py --help
 python main.py validate --help
 
-# Basic validation (incremental - only changed files)
+# Validate a document repository (uses current directory by default)
 python main.py validate
 
-# Validate specific folder
-python main.py validate --path docs/
+# Validate specific external folder/repository
+python main.py validate --path /path/to/your/docs
+python main.py validate --path C:\Users\YourName\Documents\your-doc-repo
+
+# Validate specific file(s)
+python main.py validate --file document.md
+python main.py validate --file doc1.md --file doc2.md
 
 # Force full validation (ignore cache)
 python main.py validate --force
@@ -131,11 +156,14 @@ python main.py validate --tags pricing,policies
 # Preview auto-fixes (shows what will change)
 python main.py validate --auto-fix --preview
 
-# Apply auto-fixes
+# Apply auto-fixes to documents
 python main.py validate --auto-fix
 
-# Auto-fix specific folder
-python main.py validate --path docs/ --auto-fix
+# Auto-fix specific external folder
+python main.py validate --path /path/to/your/docs --auto-fix
+
+# Auto-fix specific file
+python main.py validate --file document.md --auto-fix
 ```
 
 **Conflict Detection:**

@@ -17,7 +17,7 @@ audience: internal-technical
 ## 1. Executive Summary
 
 **Product Name**: Symphony Core Document Management Workflow
-**Product Vision**: Automated documentation system for business operations - ensuring consistency, quality, and standards compliance for pricing, policies, product specs, support documentation, and internal operational guides.
+**Product Vision**: A standalone validation tool for external document repositories - ensuring consistency, quality, and standards compliance for pricing, policies, product specs, support documentation, and internal operational guides across any markdown documentation repository.
 
 **One-Liner**: "Continuous document intelligence for small teams"
 
@@ -25,6 +25,7 @@ audience: internal-technical
 - Business operations team members who create and maintain markdown documentation
 - Documentation managers who review and approve changes
 - Product managers and team leads who contribute operational documentation
+- Teams managing multiple document repositories
 
 **Primary Goal**: Reduce document review time from 4 hours/week to 15-30 minutes/week
 
@@ -39,17 +40,17 @@ audience: internal-technical
 
 ### Current State
 
-**Symphony Core Business Operations Documentation:**
-- 50-100 markdown documents covering pricing, policies, product specifications, support guides, billing information, and operational procedures
-- Documents manually added through `_inbox/` system
-- Manual review of YAML frontmatter, markdown syntax, and naming conventions
-- Manual filing from `_inbox/` to appropriate folders
-- Updated 2-3 times per week by multiple team members
-- Inconsistently tagged and organized
-- No automated conflict detection
-- Inconsistent standards compliance across contributors
+**Document Repositories Requiring Validation:**
+- Teams manage 50-100+ markdown documents across various repositories covering pricing, policies, product specifications, support guides, billing information, and operational procedures
+- Document repositories may use various organizational systems (folders, tagging, inbox workflows)
+- Manual review of YAML frontmatter, markdown syntax, and naming conventions required
+- Manual quality control and standards enforcement across repositories
+- Documents updated 2-3 times per week by multiple team members
+- Inconsistently tagged and organized across repositories
+- No automated conflict detection or validation tooling
+- Inconsistent standards compliance across contributors and repositories
 - 10-15 minutes per document for manual processing
-- Source for customer-facing information (FAQs, support articles)
+- Documents serve as source for customer-facing information (FAQs, support articles)
 
 ### Problems & Pain Points
 
@@ -123,36 +124,36 @@ audience: internal-technical
 ## 4. User Personas & Use Cases
 
 ### Primary Persona 1: Documentation Manager (Sarah)
-- **Role**: Operations lead responsible for business documentation accuracy
-- **Context**: Manages Symphony Core business operations documentation repository
+- **Role**: Operations lead responsible for business documentation accuracy across multiple repositories
+- **Context**: Manages external business operations documentation repositories
 - **Technical Skill**: Comfortable with command line and Git workflows
 - **Goals**: Ensure consistency, quickly review changes, maintain standards, prevent contradictions from reaching customers
-- **Frustrations**: Spending hours on manual validation, cross-referencing, and standards enforcement
-- **Frequency**: Uses system 3-4x per week
-- **Documents Managed**: Pricing, policies, product specs, support guides, billing, procedures
+- **Frustrations**: Spending hours on manual validation, cross-referencing, and standards enforcement across repositories
+- **Frequency**: Uses validation tool 3-4x per week on different doc repositories
+- **Documents Managed**: Pricing, policies, product specs, support guides, billing, procedures across various folders/repositories
 
 **User Journey**:
-1. Monday morning: Reviews weekend document changes
-2. Runs validation workflow to check standards compliance
-3. Reviews validation reports, makes corrections
-4. Re-runs to verify compliance
+1. Monday morning: Reviews weekend document changes in repository
+2. Runs validation tool pointing to external document repository to check standards compliance
+3. Reviews validation reports, makes corrections in the repository
+4. Re-runs validation to verify compliance
 5. Approves documents for publication
 
 ### Primary Persona 2: Documentation Contributor (Mike)
 - **Role**: Product manager or business operations team member
-- **Context**: Creates and updates business operations documentation (pricing sheets, policy updates, product specifications, support guides)
+- **Context**: Creates and updates business operations documentation in external repositories (pricing sheets, policy updates, product specifications, support guides)
 - **Technical Skill**: Basic markdown knowledge, comfortable with text editors
 - **Goals**: Add/update documents quickly, meet standards, avoid creating contradictions, not break existing structure
 - **Frustrations**: Unsure of all standards, worried about placement, concerned about conflicting with other docs
-- **Frequency**: Adds/edits 1-3 docs per week
+- **Frequency**: Adds/edits 1-3 docs per week in various repositories
 - **Documents Created**: Product pricing, policy documents, feature specifications, support procedures
 
 **User Journey**:
-1. Creates or updates markdown doc in `_inbox/`
-2. Runs validation to check compliance
+1. Creates or updates markdown doc in external document repository
+2. Runs validation tool pointing to the repository to check compliance
 3. Fixes any validation errors reported
 4. Submits for review with validation passing
-5. Sarah reviews and approves routing
+5. Sarah reviews and approves changes
 
 ---
 
@@ -235,17 +236,20 @@ audience: internal-technical
 
 **FR-2.1: CLI Operations**
 - System SHALL provide commands for:
-  - Full validation: `python main.py validate [path]`
-  - Validate specific file: `python main.py validate --file [file]`
+  - Full validation of external repository: `python main.py validate --path /path/to/docs`
+  - Validate specific file: `python main.py validate --file /path/to/file.md`
+  - Validate current directory: `python main.py validate`
   - Force reprocess (ignore cache): `python main.py validate --force`
   - Show help: `python main.py --help`
+- System SHALL accept both absolute and relative paths to external repositories
 - System SHALL provide clear progress indicators
 - System SHALL return proper exit codes (0 = success, non-zero = errors)
 - **Acceptance Criteria**:
   - Clear help documentation
-  - Intuitive command structure
+  - Intuitive command structure with path targeting
   - Progress indicators for long operations
   - Works on both Windows and Unix-like systems
+  - Handles paths to external document repositories correctly
 
 **FR-2.2: Configuration Management**
 - System SHALL read from config.yaml file
