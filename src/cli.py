@@ -623,20 +623,20 @@ def extract_url(source, output, title, tags, category):
         source_path = Path(source)
 
         # Extract HTML content
-        click.echo(f"📄 Extracting content from: {source_path.name}")
+        click.echo(f"[1/4] Extracting content from: {source_path.name}")
         extractor = HTMLExtractor(logger)
         content_data = extractor.extract_main_content(source_path)
 
         extracted_title = content_data['title']
-        click.echo(f"   Title: {extracted_title}")
+        click.echo(f"      Title: {extracted_title}")
 
         # Convert to markdown
-        click.echo("🔄 Converting to SC-compliant markdown...")
+        click.echo("[2/4] Converting to SC-compliant markdown...")
         converter = MarkdownConverter()
         markdown_content = converter.convert_to_markdown(content_data['html_content'])
 
         # Generate frontmatter
-        click.echo("📝 Generating YAML frontmatter...")
+        click.echo("[3/4] Generating YAML frontmatter...")
         fm_generator = FrontmatterGenerator()
         title_to_use = title or extracted_title
         tags_list = tags.split(',') if tags else ['web-content', 'extracted']
@@ -665,7 +665,7 @@ def extract_url(source, output, title, tags, category):
         output_file = output_dir / filename
 
         # Write markdown file
-        click.echo(f"💾 Writing to file: {filename}")
+        click.echo(f"[4/4] Writing to file: {filename}")
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(frontmatter)
             f.write("\n")
@@ -674,7 +674,7 @@ def extract_url(source, output, title, tags, category):
         # Success message
         file_size = output_file.stat().st_size
         click.echo(f"\n{'='*60}")
-        click.echo("✅ EXTRACTION COMPLETE")
+        click.echo("SUCCESS - EXTRACTION COMPLETE")
         click.echo(f"{'='*60}")
         click.echo(f"Output file: {output_file}")
         click.echo(f"File size: {file_size:,} bytes")
@@ -687,12 +687,12 @@ def extract_url(source, output, title, tags, category):
         sys.exit(0)
 
     except FileNotFoundError as e:
-        click.echo(f"\n❌ Error: {str(e)}", err=True)
+        click.echo(f"\nERROR: {str(e)}", err=True)
         sys.exit(1)
 
     except Exception as e:
-        click.echo(f"\n❌ Extraction failed: {str(e)}", err=True)
-        logger.error(f"Extraction failed: {e}", exc_info=True)
+        click.echo(f"\nERROR: Extraction failed: {str(e)}", err=True)
+        logger.error(f"Extraction failed: {e}")
         sys.exit(1)
 
 

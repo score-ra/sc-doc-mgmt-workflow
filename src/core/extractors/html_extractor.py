@@ -158,10 +158,10 @@ class HTMLExtractor:
 
         # Look for common content container classes/ids
         content_selectors = [
-            {'class_': lambda x: x and 'content' in ' '.join(x) if isinstance(x, list) else 'content' in x},
-            {'id': lambda x: x and 'content' in x.lower()},
-            {'class_': lambda x: x and 'main' in ' '.join(x) if isinstance(x, list) else 'main' in x},
-            {'id': lambda x: x and 'main' in x.lower()}
+            {'class_': lambda x: x and (isinstance(x, list) and 'content' in ' '.join(x) or isinstance(x, str) and 'content' in x)},
+            {'id': lambda x: x and isinstance(x, str) and 'content' in x.lower()},
+            {'class_': lambda x: x and (isinstance(x, list) and 'main' in ' '.join(x) or isinstance(x, str) and 'main' in x)},
+            {'id': lambda x: x and isinstance(x, str) and 'main' in x.lower()}
         ]
 
         for selector in content_selectors:
