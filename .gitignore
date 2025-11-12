@@ -52,6 +52,9 @@ secrets/
 *.sublime-project
 *.sublime-workspace
 
+# Claude Code
+.claude/settings.local.json
+
 # Testing
 .pytest_cache/
 .coverage
@@ -102,6 +105,23 @@ desktop.ini
 # Project Specific
 # Uncomment if you don't want to track sample docs
 # sample_docs/
+
+# Input files (HTML test files, prompts)
+_input/
+
+# Meta backups and test reports
+_meta/.backups/
+_meta/reports/
+_meta/testing-reports/
+_meta/*-validation.json
+_meta/*-conflicts.json
+
+# Test files
+test-single-file.json
+nul
+
+# Pip install artifacts (Windows)
+=*
 
 # Documentation builds
 docs/_build/
