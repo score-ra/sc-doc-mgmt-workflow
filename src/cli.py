@@ -9,7 +9,7 @@ import sys
 import json
 import click
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from src.utils.config import Config
 from src.utils.logger import Logger
