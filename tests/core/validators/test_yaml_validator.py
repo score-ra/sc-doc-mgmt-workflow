@@ -7,7 +7,7 @@ from pathlib import Path
 from src.core.validators.yaml_validator import (
     YAMLValidator,
     ValidationIssue,
-    ValidationSeverity
+    ValidationSeverity,
 )
 from src.utils.config import Config
 from src.utils.logger import Logger
@@ -91,10 +91,10 @@ performance:
     def test_validator_initialization(self, validator):
         """Test validator initializes correctly."""
         assert validator.enabled is True
-        assert 'title' in validator.required_fields
-        assert 'tags' in validator.required_fields
-        assert 'status' in validator.required_fields
-        assert 'draft' in validator.allowed_statuses
+        assert "title" in validator.required_fields
+        assert "tags" in validator.required_fields
+        assert "status" in validator.required_fields
+        assert "draft" in validator.allowed_statuses
 
     def test_validate_complete_valid_document(self, validator, fixtures_dir):
         """Test validation passes for document with all required fields."""
@@ -149,7 +149,10 @@ performance:
         assert len(issues) == 1
         assert issues[0].rule_id == "YAML-003"
         assert issues[0].severity == ValidationSeverity.ERROR
-        assert "invalid" in issues[0].message.lower() or "status" in issues[0].message.lower()
+        assert (
+            "invalid" in issues[0].message.lower()
+            or "status" in issues[0].message.lower()
+        )
 
     def test_validate_tags_as_string(self, validator, fixtures_dir):
         """Test YAML-004: Tags must be a list, not a string."""
@@ -168,7 +171,10 @@ performance:
 
         assert len(issues) >= 1
         assert issues[0].rule_id == "YAML-001"
-        assert "malformed" in issues[0].message.lower() or "yaml" in issues[0].message.lower()
+        assert (
+            "malformed" in issues[0].message.lower()
+            or "yaml" in issues[0].message.lower()
+        )
 
     def test_validate_multiple_issues(self, validator, fixtures_dir):
         """Test document with multiple validation issues."""
@@ -185,13 +191,13 @@ performance:
 
     def test_validate_all_valid_statuses(self, validator, tmp_path):
         """Test that all allowed statuses are accepted."""
-        allowed_statuses = ['draft', 'review', 'approved', 'active', 'deprecated']
+        allowed_statuses = ["draft", "review", "approved", "active", "deprecated"]
 
         for status in allowed_statuses:
             test_file = tmp_path / f"test_{status}.md"
             test_file.write_text(
                 f"---\ntitle: Test\ntags: [test]\nstatus: {status}\n---\n# Content",
-                encoding='utf-8'
+                encoding="utf-8",
             )
 
             issues = validator.validate(test_file)
@@ -214,7 +220,7 @@ performance:
             message="Test message",
             file_path=Path("test.md"),
             line_number=5,
-            suggestion="Fix it"
+            suggestion="Fix it",
         )
 
         str_repr = str(issue)
@@ -248,19 +254,19 @@ performance:
                 rule_id="YAML-001",
                 severity=ValidationSeverity.ERROR,
                 message="Error 1",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
             ValidationIssue(
                 rule_id="YAML-002",
                 severity=ValidationSeverity.ERROR,
                 message="Error 2",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
             ValidationIssue(
                 rule_id="YAML-003",
                 severity=ValidationSeverity.WARNING,
                 message="Warning",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
         ]
 
@@ -274,19 +280,19 @@ performance:
                 rule_id="YAML-001",
                 severity=ValidationSeverity.ERROR,
                 message="Error",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
             ValidationIssue(
                 rule_id="YAML-002",
                 severity=ValidationSeverity.WARNING,
                 message="Warning 1",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
             ValidationIssue(
                 rule_id="YAML-003",
                 severity=ValidationSeverity.WARNING,
                 message="Warning 2",
-                file_path=Path("test.md")
+                file_path=Path("test.md"),
             ),
         ]
 
@@ -332,7 +338,7 @@ performance:
 
         # Create invalid document
         test_file = tmp_path / "test.md"
-        test_file.write_text("# No frontmatter", encoding='utf-8')
+        test_file.write_text("# No frontmatter", encoding="utf-8")
 
         # Should return empty list when disabled
         issues = validator.validate(test_file)
@@ -343,7 +349,7 @@ performance:
         test_file = tmp_path / "test.md"
         test_file.write_text(
             "---\ntitle: Test\ntags: [tag1, 123, tag2]\nstatus: draft\n---\n# Content",
-            encoding='utf-8'
+            encoding="utf-8",
         )
 
         issues = validator.validate(test_file)
@@ -358,7 +364,7 @@ performance:
         test_file = tmp_path / "test.md"
         test_file.write_text(
             "---\ntitle: Test\ntags: [test]\nstatus: 123\n---\n# Content",
-            encoding='utf-8'
+            encoding="utf-8",
         )
 
         issues = validator.validate(test_file)
@@ -376,3 +382,57 @@ performance:
         assert len(issues) >= 1
         assert issues[0].suggestion is not None
         assert len(issues[0].suggestion) > 0
+
+    def test_has_complete_frontmatter_with_frontmatter(self, validator, fixtures_dir):
+        """Test has_complete_frontmatter returns True for documents with frontmatter."""
+        test_file = fixtures_dir / "valid_complete.md"
+        result = validator.has_complete_frontmatter(test_file)
+
+        assert result is True
+
+    def test_has_complete_frontmatter_without_frontmatter(
+        self, validator, fixtures_dir
+    ):
+        """Test has_complete_frontmatter returns False for docs without frontmatter."""
+        test_file = fixtures_dir / "missing_frontmatter.md"
+        result = validator.has_complete_frontmatter(test_file)
+
+        assert result is False
+
+    def test_has_complete_frontmatter_nonexistent_file(
+        self, validator, tmp_path
+    ):
+        """Test has_complete_frontmatter returns False for non-existent files."""
+        test_file = tmp_path / "nonexistent.md"
+        result = validator.has_complete_frontmatter(test_file)
+
+        assert result is False
+
+    def test_has_complete_frontmatter_malformed_yaml(
+        self, validator, fixtures_dir
+    ):
+        """Test has_complete_frontmatter with malformed YAML."""
+        test_file = fixtures_dir / "malformed_yaml.md"
+        # Malformed YAML still has a frontmatter block, so this should be True
+        result = validator.has_complete_frontmatter(test_file)
+
+        # This tests that we're checking for PRESENCE, not validity
+        assert result is True
+
+    def test_has_complete_frontmatter_batch_check(
+        self, validator, fixtures_dir, tmp_path
+    ):
+        """Test has_complete_frontmatter on multiple documents."""
+        # Create documents with and without frontmatter
+        doc_with_fm = tmp_path / "with_fm.md"
+        doc_with_fm.write_text(
+            "---\ntitle: Test\ntags: [test]\nstatus: draft\n---\n# Content",
+            encoding="utf-8",
+        )
+
+        doc_without_fm = tmp_path / "without_fm.md"
+        doc_without_fm.write_text("# Just content, no frontmatter", encoding="utf-8")
+
+        # Test both
+        assert validator.has_complete_frontmatter(doc_with_fm) is True
+        assert validator.has_complete_frontmatter(doc_without_fm) is False

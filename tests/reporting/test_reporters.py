@@ -2,7 +2,6 @@
 Tests for console, markdown, and JSON reporters.
 """
 
-import pytest
 import json
 from pathlib import Path
 from dataclasses import dataclass
@@ -16,6 +15,7 @@ from src.reporting.json_reporter import JSONReporter
 @dataclass
 class MockIssue:
     """Mock validation issue for testing."""
+
     file_path: Path
     rule_id: str
     severity: str
@@ -50,7 +50,7 @@ class TestConsoleReporter:
             passed_documents=10,
             failed_documents=0,
             total_errors=0,
-            total_warnings=0
+            total_warnings=0,
         )
         report = reporter.generate(data)
 
@@ -68,7 +68,7 @@ class TestConsoleReporter:
             rule_id="TEST-001",
             severity="error",
             message="Test error message",
-            suggestion="Fix this"
+            suggestion="Fix this",
         )
 
         data = ReportData(
@@ -79,7 +79,7 @@ class TestConsoleReporter:
             total_warnings=0,
             issues_by_file={"test.md": [issue]},
             all_issues=[issue],
-            rule_counts={"TEST-001": 1}
+            rule_counts={"TEST-001": 1},
         )
 
         report = reporter.generate(data)
@@ -90,6 +90,40 @@ class TestConsoleReporter:
         assert "TEST-001" in report
         assert "Test error message" in report
         assert "Fix this" in report
+
+    def test_console_reporter_missing_frontmatter(self):
+        """Test console reporter displays missing frontmatter count (PB-003)."""
+        reporter = ConsoleReporter()
+
+        data = ReportData(
+            total_documents=10,
+            passed_documents=7,
+            failed_documents=3,
+            total_errors=3,
+            total_warnings=0,
+            missing_frontmatter_count=3,
+        )
+
+        report = reporter.generate(data)
+
+        assert "Documents Missing Frontmatter: 3" in report
+
+    def test_console_reporter_no_missing_frontmatter(self):
+        """Test console reporter doesn't show missing frontmatter when count is 0."""
+        reporter = ConsoleReporter()
+
+        data = ReportData(
+            total_documents=10,
+            passed_documents=10,
+            failed_documents=0,
+            total_errors=0,
+            total_warnings=0,
+            missing_frontmatter_count=0,
+        )
+
+        report = reporter.generate(data)
+
+        assert "Documents Missing Frontmatter" not in report
 
 
 class TestMarkdownReporter:
@@ -115,7 +149,7 @@ class TestMarkdownReporter:
             passed_documents=8,
             failed_documents=2,
             total_errors=2,
-            total_warnings=1
+            total_warnings=1,
         )
 
         report = reporter.generate(data)
@@ -134,7 +168,7 @@ class TestMarkdownReporter:
             rule_id="MD-001",
             severity="warning",
             message="Markdown issue",
-            suggestion="Fix markdown"
+            suggestion="Fix markdown",
         )
 
         data = ReportData(
@@ -145,7 +179,7 @@ class TestMarkdownReporter:
             total_warnings=1,
             issues_by_file={"doc.md": [issue]},
             all_issues=[issue],
-            rule_counts={"MD-001": 1}
+            rule_counts={"MD-001": 1},
         )
 
         report = reporter.generate(data)
@@ -165,11 +199,45 @@ class TestMarkdownReporter:
             failed_documents=0,
             total_errors=0,
             total_warnings=0,
-            timestamp="2025-11-09T10:00:00"
+            timestamp="2025-11-09T10:00:00",
         )
 
         report = reporter.generate(data)
         assert "**Date**: 2025-11-09T10:00:00" in report
+
+    def test_markdown_reporter_missing_frontmatter(self):
+        """Test markdown reporter displays missing frontmatter count (PB-003)."""
+        reporter = MarkdownReporter(include_timestamp=False)
+
+        data = ReportData(
+            total_documents=15,
+            passed_documents=10,
+            failed_documents=5,
+            total_errors=5,
+            total_warnings=2,
+            missing_frontmatter_count=5,
+        )
+
+        report = reporter.generate(data)
+
+        assert "- **Documents Missing Frontmatter**: 5" in report
+
+    def test_markdown_reporter_no_missing_frontmatter(self):
+        """Test markdown reporter doesn't show missing frontmatter when count is 0."""
+        reporter = MarkdownReporter(include_timestamp=False)
+
+        data = ReportData(
+            total_documents=10,
+            passed_documents=10,
+            failed_documents=0,
+            total_errors=0,
+            total_warnings=0,
+            missing_frontmatter_count=0,
+        )
+
+        report = reporter.generate(data)
+
+        assert "Documents Missing Frontmatter" not in report
 
 
 class TestJSONReporter:
@@ -196,17 +264,17 @@ class TestJSONReporter:
             passed_documents=18,
             failed_documents=2,
             total_errors=2,
-            total_warnings=0
+            total_warnings=0,
         )
 
         report = reporter.generate(data)
         report_dict = json.loads(report)
 
-        assert report_dict['summary']['total'] == 20
-        assert report_dict['summary']['passed'] == 18
-        assert report_dict['summary']['failed'] == 2
-        assert report_dict['summary']['pass_rate'] == 90.0
-        assert report_dict['summary']['errors'] == 2
+        assert report_dict["summary"]["total"] == 20
+        assert report_dict["summary"]["passed"] == 18
+        assert report_dict["summary"]["failed"] == 2
+        assert report_dict["summary"]["pass_rate"] == 90.0
+        assert report_dict["summary"]["errors"] == 2
 
     def test_generate_json_with_violations(self):
         """Test generating JSON report with violations."""
@@ -218,7 +286,7 @@ class TestJSONReporter:
             severity="error",
             message="Missing frontmatter",
             suggestion="Add YAML frontmatter",
-            line_number=1
+            line_number=1,
         )
 
         data = ReportData(
@@ -228,17 +296,17 @@ class TestJSONReporter:
             total_errors=1,
             total_warnings=0,
             all_issues=[issue],
-            rule_counts={"YAML-001": 1}
+            rule_counts={"YAML-001": 1},
         )
 
         report = reporter.generate(data)
         report_dict = json.loads(report)
 
-        assert 'violations' in report_dict
-        assert len(report_dict['violations']) == 1
-        assert report_dict['violations'][0]['rule_id'] == "YAML-001"
-        assert report_dict['violations'][0]['severity'] == "error"
-        assert report_dict['violations'][0]['line'] == 1
+        assert "violations" in report_dict
+        assert len(report_dict["violations"]) == 1
+        assert report_dict["violations"][0]["rule_id"] == "YAML-001"
+        assert report_dict["violations"][0]["severity"] == "error"
+        assert report_dict["violations"][0]["line"] == 1
 
     def test_json_includes_timestamp(self):
         """Test that JSON includes timestamp when enabled."""
@@ -250,14 +318,14 @@ class TestJSONReporter:
             failed_documents=0,
             total_errors=0,
             total_warnings=0,
-            timestamp="2025-11-09T10:00:00"
+            timestamp="2025-11-09T10:00:00",
         )
 
         report = reporter.generate(data)
         report_dict = json.loads(report)
 
-        assert 'timestamp' in report_dict
-        assert report_dict['timestamp'] == "2025-11-09T10:00:00"
+        assert "timestamp" in report_dict
+        assert report_dict["timestamp"] == "2025-11-09T10:00:00"
 
     def test_json_valid_structure(self):
         """Test that generated JSON has valid structure."""
@@ -268,7 +336,7 @@ class TestJSONReporter:
             passed_documents=1,
             failed_documents=0,
             total_errors=0,
-            total_warnings=0
+            total_warnings=0,
         )
 
         report = reporter.generate(data)
@@ -277,9 +345,48 @@ class TestJSONReporter:
         report_dict = json.loads(report)
 
         # Check required fields exist
-        assert 'summary' in report_dict
-        assert 'violations' in report_dict
-        assert 'scan_mode' in report_dict
+        assert "summary" in report_dict
+        assert "violations" in report_dict
+        assert "scan_mode" in report_dict
+
+    def test_json_reporter_missing_frontmatter(self):
+        """Test JSON reporter includes missing frontmatter count (PB-003)."""
+        reporter = JSONReporter(include_timestamp=False)
+
+        data = ReportData(
+            total_documents=20,
+            passed_documents=15,
+            failed_documents=5,
+            total_errors=5,
+            total_warnings=0,
+            missing_frontmatter_count=5,
+        )
+
+        report = reporter.generate(data)
+        report_dict = json.loads(report)
+
+        assert "summary" in report_dict
+        assert "missing_frontmatter" in report_dict["summary"]
+        assert report_dict["summary"]["missing_frontmatter"] == 5
+
+    def test_json_reporter_zero_missing_frontmatter(self):
+        """Test JSON reporter includes missing_frontmatter even when 0."""
+        reporter = JSONReporter(include_timestamp=False)
+
+        data = ReportData(
+            total_documents=10,
+            passed_documents=10,
+            failed_documents=0,
+            total_errors=0,
+            total_warnings=0,
+            missing_frontmatter_count=0,
+        )
+
+        report = reporter.generate(data)
+        report_dict = json.loads(report)
+
+        assert "missing_frontmatter" in report_dict["summary"]
+        assert report_dict["summary"]["missing_frontmatter"] == 0
 
 
 class TestReporterIntegration:
@@ -292,7 +399,7 @@ class TestReporterIntegration:
             passed_documents=7,
             failed_documents=3,
             total_errors=3,
-            total_warnings=2
+            total_warnings=2,
         )
 
         console_reporter = ConsoleReporter()
@@ -307,7 +414,7 @@ class TestReporterIntegration:
         assert "- **Passed**: 7 (70.0%)" in markdown_report
 
         json_dict = json.loads(json_report)
-        assert json_dict['summary']['total'] == 10
+        assert json_dict["summary"]["total"] == 10
 
     def test_save_functionality(self, tmp_path):
         """Test that all reporters can save to files."""
@@ -316,13 +423,13 @@ class TestReporterIntegration:
             passed_documents=5,
             failed_documents=0,
             total_errors=0,
-            total_warnings=0
+            total_warnings=0,
         )
 
         reporters = [
             (ConsoleReporter(), "console.txt"),
             (MarkdownReporter(), "report.md"),
-            (JSONReporter(), "report.json")
+            (JSONReporter(), "report.json"),
         ]
 
         for reporter, filename in reporters:

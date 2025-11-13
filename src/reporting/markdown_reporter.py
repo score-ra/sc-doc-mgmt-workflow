@@ -61,6 +61,13 @@ class MarkdownReporter(BaseReporter):
         lines.append(f"- **Failed**: {data.failed_documents} ({data.fail_rate:.1f}%)")
         lines.append(f"- **Total Errors**: {data.total_errors}")
         lines.append(f"- **Total Warnings**: {data.total_warnings}")
+
+        # Frontmatter completeness (PB-003)
+        if data.missing_frontmatter_count > 0:
+            lines.append(
+                f"- **Documents Missing Frontmatter**: {data.missing_frontmatter_count}"
+            )
+
         lines.append("")
 
         # Violations by rule
@@ -94,7 +101,7 @@ class MarkdownReporter(BaseReporter):
 
                 lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class ConflictMarkdownReporter(BaseReporter):
@@ -145,17 +152,17 @@ class ConflictMarkdownReporter(BaseReporter):
         # Group conflicts by type
         conflicts_by_type = {}
         for conflict in data.all_issues:
-            conflict_type = getattr(conflict, 'conflict_type', 'unknown')
+            conflict_type = getattr(conflict, "conflict_type", "unknown")
             if conflict_type not in conflicts_by_type:
                 conflicts_by_type[conflict_type] = []
             conflicts_by_type[conflict_type].append(conflict)
 
         # Display conflicts by type
         type_labels = {
-            'status': 'Status Conflicts',
-            'tag_synonym': 'Tag Synonym Conflicts',
-            'pricing': 'Pricing Conflicts',
-            'cross_reference': 'Cross-Reference Conflicts'
+            "status": "Status Conflicts",
+            "tag_synonym": "Tag Synonym Conflicts",
+            "pricing": "Pricing Conflicts",
+            "cross_reference": "Cross-Reference Conflicts",
         }
 
         for conflict_type, conflicts in sorted(conflicts_by_type.items()):
@@ -166,15 +173,15 @@ class ConflictMarkdownReporter(BaseReporter):
             lines.append("")
 
             for conflict in conflicts:
-                rule_id = getattr(conflict, 'rule_id', 'UNKNOWN')
-                message = getattr(conflict, 'message', 'No message')
+                rule_id = getattr(conflict, "rule_id", "UNKNOWN")
+                message = getattr(conflict, "message", "No message")
                 lines.append(f"### [{rule_id}]")
                 lines.append("")
                 lines.append(message)
                 lines.append("")
 
-                if hasattr(conflict, 'suggestion') and conflict.suggestion:
+                if hasattr(conflict, "suggestion") and conflict.suggestion:
                     lines.append(f"**Suggestion**: {conflict.suggestion}")
                     lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)

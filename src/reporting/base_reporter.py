@@ -18,6 +18,7 @@ class ReportData:
     This data structure is passed to reporters to generate reports in
     various formats.
     """
+
     # Summary statistics
     total_documents: int
     passed_documents: int
@@ -33,6 +34,9 @@ class ReportData:
 
     # Violation counts by rule
     rule_counts: Dict[str, int] = field(default_factory=dict)
+
+    # Frontmatter completeness tracking (PB-003)
+    missing_frontmatter_count: int = 0
 
     # Additional metadata
     scan_path: Optional[Path] = None
@@ -86,7 +90,7 @@ class BaseReporter(ABC):
             output_path: Path to save the report
         """
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(report, encoding='utf-8')
+        output_path.write_text(report, encoding="utf-8")
 
     def _extract_severity(self, issue: Any) -> str:
         """
@@ -101,7 +105,7 @@ class BaseReporter(ABC):
             Severity as string (error, warning, info)
         """
         severity = issue.severity
-        if hasattr(severity, 'value'):
+        if hasattr(severity, "value"):
             return severity.value
         return str(severity)
 
@@ -117,4 +121,4 @@ class BaseReporter(ABC):
         Returns:
             Line number or None
         """
-        return getattr(issue, 'line', None) or getattr(issue, 'line_number', None)
+        return getattr(issue, "line", None) or getattr(issue, "line_number", None)

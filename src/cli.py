@@ -6,7 +6,6 @@ and generating reports.
 """
 
 import sys
-import json
 import click
 from pathlib import Path
 from typing import Optional
@@ -25,7 +24,7 @@ from src.reporting import (
     ConsoleReporter,
     MarkdownReporter,
     JSONReporter,
-    ConflictReporter
+    ConflictReporter,
 )
 
 
@@ -49,7 +48,7 @@ def cli(ctx):
     # Initialize configuration
     try:
         config = Config()
-        ctx.obj['config'] = config
+        ctx.obj["config"] = config
     except Exception as e:
         click.echo(f"Error loading configuration: {e}", err=True)
         sys.exit(1)
@@ -57,51 +56,40 @@ def cli(ctx):
 
 @cli.command()
 @click.option(
-    '--path',
+    "--path",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
-    help='Validate specific folder (default: current directory)'
+    help="Validate specific folder (default: current directory)",
 )
 @click.option(
-    '--file',
-    'files',
+    "--file",
+    "files",
     type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
     multiple=True,
-    help='Validate specific file(s) - can be specified multiple times'
+    help="Validate specific file(s) - can be specified multiple times",
 )
 @click.option(
-    '--tags',
-    help='Validate documents with specific tag (comma-separated for multiple)'
+    "--tags", help="Validate documents with specific tag (comma-separated for multiple)"
+)
+@click.option("--force", is_flag=True, help="Ignore cache and revalidate all documents")
+@click.option(
+    "--auto-fix", is_flag=True, help="Automatically fix issues where possible"
 )
 @click.option(
-    '--force',
+    "--preview",
     is_flag=True,
-    help='Ignore cache and revalidate all documents'
+    help="Preview auto-fixes without applying (requires --auto-fix)",
+)
+@click.option("--conflicts", is_flag=True, help="Run conflict detection only")
+@click.option(
+    "--format",
+    type=click.Choice(["console", "markdown", "json"], case_sensitive=False),
+    default="console",
+    help="Output format for reports (default: console)",
 )
 @click.option(
-    '--auto-fix',
-    is_flag=True,
-    help='Automatically fix issues where possible'
-)
-@click.option(
-    '--preview',
-    is_flag=True,
-    help='Preview auto-fixes without applying (requires --auto-fix)'
-)
-@click.option(
-    '--conflicts',
-    is_flag=True,
-    help='Run conflict detection only'
-)
-@click.option(
-    '--format',
-    type=click.Choice(['console', 'markdown', 'json'], case_sensitive=False),
-    default='console',
-    help='Output format for reports (default: console)'
-)
-@click.option(
-    '--output',
+    "--output",
     type=click.Path(path_type=Path),
-    help='Output file for report (default: stdout)'
+    help="Output file for report (default: stdout)",
 )
 @click.pass_context
 def validate(
@@ -114,7 +102,7 @@ def validate(
     preview: bool,
     conflicts: bool,
     format: str,
-    output: Optional[Path]
+    output: Optional[Path],
 ):
     """
     Validate markdown documents against naming, YAML, and markdown rules.
@@ -146,7 +134,7 @@ def validate(
         # Generate markdown report
         python main.py validate --format markdown --output report.md
     """
-    config = ctx.obj['config']
+    config = ctx.obj["config"]
 
     # Validate option combinations
     if preview and not auto_fix:
@@ -159,7 +147,7 @@ def validate(
 
     # Set default path to docs directory from config or current directory
     if path is None and not files:
-        path = Path(config.get('paths.docs_root', '.'))
+        path = Path(config.get("paths.docs_root", "."))
 
     click.echo("=" * 80)
     click.echo("SYMPHONY CORE - DOCUMENT VALIDATION")
@@ -169,7 +157,7 @@ def validate(
     # Parse tags if provided
     tag_list = None
     if tags:
-        tag_list = [t.strip() for t in tags.split(',')]
+        tag_list = [t.strip() for t in tags.split(",")]
         click.echo(f"Filtering by tags: {', '.join(tag_list)}")
 
     # Display mode
@@ -191,12 +179,12 @@ def validate(
 
     try:
         # Initialize logger
-        log_file = Path(config.get('paths.logs_dir', 'logs')) / 'validation.log'
+        log_file = Path(config.get("paths.logs_dir", "logs")) / "validation.log"
         logger = Logger(
             name="symphony_core.cli",
             log_file=log_file,
-            log_level=config.get('logging.level', 'INFO'),
-            console_output=False  # Disable to avoid interference with CLI output
+            log_level=config.get("logging.level", "INFO"),
+            console_output=False,  # Disable to avoid interference with CLI output
         )
 
         # Initialize validators
@@ -213,7 +201,7 @@ def validate(
             documents = [Path(f) for f in files]
             # Validate that all files are markdown
             for doc in documents:
-                if doc.suffix.lower() != '.md':
+                if doc.suffix.lower() != ".md":
                     click.echo(f"Error: {doc} is not a markdown file (.md)", err=True)
                     sys.exit(1)
         elif conflicts or force:
@@ -221,12 +209,13 @@ def validate(
             documents = _find_all_documents(path, tag_list)
         else:
             # Incremental validation uses change detection
-            cache_file = Path(config.get('paths.cache_file', '_meta/.document-cache.json'))
+            cache_file = Path(
+                config.get("paths.cache_file", "_meta/.document-cache.json")
+            )
             cache = DocumentCache(cache_file)
             change_detector = ChangeDetector(cache, logger)
             documents, change_summary = change_detector.get_files_to_process(
-                path,
-                force_reprocess=False
+                path, force_reprocess=False
             )
 
         click.echo(f"Documents to process: {len(documents)}")
@@ -238,20 +227,9 @@ def validate(
 
         # Run validation based on mode
         if conflicts:
-            _run_conflict_detection(
-                conflict_detector,
-                documents,
-                format,
-                output
-            )
+            _run_conflict_detection(conflict_detector, documents, format, output)
         elif auto_fix:
-            _run_auto_fix(
-                yaml_validator,
-                documents,
-                preview,
-                format,
-                output
-            )
+            _run_auto_fix(yaml_validator, documents, preview, format, output)
         else:
             _run_validation(
                 yaml_validator,
@@ -260,13 +238,14 @@ def validate(
                 documents,
                 format,
                 output,
-                change_detector
+                change_detector,
             )
 
     except Exception as e:
         click.echo(f"Error during validation: {e}", err=True)
-        if config.get('debug', False):
+        if config.get("debug", False):
             import traceback
+
             traceback.print_exc()
         sys.exit(1)
 
@@ -285,13 +264,13 @@ def _find_all_documents(base_path: Path, tags: Optional[list] = None) -> list:
     documents = []
 
     # Recursively find all .md files
-    for md_file in base_path.rglob('*.md'):
+    for md_file in base_path.rglob("*.md"):
         # Skip hidden directories and files
-        if any(part.startswith('.') for part in md_file.parts):
+        if any(part.startswith(".") for part in md_file.parts):
             continue
 
         # Skip _meta directory
-        if '_meta' in md_file.parts:
+        if "_meta" in md_file.parts:
             continue
 
         # If tags filter provided, check document tags
@@ -312,16 +291,14 @@ def _run_validation(
     documents: list,
     format: str,
     output: Optional[Path],
-    change_detector = None
+    change_detector=None,
 ):
     """Run full validation on documents."""
     all_issues = []
     issues_by_doc = {}  # Track issues per document for cache updates
 
     with click.progressbar(
-        documents,
-        label='Validating documents',
-        show_pos=True
+        documents, label="Validating documents", show_pos=True
     ) as bar:
         for doc in bar:
             doc_issues = []
@@ -345,14 +322,18 @@ def _run_validation(
 
             # Update cache if using incremental mode
             if change_detector:
-                error_count = sum(1 for issue in doc_issues if issue.severity == 'error')
-                warning_count = sum(1 for issue in doc_issues if issue.severity == 'warning')
-                validation_status = 'passed' if error_count == 0 else 'failed'
+                error_count = sum(
+                    1 for issue in doc_issues if issue.severity == "error"
+                )
+                warning_count = sum(
+                    1 for issue in doc_issues if issue.severity == "warning"
+                )
+                validation_status = "passed" if error_count == 0 else "failed"
                 change_detector.update_cache_for_file(
                     doc,
                     validation_status=validation_status,
                     error_count=error_count,
-                    warning_count=warning_count
+                    warning_count=warning_count,
                 )
 
     # Save cache if using incremental mode
@@ -362,10 +343,10 @@ def _run_validation(
     click.echo()
 
     # Generate report
-    _generate_validation_report(all_issues, documents, format, output)
+    _generate_validation_report(all_issues, documents, yaml_validator, format, output)
 
     # Exit with appropriate code
-    error_count = sum(1 for issue in all_issues if issue.severity == 'error')
+    error_count = sum(1 for issue in all_issues if issue.severity == "error")
     if error_count > 0:
         sys.exit(1)
     else:
@@ -373,10 +354,7 @@ def _run_validation(
 
 
 def _run_conflict_detection(
-    conflict_detector,
-    documents: list,
-    format: str,
-    output: Optional[Path]
+    conflict_detector, documents: list, format: str, output: Optional[Path]
 ):
     """Run conflict detection on documents."""
     click.echo("Running conflict detection...")
@@ -391,16 +369,16 @@ def _run_conflict_detection(
     conflict_data = reporter.analyze_conflicts(conflicts)
 
     # Generate report based on format
-    if format == 'json':
+    if format == "json":
         report = reporter.generate_json_report(conflict_data)
-    elif format == 'markdown':
+    elif format == "markdown":
         report = reporter.generate_markdown_report(conflict_data)
     else:  # console (default)
         report = reporter.generate_console_report(conflict_data)
 
     # Output report
     if output:
-        output.write_text(report, encoding='utf-8')
+        output.write_text(report, encoding="utf-8")
         click.echo(f"Report saved to: {output}")
     else:
         click.echo(report)
@@ -414,31 +392,25 @@ def _run_conflict_detection(
 
 
 def _run_auto_fix(
-    yaml_validator,
-    documents: list,
-    preview: bool,
-    format: str,
-    output: Optional[Path]
+    yaml_validator, documents: list, preview: bool, format: str, output: Optional[Path]
 ):
     """Run auto-fix on documents."""
     from src.utils.config import Config
 
     config = Config()
-    log_file = Path(config.get('paths.logs_dir', 'logs')) / 'autofix.log'
+    log_file = Path(config.get("paths.logs_dir", "logs")) / "autofix.log"
     logger = Logger(
         name="symphony_core.autofix",
         log_file=log_file,
-        log_level=config.get('logging.level', 'INFO'),
-        console_output=False
+        log_level=config.get("logging.level", "INFO"),
+        console_output=False,
     )
     auto_fixer = AutoFixer(config, logger)
 
     results = []
 
     with click.progressbar(
-        documents,
-        label='Auto-fixing documents',
-        show_pos=True
+        documents, label="Auto-fixing documents", show_pos=True
     ) as bar:
         for doc in bar:
             # Validate first to find issues
@@ -460,10 +432,7 @@ def _run_auto_fix(
 
 
 def _generate_validation_report(
-    issues: list,
-    documents: list,
-    format: str,
-    output: Optional[Path]
+    issues: list, documents: list, yaml_validator, format: str, output: Optional[Path]
 ):
     """Generate validation report in specified format using reporter classes."""
     # Group issues by file
@@ -480,12 +449,18 @@ def _generate_validation_report(
     passed_docs = total_docs - failed_docs
 
     # Handle both string and Enum severity
-    total_errors = sum(1 for i in issues
-                      if (hasattr(i.severity, 'value') and i.severity.value == 'error')
-                      or str(i.severity) == 'error')
-    total_warnings = sum(1 for i in issues
-                        if (hasattr(i.severity, 'value') and i.severity.value == 'warning')
-                        or str(i.severity) == 'warning')
+    total_errors = sum(
+        1
+        for i in issues
+        if (hasattr(i.severity, "value") and i.severity.value == "error")
+        or str(i.severity) == "error"
+    )
+    total_warnings = sum(
+        1
+        for i in issues
+        if (hasattr(i.severity, "value") and i.severity.value == "warning")
+        or str(i.severity) == "warning"
+    )
 
     # Calculate rule counts
     rule_counts = {}
@@ -494,6 +469,11 @@ def _generate_validation_report(
         if rule_id not in rule_counts:
             rule_counts[rule_id] = 0
         rule_counts[rule_id] += 1
+
+    # Count documents missing frontmatter (PB-003)
+    missing_frontmatter_count = sum(
+        1 for doc in documents if not yaml_validator.has_complete_frontmatter(doc)
+    )
 
     # Create report data
     report_data = ReportData(
@@ -505,16 +485,17 @@ def _generate_validation_report(
         issues_by_file=issues_by_file,
         all_issues=issues,
         rule_counts=rule_counts,
-        scan_mode="validation"
+        missing_frontmatter_count=missing_frontmatter_count,
+        scan_mode="validation",
     )
 
     # Select and use appropriate reporter
-    if format == 'console':
+    if format == "console":
         reporter = ConsoleReporter()
         report = reporter.generate(report_data)
         click.echo(report)
 
-    elif format == 'json':
+    elif format == "json":
         reporter = JSONReporter()
         report = reporter.generate(report_data)
         if output:
@@ -523,7 +504,7 @@ def _generate_validation_report(
         else:
             click.echo(report)
 
-    elif format == 'markdown':
+    elif format == "markdown":
         reporter = MarkdownReporter()
         report = reporter.generate(report_data)
         if output:
@@ -534,13 +515,10 @@ def _generate_validation_report(
 
 
 def _generate_autofix_report(
-    results: list,
-    preview: bool,
-    format: str,
-    output: Optional[Path]
+    results: list, preview: bool, format: str, output: Optional[Path]
 ):
     """Generate auto-fix report."""
-    if format == 'console':
+    if format == "console":
         click.echo("=" * 80)
         click.echo(f"AUTO-FIX REPORT ({'PREVIEW' if preview else 'APPLIED'})")
         click.echo("=" * 80)
@@ -558,34 +536,34 @@ def _generate_autofix_report(
 
 @cli.command()
 @click.option(
-    '--source',
+    "--source",
     type=click.Path(exists=True),
     required=True,
-    help='Path to HTML file to extract content from'
+    help="Path to HTML file to extract content from",
 )
 @click.option(
-    '--output',
+    "--output",
     type=click.Path(),
-    default='_output',
-    help='Output directory for converted markdown (default: _output/)'
+    default="_output",
+    help="Output directory for converted markdown (default: _output/)",
 )
 @click.option(
-    '--title',
+    "--title",
     type=str,
     default=None,
-    help='Custom title (default: extracted from HTML)'
+    help="Custom title (default: extracted from HTML)",
 )
 @click.option(
-    '--tags',
+    "--tags",
     type=str,
     default=None,
-    help='Comma-separated tags (default: web-content,extracted)'
-)
+    help="Comma-separated tags (default: web-content,extracted)",
+)  # noqa: E501
 @click.option(
-    '--category',
+    "--category",
     type=str,
-    default='KB Article',
-    help='Document category (default: KB Article)'
+    default="KB Article",
+    help="Document category (default: KB Article)",
 )
 def extract_url(source, output, title, tags, category):
     """
@@ -606,7 +584,8 @@ def extract_url(source, output, title, tags, category):
 
         \b
         # With custom title and tags
-        python main.py extract-url --source page.html --title "SEO Guide" --tags "seo,marketing"
+        python main.py extract-url --source page.html --title "SEO Guide" \\
+            --tags "seo,marketing"
     """
     from datetime import datetime
     from src.core.extractors.html_extractor import HTMLExtractor
@@ -627,46 +606,47 @@ def extract_url(source, output, title, tags, category):
         extractor = HTMLExtractor(logger)
         content_data = extractor.extract_main_content(source_path)
 
-        extracted_title = content_data['title']
+        extracted_title = content_data["title"]
         click.echo(f"      Title: {extracted_title}")
 
         # Convert to markdown
         click.echo("[2/4] Converting to SC-compliant markdown...")
         converter = MarkdownConverter()
-        markdown_content = converter.convert_to_markdown(content_data['html_content'])
+        markdown_content = converter.convert_to_markdown(content_data["html_content"])
 
         # Generate frontmatter
         click.echo("[3/4] Generating YAML frontmatter...")
         fm_generator = FrontmatterGenerator()
         title_to_use = title or extracted_title
-        tags_list = tags.split(',') if tags else ['web-content', 'extracted']
+        tags_list = tags.split(",") if tags else ["web-content", "extracted"]
         tags_list = [tag.strip() for tag in tags_list]  # Clean whitespace
 
         frontmatter = fm_generator.generate(
             title=title_to_use,
             tags=tags_list,
             category=category,
-            source_url=content_data['metadata'].get('url')
+            source_url=content_data["metadata"].get("url"),
         )
 
         # Create output directory
-        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
-        output_dir = Path(output) / f"extracted-{timestamp}"
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        output_dir = Path(output) / f"extracted-{timestamp}"  # noqa: F541
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Generate filename from title (lowercase-with-hyphens)
         import re
-        filename = title_to_use.lower().replace(' ', '-')
-        filename = re.sub(r'[^a-z0-9-]', '', filename)[:50]
+
+        filename = title_to_use.lower().replace(" ", "-")
+        filename = re.sub(r"[^a-z0-9-]", "", filename)[:50]
         if not filename:  # Fallback if title becomes empty after cleaning
-            filename = 'extracted-document'
-        filename = filename + '.md'
+            filename = "extracted-document"
+        filename = filename + ".md"
 
         output_file = output_dir / filename
 
         # Write markdown file
         click.echo(f"[4/4] Writing to file: {filename}")
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(frontmatter)
             f.write("\n")
             f.write(markdown_content)
@@ -681,8 +661,8 @@ def extract_url(source, output, title, tags, category):
         click.echo(f"Title: {title_to_use}")
         click.echo(f"Tags: {', '.join(tags_list)}")
         click.echo(f"Category: {category}")
-        click.echo(f"Status: draft")
-        click.echo(f"{'='*60}\n")
+        click.echo("Status: draft")
+        click.echo("=" * 60 + "\n")
 
         sys.exit(0)
 
@@ -696,5 +676,5 @@ def extract_url(source, output, title, tags, category):
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli(obj={})

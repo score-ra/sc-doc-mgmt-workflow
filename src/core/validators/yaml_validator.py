@@ -17,6 +17,7 @@ from src.utils.frontmatter import parse_frontmatter, has_frontmatter, Frontmatte
 
 class ValidationSeverity(Enum):
     """Severity levels for validation issues."""
+
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"
@@ -35,6 +36,7 @@ class ValidationIssue:
         line_number: Optional line number where issue occurs
         suggestion: Optional suggestion for fixing the issue
     """
+
     rule_id: str
     severity: ValidationSeverity
     message: str
@@ -79,14 +81,13 @@ class YAMLValidator:
         self.logger = logger
 
         # Load validation settings from config
-        self.enabled = config.get('validation.yaml.enabled', True)
+        self.enabled = config.get("validation.yaml.enabled", True)
         self.required_fields = config.get(
-            'validation.yaml.required_fields',
-            ['title', 'tags', 'status']
+            "validation.yaml.required_fields", ["title", "tags", "status"]
         )
         self.allowed_statuses = config.get(
-            'validation.yaml.allowed_statuses',
-            ['draft', 'review', 'approved', 'active', 'deprecated']
+            "validation.yaml.allowed_statuses",
+            ["draft", "review", "approved", "active", "deprecated"],
         )
 
     def validate(self, file_path: Path) -> List[ValidationIssue]:
@@ -104,12 +105,14 @@ class YAMLValidator:
             return []
 
         if not file_path.exists():
-            return [ValidationIssue(
-                rule_id="YAML-000",
-                severity=ValidationSeverity.ERROR,
-                message=f"File not found: {file_path}",
-                file_path=file_path
-            )]
+            return [
+                ValidationIssue(
+                    rule_id="YAML-000",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"File not found: {file_path}",
+                    file_path=file_path,
+                )
+            ]
 
         issues: List[ValidationIssue] = []
 
@@ -118,12 +121,14 @@ class YAMLValidator:
             has_yaml = has_frontmatter(file_path)
         except Exception as e:
             self.logger.error(f"Error checking frontmatter in {file_path}: {e}")
-            return [ValidationIssue(
-                rule_id="YAML-000",
-                severity=ValidationSeverity.ERROR,
-                message=f"Error reading file: {str(e)}",
-                file_path=file_path
-            )]
+            return [
+                ValidationIssue(
+                    rule_id="YAML-000",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Error reading file: {str(e)}",
+                    file_path=file_path,
+                )
+            ]
 
         if not has_yaml:
             issues.append(self._create_missing_frontmatter_issue(file_path))
@@ -134,13 +139,15 @@ class YAMLValidator:
         try:
             metadata = parse_frontmatter(file_path)
         except FrontmatterError as e:
-            issues.append(ValidationIssue(
-                rule_id="YAML-001",
-                severity=ValidationSeverity.ERROR,
-                message=f"Malformed YAML frontmatter: {str(e)}",
-                file_path=file_path,
-                suggestion="Fix YAML syntax errors in frontmatter"
-            ))
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-001",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Malformed YAML frontmatter: {str(e)}",
+                    file_path=file_path,
+                    suggestion="Fix YAML syntax errors in frontmatter",
+                )
+            )
             # Can't validate further if YAML is malformed
             return issues
 
@@ -148,11 +155,11 @@ class YAMLValidator:
         issues.extend(self._validate_required_fields(file_path, metadata))
 
         # YAML-003: Validate status field value (if present)
-        if 'status' in metadata:
+        if "status" in metadata:
             issues.extend(self._validate_status(file_path, metadata))
 
         # YAML-004: Validate tags field is a list (if present)
-        if 'tags' in metadata:
+        if "tags" in metadata:
             issues.extend(self._validate_tags_format(file_path, metadata))
 
         return issues
@@ -169,16 +176,14 @@ class YAMLValidator:
                 "Add YAML frontmatter at the start of the file:\n"
                 "---\n"
                 "title: Your Document Title\n"
-                f"tags: [tag1, tag2]\n"
+                "tags: [tag1, tag2]\n"
                 "status: draft\n"
                 "---"
-            )
+            ),
         )
 
     def _validate_required_fields(
-        self,
-        file_path: Path,
-        metadata: Dict[str, Any]
+        self, file_path: Path, metadata: Dict[str, Any]
     ) -> List[ValidationIssue]:
         """
         Validate that all required fields are present.
@@ -194,20 +199,23 @@ class YAMLValidator:
 
         if missing_fields:
             field_list = ", ".join(missing_fields)
-            issues.append(ValidationIssue(
-                rule_id="YAML-002",
-                severity=ValidationSeverity.ERROR,
-                message=f"Missing required field(s): {field_list}",
-                file_path=file_path,
-                suggestion=f"Add the following field(s) to frontmatter: {field_list}"
-            ))
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-002",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Missing required field(s): {field_list}",
+                    file_path=file_path,
+                    suggestion=(
+                        f"Add the following field(s) to "
+                        f"frontmatter: {field_list}"
+                    ),
+                )
+            )
 
         return issues
 
     def _validate_status(
-        self,
-        file_path: Path,
-        metadata: Dict[str, Any]
+        self, file_path: Path, metadata: Dict[str, Any]
     ) -> List[ValidationIssue]:
         """
         Validate status field value is in allowed list.
@@ -215,35 +223,43 @@ class YAMLValidator:
         Implements YAML-003: Status value validation.
         """
         issues: List[ValidationIssue] = []
-        status = metadata.get('status')
+        status = metadata.get("status")
 
         # Check if status is a string
         if not isinstance(status, str):
-            issues.append(ValidationIssue(
-                rule_id="YAML-003",
-                severity=ValidationSeverity.ERROR,
-                message=f"Status must be a string, got {type(status).__name__}",
-                file_path=file_path,
-                suggestion=f"Change status to one of: {', '.join(self.allowed_statuses)}"
-            ))
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-003",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Status must be a string, got {type(status).__name__}",
+                    file_path=file_path,
+                    suggestion=(
+                        "Change status to one of: "
+                        f"{', '.join(self.allowed_statuses)}"
+                    ),
+                )
+            )
             return issues
 
         # Check if status is in allowed list
         if status not in self.allowed_statuses:
-            issues.append(ValidationIssue(
-                rule_id="YAML-003",
-                severity=ValidationSeverity.ERROR,
-                message=f"Invalid status value: '{status}'",
-                file_path=file_path,
-                suggestion=f"Use one of the allowed values: {', '.join(self.allowed_statuses)}"
-            ))
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-003",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Invalid status value: '{status}'",
+                    file_path=file_path,
+                    suggestion=(
+                        "Use one of the allowed values: "
+                        f"{', '.join(self.allowed_statuses)}"
+                    ),
+                )
+            )
 
         return issues
 
     def _validate_tags_format(
-        self,
-        file_path: Path,
-        metadata: Dict[str, Any]
+        self, file_path: Path, metadata: Dict[str, Any]
     ) -> List[ValidationIssue]:
         """
         Validate tags field is a list, not a string.
@@ -251,39 +267,69 @@ class YAMLValidator:
         Implements YAML-004: Tags format validation.
         """
         issues: List[ValidationIssue] = []
-        tags = metadata.get('tags')
+        tags = metadata.get("tags")
 
         # Check if tags is a list
         if not isinstance(tags, list):
-            issues.append(ValidationIssue(
-                rule_id="YAML-004",
-                severity=ValidationSeverity.ERROR,
-                message=f"Tags must be a list, got {type(tags).__name__}",
-                file_path=file_path,
-                suggestion=(
-                    "Change tags format from string to list. "
-                    "Example: tags: [pricing, policy] or tags:\n  - pricing\n  - policy"
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-004",
+                    severity=ValidationSeverity.ERROR,
+                    message=f"Tags must be a list, got {type(tags).__name__}",
+                    file_path=file_path,
+                    suggestion=(
+                        "Change tags format from string to list. "
+                        "Example: tags: [pricing, policy] or "
+                        "tags:\n  - pricing\n  - policy"
+                    ),
                 )
-            ))
+            )
             return issues
 
         # Additional validation: check that all tag items are strings
-        non_string_tags = [
-            tag for tag in tags if not isinstance(tag, str)
-        ]
+        non_string_tags = [tag for tag in tags if not isinstance(tag, str)]
 
         if non_string_tags:
-            issues.append(ValidationIssue(
-                rule_id="YAML-004",
-                severity=ValidationSeverity.WARNING,
-                message="All tags should be strings",
-                file_path=file_path,
-                suggestion="Ensure all items in the tags list are strings"
-            ))
+            issues.append(
+                ValidationIssue(
+                    rule_id="YAML-004",
+                    severity=ValidationSeverity.WARNING,
+                    message="All tags should be strings",
+                    file_path=file_path,
+                    suggestion="Ensure all items in the tags list are strings",
+                )
+            )
 
         return issues
 
-    def validate_batch(self, file_paths: List[Path]) -> Dict[Path, List[ValidationIssue]]:
+    def has_complete_frontmatter(self, file_path: Path) -> bool:
+        """
+        Check if a document has complete YAML frontmatter.
+
+        This method is used for frontmatter completeness tracking (PB-003).
+        Returns True if the document has a valid frontmatter block,
+        False if frontmatter is completely missing.
+
+        Args:
+            file_path: Path to the markdown file to check
+
+        Returns:
+            True if frontmatter block exists, False otherwise
+        """
+        if not file_path.exists():
+            return False
+
+        try:
+            return has_frontmatter(file_path)
+        except Exception as e:
+            self.logger.error(
+                f"Error checking frontmatter presence in {file_path}: {e}"
+            )
+            return False
+
+    def validate_batch(
+        self, file_paths: List[Path]
+    ) -> Dict[Path, List[ValidationIssue]]:
         """
         Validate multiple files and return results.
 
@@ -301,9 +347,7 @@ class YAMLValidator:
 
             if issues:
                 results[file_path] = issues
-                self.logger.info(
-                    f"Found {len(issues)} issue(s) in {file_path}"
-                )
+                self.logger.info(f"Found {len(issues)} issue(s) in {file_path}")
             else:
                 self.logger.debug(f"No issues found in {file_path}")
 
@@ -311,14 +355,10 @@ class YAMLValidator:
 
     def get_error_count(self, issues: List[ValidationIssue]) -> int:
         """Count number of errors in validation issues."""
-        return sum(
-            1 for issue in issues
-            if issue.severity == ValidationSeverity.ERROR
-        )
+        return sum(1 for issue in issues if issue.severity == ValidationSeverity.ERROR)
 
     def get_warning_count(self, issues: List[ValidationIssue]) -> int:
         """Count number of warnings in validation issues."""
         return sum(
-            1 for issue in issues
-            if issue.severity == ValidationSeverity.WARNING
+            1 for issue in issues if issue.severity == ValidationSeverity.WARNING
         )
