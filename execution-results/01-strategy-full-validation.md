@@ -1,0 +1,623 @@
+# Symphony Core Validation Report
+
+**Date**: 2025-11-13T10:43:56.454328
+
+**Mode**: validation
+**Documents**: 10 scanned
+
+## Summary
+
+- **Passed**: 2 (20.0%)
+- **Failed**: 8 (80.0%)
+- **Total Errors**: 0
+- **Total Warnings**: 5
+
+## Violations by Rule
+
+| Rule ID | Count |
+|---------|-------|
+| MD-001 | 1 |
+| MD-002 | 4 |
+| MD-004 | 283 |
+
+## Failed Documents
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\ct-marketing-agencies.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\in-progress.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\saas-platforms-referenced-in-business-plan.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\symphony-core-business-plan-draft-0.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\symphony-core-business-plan-draft-1.0.md
+
+- **[WARNING]** MD-001: Heading hierarchy skips level (H1 → H3): 'Profit and Loss Statement (With Monthly Detail)'
+  - Suggestion: Insert H2 heading before this H3 heading
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\business-plans\symphony-core-expense-tracker-guide.md
+
+- **[WARNING]** MD-002: Code block missing language specification
+  - Suggestion: Add language after opening fence: ```python, ```javascript, ```bash, etc.
+- **[WARNING]** MD-002: Code block missing language specification
+  - Suggestion: Add language after opening fence: ```python, ```javascript, ```bash, etc.
+- **[WARNING]** MD-002: Code block missing language specification
+  - Suggestion: Add language after opening fence: ```python, ```javascript, ```bash, etc.
+- **[WARNING]** MD-002: Code block missing language specification
+  - Suggestion: Add language after opening fence: ```python, ```javascript, ```bash, etc.
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\competitor-analysis\ueni_analysis.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
+
+### C:\Users\Rohit\workspace\Work\docs\symphonycore\symphony-core-documents\01-strategy\financial\symphony-core-financial-accounts.md
+
+- **[INFO]** MD-004: Line has trailing whitespace
+  - Suggestion: Remove trailing whitespace from end of line
