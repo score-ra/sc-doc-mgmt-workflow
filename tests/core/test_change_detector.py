@@ -65,7 +65,7 @@ class TestChangeDetector:
         files = detector.scan_directory(
             temp_dir,
             include_patterns=["**/*.md"],
-            exclude_patterns=["**/subdir/**"]
+            exclude_patterns=["**/subdir/*.md"]  # Fixed: match files in subdir, not just the directory
         )
 
         assert len(files) == 2

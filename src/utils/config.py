@@ -6,9 +6,11 @@ from YAML files with support for environment variable overrides.
 """
 
 import os
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import yaml
+from jsonschema import validate, ValidationError as JSONSchemaValidationError, SchemaError
 
 
 class ConfigurationError(Exception):
@@ -100,7 +102,131 @@ class Config:
 
     def _validate_config(self) -> None:
         """
-        Validate configuration structure and required fields.
+        Validate configuration structure and required fields using JSON Schema.
+
+        Raises:
+            ConfigurationError: If configuration is invalid
+        """
+        # Load JSON Schema
+        schema_path = self.config_path.parent / "config-schema.json"
+
+        if not schema_path.exists():
+            # Fallback to basic validation if schema not found
+            self._validate_config_basic()
+            return
+
+        try:
+            with open(schema_path, 'r', encoding='utf-8') as f:
+                schema = json.load(f)
+        except Exception as e:
+            raise ConfigurationError(
+                f"Failed to load configuration schema: {e}"
+            )
+
+        # Validate config against schema
+        try:
+            validate(instance=self.config_data, schema=schema)
+        except JSONSchemaValidationError as e:
+            # Create helpful error message
+            error_path = " → ".join(str(p) for p in e.path) if e.path else "root"
+            error_msg = self._format_validation_error(e, error_path)
+            raise ConfigurationError(error_msg)
+        except SchemaError as e:
+            raise ConfigurationError(
+                f"Configuration schema is invalid: {e}"
+            )
+
+    def _format_validation_error(self, error: JSONSchemaValidationError, path: str) -> str:
+        """
+        Format JSON Schema validation error into helpful message.
+
+        Args:
+            error: The validation error
+            path: Path to the invalid field
+
+        Returns:
+            Formatted error message with fix suggestions
+        """
+        message_parts = [
+            "Configuration Validation Error",
+            "",
+            f"Location: {path}",
+            f"Issue: {error.message}",
+            ""
+        ]
+
+        # Add specific guidance based on error type
+        if error.validator == "required":
+            missing_field = error.message.split("'")[1] if "'" in error.message else "unknown"
+            message_parts.extend([
+                "How to fix:",
+                f"  Add the required field '{missing_field}' to your config.yaml",
+                "",
+                "Example:",
+                f"  {missing_field}: <value>",
+            ])
+        elif error.validator == "type":
+            expected_type = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  The field must be of type: {expected_type}",
+                "",
+                "Example:",
+                f"  {path}: <{expected_type} value>",
+            ])
+        elif error.validator == "enum":
+            allowed_values = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  Use one of the allowed values: {', '.join(map(str, allowed_values))}",
+                "",
+                "Example:",
+                f"  {path}: {allowed_values[0]}",
+            ])
+        elif error.validator == "minimum":
+            min_value = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  Value must be at least: {min_value}",
+            ])
+        elif error.validator == "maximum":
+            max_value = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  Value must be at most: {max_value}",
+            ])
+        elif error.validator == "minItems":
+            min_items = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  Array must contain at least {min_items} item(s)",
+            ])
+        elif error.validator == "pattern":
+            pattern = error.validator_value
+            message_parts.extend([
+                "How to fix:",
+                f"  Value must match pattern: {pattern}",
+            ])
+        else:
+            message_parts.extend([
+                "How to fix:",
+                "  Review the configuration schema and correct the value",
+            ])
+
+        message_parts.extend([
+            "",
+            "Configuration file:",
+            f"  {self.config_path}",
+            "",
+            "Documentation:",
+            "  See config/config.yaml for examples",
+        ])
+
+        return "\n".join(message_parts)
+
+    def _validate_config_basic(self) -> None:
+        """
+        Basic configuration validation (fallback when schema not available).
 
         Raises:
             ConfigurationError: If configuration is invalid
@@ -110,26 +236,33 @@ class Config:
         for section in required_sections:
             if section not in self.config_data:
                 raise ConfigurationError(
-                    f"Missing required configuration section: {section}"
+                    f"Missing required configuration section: {section}\n"
+                    f"\nHow to fix:\n"
+                    f"  Add the '{section}' section to your config.yaml\n"
+                    f"\nConfiguration file: {self.config_path}"
                 )
-
-        # Validate mode
-        valid_modes = ['symphony-core', 'business-docs']
-        if self.mode not in valid_modes:
-            raise ConfigurationError(
-                f"Invalid mode '{self.mode}'. Must be one of: {valid_modes}"
-            )
 
         # Validate processing settings
         if 'doc_directories' not in self.config_data['processing']:
             raise ConfigurationError(
-                "Missing 'doc_directories' in processing configuration"
+                "Missing 'doc_directories' in processing configuration\n"
+                "\nHow to fix:\n"
+                "  Add doc_directories to the processing section:\n"
+                "\n  processing:\n"
+                "    doc_directories:\n"
+                "      - '.'\n"
+                f"\nConfiguration file: {self.config_path}"
             )
 
         # Validate cache file path
         if 'cache_file' not in self.config_data['processing']:
             raise ConfigurationError(
-                "Missing 'cache_file' in processing configuration"
+                "Missing 'cache_file' in processing configuration\n"
+                "\nHow to fix:\n"
+                "  Add cache_file to the processing section:\n"
+                "\n  processing:\n"
+                "    cache_file: '_meta/.document-cache.json'\n"
+                f"\nConfiguration file: {self.config_path}"
             )
 
         # Validate logging level
@@ -137,7 +270,13 @@ class Config:
         log_level = self.config_data['logging'].get('level', 'INFO')
         if log_level not in valid_log_levels:
             raise ConfigurationError(
-                f"Invalid log level '{log_level}'. Must be one of: {valid_log_levels}"
+                f"Invalid log level '{log_level}'\n"
+                f"\nHow to fix:\n"
+                f"  Use one of: {', '.join(valid_log_levels)}\n"
+                "\nExample:\n"
+                "  logging:\n"
+                "    level: 'INFO'\n"
+                f"\nConfiguration file: {self.config_path}"
             )
 
     def get(self, key_path: str, default: Any = None) -> Any:
