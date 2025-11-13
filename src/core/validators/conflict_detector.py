@@ -110,6 +110,7 @@ class ConflictDetector:
         - path: Path to document
         - metadata: Parsed frontmatter (or empty dict)
         - content: Full document content
+        - content_lines: List of content lines for line number tracking
         """
         documents = []
 
@@ -119,6 +120,7 @@ class ConflictDetector:
                     continue
 
                 content = file_path.read_text(encoding='utf-8')
+                content_lines = content.splitlines()
 
                 # Try to parse frontmatter
                 metadata = {}
@@ -131,13 +133,55 @@ class ConflictDetector:
                 documents.append({
                     'path': file_path,
                     'metadata': metadata,
-                    'content': content
+                    'content': content,
+                    'content_lines': content_lines
                 })
 
             except Exception as e:
                 self.logger.error(f"Error loading document {file_path}: {e}")
 
         return documents
+
+    def _get_line_number(self, content: str, char_position: int) -> int:
+        """
+        Convert character position to line number.
+
+        Args:
+            content: Full document content
+            char_position: Character position in content
+
+        Returns:
+            Line number (1-indexed)
+        """
+        return content[:char_position].count('\n') + 1
+
+    def _find_yaml_field_line(self, content_lines: List[str], field_name: str) -> Optional[int]:
+        """
+        Find the line number where a YAML field appears in frontmatter.
+
+        Args:
+            content_lines: List of content lines
+            field_name: YAML field name to search for (e.g., 'status', 'tags')
+
+        Returns:
+            Line number (1-indexed) or None if not found
+        """
+        in_frontmatter = False
+        for i, line in enumerate(content_lines, start=1):
+            if line.strip() == '---':
+                if not in_frontmatter:
+                    in_frontmatter = True
+                    continue
+                else:
+                    # End of frontmatter
+                    break
+
+            if in_frontmatter:
+                # Check if this line contains the field
+                if line.strip().startswith(f"{field_name}:"):
+                    return i
+
+        return None
 
     def _detect_status_conflicts(self, documents: List[Dict]) -> List[ValidationIssue]:
         """
@@ -149,14 +193,16 @@ class ConflictDetector:
         - Case variations (draft vs Draft)
         """
         issues = []
-        status_variations = defaultdict(list)  # status_value -> list of docs
+        status_variations = defaultdict(list)  # status_value -> list of (doc_path, line_number)
 
         for doc in documents:
             metadata = doc['metadata']
             if 'status' in metadata:
                 status = metadata['status']
                 if isinstance(status, str):
-                    status_variations[status].append(doc['path'])
+                    # Find line number where status field is defined
+                    line_num = self._find_yaml_field_line(doc['content_lines'], 'status')
+                    status_variations[status].append((doc['path'], line_num))
 
         # Check for case variations of same status
         status_by_lowercase = defaultdict(set)
@@ -166,28 +212,32 @@ class ConflictDetector:
         for lowercase_status, variations in status_by_lowercase.items():
             if len(variations) > 1:
                 # Multiple case variations exist
-                doc_paths = []
+                doc_info = []
                 for variant in variations:
-                    doc_paths.extend(status_variations[variant])
+                    doc_info.extend(status_variations[variant])
 
                 # Report on first document with non-standard casing
-                primary_docs = status_variations[list(variations)[0]]
+                primary_info = status_variations[list(variations)[0]]
+                first_path, first_line = primary_info[0]
                 issues.append(ValidationIssue(
                     rule_id="CONFLICT-001",
                     severity=ValidationSeverity.WARNING,
                     message=f"Status value has case variations: {', '.join(sorted(variations))}",
-                    file_path=primary_docs[0],
+                    file_path=first_path,
+                    line_number=first_line,
                     suggestion=f"Standardize to lowercase: '{lowercase_status}'"
                 ))
 
         # Check for non-standard status values
-        for status_value, doc_paths in status_variations.items():
+        for status_value, doc_info_list in status_variations.items():
             if status_value not in self.allowed_status_values:
+                first_path, first_line = doc_info_list[0]
                 issues.append(ValidationIssue(
                     rule_id="CONFLICT-001",
                     severity=ValidationSeverity.ERROR,
-                    message=f"Non-standard status value: '{status_value}' used in {len(doc_paths)} document(s)",
-                    file_path=doc_paths[0],
+                    message=f"Non-standard status value: '{status_value}' used in {len(doc_info_list)} document(s)",
+                    file_path=first_path,
+                    line_number=first_line,
                     suggestion=f"Use one of: {', '.join(self.allowed_status_values)}"
                 ))
 
@@ -201,28 +251,32 @@ class ConflictDetector:
         Detects tags that are synonyms but use different names.
         """
         issues = []
-        tag_usage = defaultdict(list)  # tag -> list of docs
+        tag_usage = defaultdict(list)  # tag -> list of (doc_path, line_number)
 
         for doc in documents:
             metadata = doc['metadata']
             if 'tags' in metadata and isinstance(metadata['tags'], list):
+                # Find line number where tags field is defined
+                line_num = self._find_yaml_field_line(doc['content_lines'], 'tags')
                 for tag in metadata['tags']:
                     if isinstance(tag, str):
-                        tag_usage[tag.lower()].append(doc['path'])
+                        tag_usage[tag.lower()].append((doc['path'], line_num))
 
         # Check for synonym usage
-        for tag, doc_paths in tag_usage.items():
+        for tag, doc_info_list in tag_usage.items():
             # Check if this tag has a canonical form in synonym map
             if tag in self.tag_synonyms:
                 canonical = self.tag_synonyms[tag]
 
                 # Check if canonical form is also used
                 if canonical.lower() in tag_usage:
+                    first_path, first_line = doc_info_list[0]
                     issues.append(ValidationIssue(
                         rule_id="CONFLICT-002",
                         severity=ValidationSeverity.WARNING,
                         message=f"Tag synonym conflict: '{tag}' and '{canonical}' both used",
-                        file_path=doc_paths[0],
+                        file_path=first_path,
+                        line_number=first_line,
                         suggestion=f"Standardize to canonical form: '{canonical}'"
                     ))
 
@@ -236,7 +290,7 @@ class ConflictDetector:
         Extracts pricing information and identifies inconsistencies.
         """
         issues = []
-        pricing_mentions = defaultdict(list)  # product_context -> list of (price, unit, doc_path)
+        pricing_mentions = defaultdict(list)  # product_context -> list of pricing info
 
         for doc in documents:
             content = doc['content']
@@ -251,6 +305,9 @@ class ConflictDetector:
                     # Normalize to monthly price
                     price_monthly = self._normalize_to_monthly(float(amount), unit)
 
+                    # Calculate line number for this match
+                    line_num = self._get_line_number(content, match.start())
+
                     # Try to extract context (nearby words)
                     start = max(0, match.start() - 50)
                     end = min(len(content), match.end() + 50)
@@ -263,6 +320,7 @@ class ConflictDetector:
                         'price': price_monthly,
                         'original': match.group(0),
                         'path': path,
+                        'line_number': line_num,
                         'context': context
                     })
 
@@ -277,11 +335,15 @@ class ConflictDetector:
                     price_list = ', '.join(f"${p:.2f}/mo" for p in sorted(unique_prices))
                     doc_list = set(m['path'] for m in mentions)
 
+                    # Get first occurrence for reporting
+                    first_mention = mentions[0]
+
                     issues.append(ValidationIssue(
                         rule_id="CONFLICT-003",
                         severity=ValidationSeverity.ERROR,
                         message=f"Pricing conflict for '{product}': {price_list} across {len(doc_list)} document(s)",
-                        file_path=list(doc_list)[0],
+                        file_path=first_mention['path'],
+                        line_number=first_mention['line_number'],
                         suggestion="Review and standardize pricing across all documents"
                     ))
 
@@ -337,11 +399,15 @@ class ConflictDetector:
 
                     # Check if target is deprecated
                     if target_path in deprecated_docs:
+                        # Calculate line number for this link
+                        line_num = self._get_line_number(content, match.start())
+
                         issues.append(ValidationIssue(
                             rule_id="CONFLICT-004",
                             severity=ValidationSeverity.WARNING,
                             message=f"Link to deprecated document: '{link_url}'",
                             file_path=path,
+                            line_number=line_num,
                             suggestion="Update link to current documentation or remove if obsolete"
                         ))
 
