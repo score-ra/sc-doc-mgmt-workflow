@@ -89,6 +89,9 @@ reporting:
     - error
     - warning
     - info
+  # Minimum severity level to include in reports (ERROR, WARNING, or INFO)
+  # ERROR: only errors, WARNING: errors and warnings, INFO: all issues
+  min_severity: "INFO"
 
 # URL Extraction Configuration (Sprint 5)
 extraction:
