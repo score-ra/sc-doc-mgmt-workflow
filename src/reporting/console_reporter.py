@@ -45,18 +45,19 @@ class ConsoleReporter(BaseReporter):
 
         # Summary statistics
         lines.append(f"Documents Scanned: {data.total_documents}")
-        lines.append(
-            f"Passed: {data.passed_documents} "
-            f"({data.pass_rate:.1f}%)"
-        )
-        lines.append(
-            f"Failed: {data.failed_documents} "
-            f"({data.fail_rate:.1f}%)"
-        )
+        lines.append(f"Passed: {data.passed_documents} " f"({data.pass_rate:.1f}%)")
+        lines.append(f"Failed: {data.failed_documents} " f"({data.fail_rate:.1f}%)")
         lines.append("")
         lines.append(f"Total Errors: {data.total_errors}")
         lines.append(f"Total Warnings: {data.total_warnings}")
         lines.append("")
+
+        # Frontmatter completeness (PB-003)
+        if data.missing_frontmatter_count > 0:
+            lines.append(
+                f"Documents Missing Frontmatter: {data.missing_frontmatter_count}"
+            )
+            lines.append("")
 
         # Violations by rule
         if data.rule_counts:
@@ -81,7 +82,7 @@ class ConsoleReporter(BaseReporter):
         lines.append("")
         lines.append("=" * 80)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class ConflictConsoleReporter(BaseReporter):
@@ -124,17 +125,17 @@ class ConflictConsoleReporter(BaseReporter):
         # Group conflicts by type
         conflicts_by_type = {}
         for conflict in data.all_issues:
-            conflict_type = getattr(conflict, 'conflict_type', 'UNKNOWN')
+            conflict_type = getattr(conflict, "conflict_type", "UNKNOWN")
             if conflict_type not in conflicts_by_type:
                 conflicts_by_type[conflict_type] = []
             conflicts_by_type[conflict_type].append(conflict)
 
         # Display conflicts by type
         type_labels = {
-            'status': 'STATUS CONFLICTS',
-            'tag_synonym': 'TAG SYNONYM CONFLICTS',
-            'pricing': 'PRICING CONFLICTS',
-            'cross_reference': 'CROSS-REFERENCE CONFLICTS'
+            "status": "STATUS CONFLICTS",
+            "tag_synonym": "TAG SYNONYM CONFLICTS",
+            "pricing": "PRICING CONFLICTS",
+            "cross_reference": "CROSS-REFERENCE CONFLICTS",
         }
 
         for conflict_type, conflicts in sorted(conflicts_by_type.items()):
@@ -144,14 +145,14 @@ class ConflictConsoleReporter(BaseReporter):
             lines.append("")
 
             for conflict in conflicts:
-                rule_id = getattr(conflict, 'rule_id', 'UNKNOWN')
-                message = getattr(conflict, 'message', 'No message')
+                rule_id = getattr(conflict, "rule_id", "UNKNOWN")
+                message = getattr(conflict, "message", "No message")
                 lines.append(f"[{rule_id}] {message}")
 
-                if hasattr(conflict, 'suggestion') and conflict.suggestion:
+                if hasattr(conflict, "suggestion") and conflict.suggestion:
                     lines.append(f"  Suggestion: {conflict.suggestion}")
                 lines.append("")
 
         lines.append("=" * 80)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
