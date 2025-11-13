@@ -1,0 +1,382 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://symphonycore.com/schemas/config.json",
+  "title": "Symphony Core Configuration Schema",
+  "description": "JSON Schema for validating Symphony Core Document Management Workflow configuration",
+  "type": "object",
+  "required": ["processing", "validation", "reporting", "logging"],
+  "properties": {
+    "processing": {
+      "type": "object",
+      "description": "Processing settings for document scanning",
+      "required": ["doc_directories", "cache_file"],
+      "properties": {
+        "doc_directories": {
+          "type": "array",
+          "description": "Directories to scan for markdown documents",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "cache_file": {
+          "type": "string",
+          "description": "File to store document cache",
+          "minLength": 1,
+          "pattern": "\\.json$"
+        },
+        "backup_dir": {
+          "type": "string",
+          "description": "Directory for backups before modifications"
+        },
+        "include_patterns": {
+          "type": "array",
+          "description": "File patterns to include",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_patterns": {
+          "type": "array",
+          "description": "File patterns to exclude",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Validation rules for documents",
+      "required": ["yaml", "markdown", "naming"],
+      "properties": {
+        "yaml": {
+          "type": "object",
+          "description": "YAML frontmatter validation rules",
+          "required": ["enabled", "required_fields", "allowed_statuses"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable YAML validation"
+            },
+            "required_fields": {
+              "type": "array",
+              "description": "Required frontmatter fields",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "enum": ["title", "tags", "status", "version", "date", "author", "category", "audience"]
+              }
+            },
+            "optional_fields": {
+              "type": "array",
+              "description": "Optional frontmatter fields",
+              "items": {
+                "type": "string"
+              }
+            },
+            "date_format": {
+              "type": "string",
+              "description": "Date format for validation"
+            },
+            "allowed_statuses": {
+              "type": "array",
+              "description": "Allowed status values",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "markdown": {
+          "type": "object",
+          "description": "Markdown syntax validation rules",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable markdown validation"
+            },
+            "enforce_heading_hierarchy": {
+              "type": "boolean",
+              "description": "Enforce proper heading hierarchy"
+            },
+            "require_language_in_code_blocks": {
+              "type": "boolean",
+              "description": "Require language specification in code blocks"
+            },
+            "relative_links_only": {
+              "type": "boolean",
+              "description": "Only allow relative links"
+            },
+            "horizontal_rule_format": {
+              "type": "string",
+              "description": "Preferred horizontal rule format"
+            },
+            "check_trailing_whitespace": {
+              "type": "boolean",
+              "description": "Check for trailing whitespace"
+            }
+          }
+        },
+        "naming": {
+          "type": "object",
+          "description": "Naming convention validation rules",
+          "required": ["enabled", "pattern"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable naming validation"
+            },
+            "pattern": {
+              "type": "string",
+              "description": "Naming pattern to enforce",
+              "enum": ["lowercase-with-hyphens", "snake_case", "camelCase", "PascalCase"]
+            },
+            "max_length": {
+              "type": "integer",
+              "description": "Maximum filename length",
+              "minimum": 1,
+              "maximum": 255
+            },
+            "min_length": {
+              "type": "integer",
+              "description": "Minimum filename length",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "no_version_numbers": {
+              "type": "boolean",
+              "description": "Disallow version numbers in filenames"
+            }
+          }
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "description": "Reporting configuration",
+      "required": ["format", "output_dir"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "description": "Report format",
+          "enum": ["markdown", "json", "text", "console"]
+        },
+        "output_dir": {
+          "type": "string",
+          "description": "Directory for validation reports",
+          "minLength": 1
+        },
+        "verbose": {
+          "type": "boolean",
+          "description": "Include verbose details in reports"
+        },
+        "include_suggestions": {
+          "type": "boolean",
+          "description": "Include auto-fix suggestions"
+        },
+        "report_levels": {
+          "type": "array",
+          "description": "Severity levels to report",
+          "items": {
+            "type": "string",
+            "enum": ["error", "warning", "info", "debug"]
+          }
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "description": "URL extraction configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable URL extraction feature"
+        },
+        "default_output_dir": {
+          "type": "string",
+          "description": "Default output directory for extracted content"
+        },
+        "default_status": {
+          "type": "string",
+          "description": "Default status for extracted documents"
+        },
+        "default_category": {
+          "type": "string",
+          "description": "Default category for extracted documents"
+        },
+        "default_author": {
+          "type": "string",
+          "description": "Default author name"
+        },
+        "default_tags": {
+          "type": "array",
+          "description": "Default tags for extracted documents",
+          "items": {
+            "type": "string"
+          }
+        },
+        "frontmatter": {
+          "type": "object",
+          "description": "Frontmatter options",
+          "properties": {
+            "include_source_url": {
+              "type": "boolean"
+            },
+            "include_extracted_date": {
+              "type": "boolean"
+            },
+            "include_extraction_method": {
+              "type": "boolean"
+            }
+          }
+        },
+        "conversion": {
+          "type": "object",
+          "description": "Conversion options",
+          "properties": {
+            "remove_navigation": {
+              "type": "boolean"
+            },
+            "remove_footer": {
+              "type": "boolean"
+            },
+            "remove_ads": {
+              "type": "boolean"
+            },
+            "convert_tables_to_structured": {
+              "type": "boolean"
+            },
+            "preserve_links": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "logging": {
+      "type": "object",
+      "description": "Logging configuration",
+      "required": ["level", "file"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Log level",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        },
+        "file": {
+          "type": "string",
+          "description": "Log file path",
+          "minLength": 1
+        },
+        "console": {
+          "type": "boolean",
+          "description": "Also output logs to console"
+        },
+        "format": {
+          "type": "string",
+          "description": "Log format string"
+        },
+        "max_file_size_mb": {
+          "type": "integer",
+          "description": "Max log file size in MB before rotation",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "backup_count": {
+          "type": "integer",
+          "description": "Number of backup log files to keep",
+          "minimum": 0,
+          "maximum": 20
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance settings",
+      "properties": {
+        "enable_cache": {
+          "type": "boolean",
+          "description": "Enable caching for change detection"
+        },
+        "parallel_workers": {
+          "type": "integer",
+          "description": "Number of parallel workers (0 = auto-detect)",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "processing_timeout": {
+          "type": "integer",
+          "description": "Timeout for document processing in seconds",
+          "minimum": 1,
+          "maximum": 300
+        }
+      }
+    },
+    "features": {
+      "type": "object",
+      "description": "Feature flags",
+      "properties": {
+        "auto_fix": {
+          "type": "boolean",
+          "description": "Enable auto-fix feature"
+        },
+        "intelligent_routing": {
+          "type": "boolean",
+          "description": "Enable intelligent routing"
+        },
+        "automated_tagging": {
+          "type": "boolean",
+          "description": "Enable automated tagging"
+        },
+        "conflict_detection": {
+          "type": "boolean",
+          "description": "Enable conflict detection"
+        }
+      }
+    },
+    "api": {
+      "type": "object",
+      "description": "API configuration for LLM features",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "API provider",
+          "enum": ["anthropic", "openai"]
+        },
+        "model": {
+          "type": "string",
+          "description": "Model to use"
+        },
+        "max_tokens": {
+          "type": "integer",
+          "description": "Max tokens per request",
+          "minimum": 1,
+          "maximum": 200000
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "API timeout in seconds",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_retries": {
+          "type": "integer",
+          "description": "Retry attempts on failure",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "retry_backoff_base": {
+          "type": "integer",
+          "description": "Exponential backoff base in seconds",
+          "minimum": 1,
+          "maximum": 60
+        }
+      }
+    }
+  }
+}
