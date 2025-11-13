@@ -417,6 +417,15 @@ class Config:
         """
         return self.get(f'features.{feature_name}', False)
 
+    def get_min_severity(self) -> str:
+        """
+        Get minimum severity level for report filtering.
+
+        Returns:
+            Minimum severity level (ERROR, WARNING, or INFO)
+        """
+        return self.get('reporting.min_severity', 'INFO')
+
     def __repr__(self) -> str:
         """String representation of configuration."""
         return f"Config(mode={self.mode}, config_path={self.config_path})"

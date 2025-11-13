@@ -25,7 +25,9 @@ from src.reporting import (
     ConsoleReporter,
     MarkdownReporter,
     JSONReporter,
-    ConflictReporter
+    ConflictReporter,
+    Severity,
+    filter_issues_by_severity
 )
 
 
@@ -103,6 +105,12 @@ def cli(ctx):
     type=click.Path(path_type=Path),
     help='Output file for report (default: stdout)'
 )
+@click.option(
+    '--min-severity',
+    type=click.Choice(['ERROR', 'WARNING', 'INFO'], case_sensitive=False),
+    default=None,
+    help='Minimum severity level to include in report (default: from config or INFO)'
+)
 @click.pass_context
 def validate(
     ctx,
@@ -114,7 +122,8 @@ def validate(
     preview: bool,
     conflicts: bool,
     format: str,
-    output: Optional[Path]
+    output: Optional[Path],
+    min_severity: Optional[str]
 ):
     """
     Validate markdown documents against naming, YAML, and markdown rules.
@@ -160,6 +169,14 @@ def validate(
     # Set default path to docs directory from config or current directory
     if path is None and not files:
         path = Path(config.get('paths.docs_root', '.'))
+
+    # Determine minimum severity level (CLI flag > config > default INFO)
+    severity_filter = None
+    if min_severity:
+        severity_filter = Severity.from_string(min_severity)
+    else:
+        config_severity = config.get('reporting.min_severity', 'INFO')
+        severity_filter = Severity.from_string(config_severity)
 
     click.echo("=" * 80)
     click.echo("SYMPHONY CORE - DOCUMENT VALIDATION")
@@ -260,7 +277,8 @@ def validate(
                 documents,
                 format,
                 output,
-                change_detector
+                change_detector,
+                severity_filter
             )
 
     except Exception as e:
@@ -312,7 +330,8 @@ def _run_validation(
     documents: list,
     format: str,
     output: Optional[Path],
-    change_detector = None
+    change_detector = None,
+    severity_filter: Optional[Severity] = None
 ):
     """Run full validation on documents."""
     all_issues = []
@@ -362,7 +381,7 @@ def _run_validation(
     click.echo()
 
     # Generate report
-    _generate_validation_report(all_issues, documents, format, output)
+    _generate_validation_report(all_issues, documents, format, output, severity_filter)
 
     # Exit with appropriate code
     error_count = sum(1 for issue in all_issues if issue.severity == 'error')
@@ -463,9 +482,14 @@ def _generate_validation_report(
     issues: list,
     documents: list,
     format: str,
-    output: Optional[Path]
+    output: Optional[Path],
+    severity_filter: Optional[Severity] = None
 ):
     """Generate validation report in specified format using reporter classes."""
+    # Apply severity filter if specified
+    if severity_filter:
+        issues = filter_issues_by_severity(issues, severity_filter)
+
     # Group issues by file
     issues_by_file = {}
     for issue in issues:
