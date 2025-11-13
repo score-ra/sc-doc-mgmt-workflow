@@ -133,6 +133,10 @@ Content
         assert len(status_conflicts) >= 1
         assert any(issue.rule_id == "CONFLICT-001" for issue in status_conflicts)
         assert any("case variations" in issue.message.lower() for issue in status_conflicts)
+        # Verify line number is tracked (status is on line 4 in both docs)
+        for issue in status_conflicts:
+            if "case variations" in issue.message.lower():
+                assert issue.line_number == 4, f"Expected line 4, got {issue.line_number}"
 
     def test_non_standard_status(self, detector, test_docs_dir):
         """Test detection of non-standard status values."""
@@ -160,6 +164,9 @@ Content
         # Should flag both non-standard values
         non_standard_issues = [i for i in status_conflicts if "non-standard" in i.message.lower()]
         assert len(non_standard_issues) >= 2
+        # Verify line numbers are tracked
+        for issue in non_standard_issues:
+            assert issue.line_number == 4, f"Expected line 4, got {issue.line_number}"
 
     def test_tag_synonym_conflict(self, detector, test_docs_dir):
         """Test detection of tag synonym conflicts."""
@@ -187,6 +194,10 @@ Content about GoHighLevel
         assert len(tag_conflicts) >= 1
         assert any(issue.rule_id == "CONFLICT-002" for issue in tag_conflicts)
         assert any("synonym conflict" in issue.message.lower() for issue in tag_conflicts)
+        # Verify line number is tracked (tags is on line 3 in both docs)
+        for issue in tag_conflicts:
+            if "synonym conflict" in issue.message.lower():
+                assert issue.line_number == 3, f"Expected line 3, got {issue.line_number}"
 
     def test_pricing_conflict(self, detector, test_docs_dir):
         """Test detection of pricing conflicts."""
@@ -221,6 +232,11 @@ Basic plan costs $149 per month
         assert len(pricing_conflicts) >= 1
         assert any(issue.rule_id == "CONFLICT-003" for issue in pricing_conflicts)
         assert any("pricing conflict" in issue.message.lower() for issue in pricing_conflicts)
+        # Verify line number is tracked (first price is on line 9 in doc1)
+        for issue in pricing_conflicts:
+            if "pricing conflict" in issue.message.lower():
+                assert issue.line_number is not None, "Line number should be tracked for pricing conflicts"
+                assert issue.line_number == 9, f"Expected line 9, got {issue.line_number}"
 
     def test_pricing_no_conflict_same_price(self, detector, test_docs_dir):
         """Test no conflict when pricing is consistent."""
@@ -278,6 +294,10 @@ See [old guide](./old-guide.md) for more info.
         assert len(cross_ref_conflicts) >= 1
         assert any(issue.rule_id == "CONFLICT-004" for issue in cross_ref_conflicts)
         assert any("deprecated document" in issue.message.lower() for issue in cross_ref_conflicts)
+        # Verify line number is tracked (link is on line 7 in active_doc)
+        for issue in cross_ref_conflicts:
+            if "deprecated document" in issue.message.lower():
+                assert issue.line_number == 7, f"Expected line 7, got {issue.line_number}"
 
     def test_no_conflict_for_external_links(self, detector, test_docs_dir):
         """Test external links are not flagged as cross-reference conflicts."""

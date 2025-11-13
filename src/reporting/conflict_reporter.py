@@ -193,7 +193,10 @@ class ConflictReporter:
                     lines.append(f"\n{conflict_type.upper()} ({len(issues)}):")
                     for issue in issues[:5]:  # Show first 5 per type
                         severity = issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity)
-                        lines.append(f"  [{severity.upper()}] {issue.file_path.name}")
+                        location = f"{issue.file_path.name}"
+                        if issue.line_number:
+                            location += f":{issue.line_number}"
+                        lines.append(f"  [{severity.upper()}] {location}")
                         lines.append(f"    {issue.message}")
                     if len(issues) > 5:
                         lines.append(f"    ... and {len(issues) - 5} more")
@@ -251,7 +254,10 @@ class ConflictReporter:
                     lines.append("")
                     for issue in issues[:5]:
                         severity = issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity)
-                        lines.append(f"**[{severity.upper()}]** `{issue.file_path.name}`")
+                        location = f"{issue.file_path.name}"
+                        if issue.line_number:
+                            location += f":{issue.line_number}"
+                        lines.append(f"**[{severity.upper()}]** `{location}`")
                         lines.append(f"- {issue.message}")
                         lines.append("")
                     if len(issues) > 5:
@@ -283,6 +289,7 @@ class ConflictReporter:
             conflicts_serialized[conflict_type] = [
                 {
                     'file': str(issue.file_path),
+                    'line_number': issue.line_number,
                     'severity': issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity),
                     'rule_id': issue.rule_id,
                     'message': issue.message,
