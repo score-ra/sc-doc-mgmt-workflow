@@ -417,6 +417,15 @@ class Config:
         """
         return self.get(f'features.{feature_name}', False)
 
+    def get_yaml_exclude_patterns(self) -> List[str]:
+        """
+        Get list of file exclusion patterns for YAML frontmatter validation.
+
+        Returns:
+            List of glob patterns for files to exclude from YAML validation
+        """
+        return self.get('validation.yaml.exclude_patterns', [])
+
     def __repr__(self) -> str:
         """String representation of configuration."""
         return f"Config(mode={self.mode}, config_path={self.config_path})"

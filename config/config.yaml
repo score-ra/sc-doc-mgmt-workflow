@@ -47,6 +47,13 @@ validation:
       - approved
       - deprecated
       - active
+    # File exclusion patterns (glob patterns) - files matching these will skip YAML validation
+    exclude_patterns:
+      - "README.md"           # Exclude root README
+      - "**/README.md"        # Exclude all README files
+      - "CHANGELOG.md"        # Exclude changelog
+      - "CONTRIBUTING.md"     # Exclude contributing guide
+      - "LICENSE.md"          # Exclude license file
 
   # Markdown syntax validation rules
   markdown:
