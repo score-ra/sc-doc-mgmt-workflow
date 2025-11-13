@@ -696,5 +696,293 @@ def extract_url(source, output, title, tags, category):
         sys.exit(1)
 
 
+@cli.group()
+def frontmatter():
+    """
+    Frontmatter field management commands.
+
+    Commands for bulk adding, removing, or querying frontmatter fields
+    across multiple markdown documents.
+    """
+    pass
+
+
+@frontmatter.command('add-field')
+@click.option(
+    '--path',
+    type=click.Path(exists=True, file_okay=False, dir_okay=True, path_type=Path),
+    help='Process documents in specific folder (default: current directory)'
+)
+@click.option(
+    '--file',
+    'files',
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+    multiple=True,
+    help='Process specific file(s) - can be specified multiple times'
+)
+@click.option(
+    '--field',
+    required=True,
+    help='Name of the frontmatter field to add'
+)
+@click.option(
+    '--value',
+    required=True,
+    help='Value to set for the field'
+)
+@click.option(
+    '--type',
+    'value_type',
+    type=click.Choice(['string', 'list', 'number', 'boolean'], case_sensitive=False),
+    default='string',
+    help='Type of the value (default: string)'
+)
+@click.option(
+    '--overwrite',
+    is_flag=True,
+    help='Overwrite existing field values'
+)
+@click.option(
+    '--no-skip',
+    is_flag=True,
+    help='Do not skip documents that already have the field'
+)
+@click.option(
+    '--preview',
+    is_flag=True,
+    help='Preview changes without applying them'
+)
+@click.pass_context
+def add_field(
+    ctx,
+    path: Optional[Path],
+    files: tuple,
+    field: str,
+    value: str,
+    value_type: str,
+    overwrite: bool,
+    no_skip: bool,
+    preview: bool
+):
+    """
+    Add a frontmatter field to multiple markdown documents.
+
+    This command allows you to bulk-add a frontmatter field to documents.
+    By default, it skips documents that already have the field unless
+    --overwrite is specified.
+
+    Examples:
+
+        # Add 'author' field to all documents in current directory
+        python main.py frontmatter add-field --field author --value "John Doe"
+
+        # Add 'version' field to specific folder
+        python main.py frontmatter add-field --path docs/ --field version --value "1.0" --type string
+
+        # Add 'tags' list field to specific files
+        python main.py frontmatter add-field --file doc1.md --file doc2.md --field tags --value "tag1,tag2" --type list
+
+        # Add field and overwrite existing values
+        python main.py frontmatter add-field --field status --value "review" --overwrite
+
+        # Preview changes before applying
+        python main.py frontmatter add-field --field category --value "Policy" --preview
+    """
+    from src.core.frontmatter_manager import FrontmatterManager
+
+    config = ctx.obj['config']
+
+    # Validate option combinations
+    if path and files:
+        click.echo("Error: Cannot specify both --path and --file", err=True)
+        sys.exit(1)
+
+    # Set default path
+    if path is None and not files:
+        path = Path(config.get('paths.docs_root', '.'))
+
+    click.echo("=" * 80)
+    click.echo("SYMPHONY CORE - FRONTMATTER FIELD ADDITION")
+    click.echo("=" * 80)
+    click.echo()
+
+    # Display operation details
+    click.echo(f"Field: {field}")
+    click.echo(f"Value: {value}")
+    click.echo(f"Type: {value_type}")
+    click.echo(f"Overwrite: {'Yes' if overwrite else 'No'}")
+    click.echo(f"Skip existing: {'No' if no_skip else 'Yes'}")
+    click.echo(f"Mode: {'Preview' if preview else 'Apply'}")
+    click.echo()
+
+    try:
+        # Initialize logger
+        log_file = Path(config.get('paths.logs_dir', 'logs')) / 'frontmatter.log'
+        logger = Logger(
+            name="symphony_core.frontmatter",
+            log_file=log_file,
+            log_level=config.get('logging.level', 'INFO'),
+            console_output=False
+        )
+
+        # Find documents to process
+        if files:
+            documents = [Path(f) for f in files]
+            # Validate that all files are markdown
+            for doc in documents:
+                if doc.suffix.lower() != '.md':
+                    click.echo(f"Error: {doc} is not a markdown file (.md)", err=True)
+                    sys.exit(1)
+        else:
+            # Find all markdown files in path
+            documents = _find_all_documents(path)
+
+        click.echo(f"Documents to process: {len(documents)}")
+        click.echo()
+
+        if len(documents) == 0:
+            click.echo("No documents to process.")
+            sys.exit(0)
+
+        # Parse value based on type
+        parsed_value = _parse_field_value(value, value_type)
+
+        # Preview mode - show what would happen
+        if preview:
+            click.echo("PREVIEW MODE - No changes will be applied")
+            click.echo("-" * 80)
+
+            manager = FrontmatterManager(logger)
+
+            # Check each document to see what would happen
+            preview_count = 0
+            for doc in documents[:10]:  # Show first 10 for preview
+                from src.utils.frontmatter import has_frontmatter, parse_frontmatter
+
+                if has_frontmatter(doc):
+                    metadata = parse_frontmatter(doc)
+                    if field in metadata:
+                        if overwrite or not no_skip:
+                            click.echo(f"[WOULD UPDATE] {doc}: {field}={metadata[field]} → {parsed_value}")
+                        else:
+                            click.echo(f"[WOULD SKIP] {doc}: Field already exists")
+                    else:
+                        click.echo(f"[WOULD ADD] {doc}: {field}={parsed_value}")
+                else:
+                    click.echo(f"[WOULD CREATE] {doc}: Adding frontmatter with {field}={parsed_value}")
+                preview_count += 1
+
+            if len(documents) > 10:
+                click.echo(f"... and {len(documents) - 10} more documents")
+
+            click.echo()
+            click.echo("Run without --preview to apply changes")
+            sys.exit(0)
+
+        # Apply changes
+        manager = FrontmatterManager(logger)
+
+        with click.progressbar(
+            length=len(documents),
+            label='Adding field to documents',
+            show_pos=True
+        ) as bar:
+            results = []
+            for doc in documents:
+                result = manager._add_field_to_document(
+                    doc,
+                    field,
+                    parsed_value,
+                    overwrite,
+                    only_if_missing=not no_skip
+                )
+                results.append(result)
+                bar.update(1)
+
+        click.echo()
+
+        # Generate and display summary
+        summary = manager.generate_summary_report(results)
+
+        click.echo("=" * 80)
+        click.echo("OPERATION SUMMARY")
+        click.echo("=" * 80)
+        click.echo(f"Total documents: {summary['total_documents']}")
+        click.echo(f"Successful: {summary['successful']}")
+        click.echo(f"Failed/Skipped: {summary['failed']}")
+        click.echo(f"Success rate: {summary['success_rate']:.1f}%")
+        click.echo()
+
+        # Show failure reasons if any
+        if summary['failure_reasons']:
+            click.echo("Skipped/Failed documents by reason:")
+            for reason, file_list in summary['failure_reasons'].items():
+                click.echo(f"\n  {reason}: {len(file_list)} documents")
+                for file_path in file_list[:3]:  # Show first 3
+                    click.echo(f"    - {file_path}")
+                if len(file_list) > 3:
+                    click.echo(f"    ... and {len(file_list) - 3} more")
+
+        click.echo()
+        click.echo("=" * 80)
+
+        # Exit with appropriate code
+        if summary['failed'] > 0 and summary['successful'] == 0:
+            sys.exit(1)
+        else:
+            sys.exit(0)
+
+    except Exception as e:
+        click.echo(f"Error during operation: {e}", err=True)
+        if config.get('debug', False):
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+
+def _parse_field_value(value: str, value_type: str) -> Any:
+    """
+    Parse a string value into the specified type.
+
+    Args:
+        value: String value to parse
+        value_type: Type to parse into (string, list, number, boolean)
+
+    Returns:
+        Parsed value in the appropriate type
+
+    Raises:
+        ValueError: If value cannot be parsed into the specified type
+    """
+    if value_type == 'string':
+        return value
+
+    elif value_type == 'list':
+        # Split by comma and strip whitespace
+        return [item.strip() for item in value.split(',')]
+
+    elif value_type == 'number':
+        # Try int first, then float
+        try:
+            if '.' in value:
+                return float(value)
+            else:
+                return int(value)
+        except ValueError:
+            raise ValueError(f"Cannot parse '{value}' as a number")
+
+    elif value_type == 'boolean':
+        value_lower = value.lower()
+        if value_lower in ('true', 'yes', '1', 'y'):
+            return True
+        elif value_lower in ('false', 'no', '0', 'n'):
+            return False
+        else:
+            raise ValueError(f"Cannot parse '{value}' as a boolean")
+
+    else:
+        raise ValueError(f"Unknown type: {value_type}")
+
+
 if __name__ == '__main__':
     cli(obj={})
