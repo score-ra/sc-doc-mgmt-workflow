@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from fnmatch import fnmatch
 
 from src.utils.config import Config
 from src.utils.logger import Logger
@@ -88,6 +89,34 @@ class YAMLValidator:
             'validation.yaml.allowed_statuses',
             ['draft', 'review', 'approved', 'active', 'deprecated']
         )
+        self.exclude_patterns = config.get_yaml_exclude_patterns()
+
+    def _is_excluded(self, file_path: Path) -> bool:
+        """
+        Check if a file should be excluded from YAML validation based on exclusion patterns.
+
+        Args:
+            file_path: Path to the file to check
+
+        Returns:
+            True if file matches any exclusion pattern, False otherwise
+        """
+        if not self.exclude_patterns:
+            return False
+
+        # Convert to string for pattern matching
+        file_str = str(file_path)
+        file_name = file_path.name
+
+        for pattern in self.exclude_patterns:
+            # Check if pattern matches the full path or just the filename
+            if fnmatch(file_str, pattern) or fnmatch(file_name, pattern):
+                self.logger.debug(
+                    f"File {file_path} excluded from YAML validation (matches pattern: {pattern})"
+                )
+                return True
+
+        return False
 
     def validate(self, file_path: Path) -> List[ValidationIssue]:
         """
@@ -101,6 +130,11 @@ class YAMLValidator:
         """
         if not self.enabled:
             self.logger.debug(f"YAML validation disabled, skipping {file_path}")
+            return []
+
+        # Check if file is excluded from validation
+        if self._is_excluded(file_path):
+            self.logger.debug(f"File {file_path} excluded from YAML validation")
             return []
 
         if not file_path.exists():
