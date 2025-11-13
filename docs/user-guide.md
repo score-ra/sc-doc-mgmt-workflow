@@ -1,8 +1,8 @@
 ---
 title: Symphony Core - User Guide
 tags: [user-guide, documentation, validation, cli]
-version: 1.0.0
-last_updated: 2025-11-09
+version: 1.2.0
+last_updated: 2025-11-13
 status: active
 audience: end-users
 ---
@@ -10,8 +10,8 @@ audience: end-users
 # Symphony Core: User Guide
 ## Document Validation & Management System
 
-**Version**: 1.0.0 (Production Ready)
-**Status**: All features complete and tested
+**Version**: 1.2.0 (Enhanced Foundation)
+**Status**: Production ready with 83.29% test coverage
 
 ---
 
@@ -37,7 +37,7 @@ Symphony Core is an automated document validation system for business operations
 
 ### What Symphony Core Does
 
-**Core Features** (v1.0 Complete):
+**Core Features** (v1.2 Complete):
 - ✅ **YAML Frontmatter Validation** - Ensures required fields (title, tags, status)
 - ✅ **Markdown Syntax Validation** - Checks headings, code blocks, links, formatting
 - ✅ **Naming Convention Validation** - Enforces lowercase-with-hyphens standard
@@ -47,6 +47,9 @@ Symphony Core is an automated document validation system for business operations
 - ✅ **CLI Interface** - Practical command-line tools for validation
 - ✅ **Multiple Report Formats** - Console, JSON, and Markdown outputs
 - ✅ **Enhanced Conflict Reporting** - Severity levels, impact assessment, recommendations
+- ✅ **URL Content Extraction** - Convert HTML to SC-compliant markdown (v1.1)
+- ✅ **Configuration Validation** - JSON Schema validation with helpful errors (v1.2)
+- ✅ **Professional Architecture** - 304 tests, 83.29% coverage (v1.2)
 
 **Benefits**:
 - Reduce document review time from 4 hours/week to 30 minutes/week
@@ -93,7 +96,7 @@ Symphony Core is an automated document validation system for business operations
    ```bash
    pytest
    ```
-   You should see 215 tests passing. ✅
+   You should see 304 tests passing. ✅
 
 5. **Test the CLI:**
    ```bash
@@ -225,6 +228,39 @@ python main.py validate --conflicts --format json --output conflicts.json
 | `--conflicts` | `-c` | Run conflict detection mode |
 | `--format FORMAT` | | Output format (console/json/markdown) |
 | `--output FILE` | `-o` | Save report to file |
+
+### URL Content Extraction (v1.1+)
+
+Extract HTML files and convert to SC-compliant markdown.
+
+**Basic Usage:**
+```bash
+# Extract HTML to markdown
+python main.py extract-url --source page.html
+
+# With output directory
+python main.py extract-url --source page.html --output docs/extracted/
+
+# With custom metadata
+python main.py extract-url --source page.html --title "SEO Guide" --tags "seo,marketing"
+```
+
+**Extract-URL Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--source PATH` | HTML file to extract (required) |
+| `--output PATH` | Output directory (default: `_output/`) |
+| `--title TEXT` | Custom title (default: from HTML) |
+| `--tags TEXT` | Comma-separated tags |
+| `--category TEXT` | Document category |
+
+**Features:**
+- Extracts main content from HTML
+- Converts to SC-compliant markdown
+- No markdown tables (converted to structured content)
+- Automatic YAML frontmatter generation
+- Preserves links and formatting
 
 ### Exit Codes
 
