@@ -1,8 +1,11 @@
 ---
 title: Symphony Core Design Kit
-tags: [brand, design, resources]
+tags:
+- brand
+- design
+- resources
+status: draft
 ---
-
 # Symphony Core Design Kit
 
 ## Overview

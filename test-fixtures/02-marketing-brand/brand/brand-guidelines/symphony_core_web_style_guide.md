@@ -1,8 +1,12 @@
 ---
 title: Symphony Core Web Style Guide
-tags: [brand, web, css, html]
+tags:
+- brand
+- web
+- css
+- html
+status: draft
 ---
-
 # Symphony Core Web Style Guide
 
 ## HTML Structure

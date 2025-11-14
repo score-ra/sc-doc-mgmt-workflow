@@ -78,6 +78,7 @@ class AutoFixer:
     - Suggest tags from file path
     - Standardize tag format (string → list)
     - Default status to 'draft'
+    - Remove trailing whitespace (MD-004)
     """
 
     def __init__(self, config: Config, logger: Logger):
@@ -200,14 +201,37 @@ class AutoFixer:
                     metadata['tags'] = [metadata['tags']]
                     fixes_applied.append("Converted tags from string to list")
 
+            # Fix trailing whitespace (MD-004)
+            trailing_whitespace_issues = [
+                issue for issue in issues if issue.rule_id == "MD-004"
+            ]
+            fixed_content = original_content
+            if trailing_whitespace_issues:
+                # Remove trailing whitespace from each line
+                lines = original_content.splitlines(keepends=True)
+                fixed_lines = [line.rstrip() + ('\n' if line.endswith('\n') else '') for line in lines]
+                fixed_content = ''.join(fixed_lines)
+
+                # Count how many lines were fixed
+                num_fixed = sum(1 for orig, fixed in zip(lines, fixed_lines) if orig != fixed)
+                if num_fixed > 0:
+                    fixes_applied.append(f"Removed trailing whitespace from {num_fixed} line(s)")
+
             # Apply fixes if not in preview mode
             if not preview and fixes_applied:
                 # Create backup
                 backup_path = self._create_backup(file_path)
                 self.logger.info(f"Created backup: {backup_path}")
 
-                # Write updated frontmatter
-                add_frontmatter(file_path, metadata, preserve_content=True)
+                # Apply frontmatter fixes if needed
+                if needs_frontmatter or missing_fields_issues or tags_format_issues:
+                    add_frontmatter(file_path, metadata, preserve_content=True)
+
+                # Apply whitespace fixes if needed
+                if trailing_whitespace_issues and fixed_content != original_content:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(fixed_content)
+
                 self.logger.info(f"Applied {len(fixes_applied)} fix(es) to {file_path}")
 
             return AutoFixResult(
@@ -353,7 +377,7 @@ class AutoFixer:
             self.logger.debug(f"Auto-fixing {file_path}")
 
             # Only attempt to fix if there are fixable issues
-            fixable_rules = ["YAML-001", "YAML-002", "YAML-004"]
+            fixable_rules = ["YAML-001", "YAML-002", "YAML-004", "MD-004"]
             fixable_issues = [
                 issue for issue in issues
                 if issue.rule_id in fixable_rules
@@ -381,6 +405,7 @@ class AutoFixer:
             "YAML-001",  # Missing frontmatter
             "YAML-002",  # Missing required fields
             "YAML-004",  # Tags format (string → list)
+            "MD-004",    # Trailing whitespace
         ]
 
         return issue.rule_id in fixable_rules
