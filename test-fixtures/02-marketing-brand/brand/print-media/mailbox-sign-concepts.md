@@ -8,7 +8,7 @@ status: draft
 
 ## Design Option 1: Minimalist
 
-```
+```text
 ┌─────────────────────┐
 │  SYMPHONY CORE      │
 │  Suite 200          │
@@ -18,7 +18,7 @@ status: draft
 
 ## Design Option 2: Logo + Text
 
-```
+```text
 ┌─────────────────────┐
 │  [LOGO]             │
 │  Symphony Core      │
@@ -28,7 +28,7 @@ status: draft
 
 ## Design Option 3: Vertical Layout
 
-```
+```text
 ┌───────────┐
 │ SYMPHONY  │
 │   CORE    │

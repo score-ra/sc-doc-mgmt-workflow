@@ -13,7 +13,7 @@ status: draft
 
 Use semantic HTML5 elements:
 
-```
+```html
 <header class="site-header">
   <nav class="main-nav">
     <a href="/" class="logo">Symphony Core</a>
@@ -25,7 +25,7 @@ Use semantic HTML5 elements:
 
 Follow BEM naming:
 
-```
+```css
 .card {
   border: 1px solid #e5e7eb;
 }
