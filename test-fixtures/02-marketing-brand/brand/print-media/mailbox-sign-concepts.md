@@ -1,7 +1,7 @@
 ---
 title: Mailbox Sign Concepts
 tags: [print-media, signage, office]
-status: concepts
+status: draft
 ---
 
 # Mailbox Sign Concepts
