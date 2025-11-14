@@ -1,7 +1,7 @@
 ---
 title: Office Door Sign Concepts
 tags: [print-media, signage, office]
-status: concepts
+status: draft
 ---
 
 # Office Door Sign Concepts
