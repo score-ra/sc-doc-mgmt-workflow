@@ -463,11 +463,13 @@ def _run_auto_fix(
             # Validate first to find issues
             issues = yaml_validator.validate(doc)
 
-            # Try to fix each issue
-            for issue in issues:
-                if auto_fixer.can_fix(issue):
-                    result = auto_fixer.fix(doc, issue, preview=preview)
-                    results.append(result)
+            # Collect fixable issues
+            fixable_issues = [issue for issue in issues if auto_fixer.can_fix(issue)]
+
+            # Fix document if there are fixable issues
+            if fixable_issues:
+                result = auto_fixer.fix_document(doc, fixable_issues, preview=preview)
+                results.append(result)
 
     click.echo()
 
@@ -574,7 +576,11 @@ def _generate_autofix_report(
 
         for result in results:
             status = "WOULD FIX" if preview else "FIXED"
-            click.echo(f"[{status}] {result.file_path}: {result.description}")
+            fixes_summary = f"{len(result.fixes_applied)} fix(es)" if result.fixes_applied else "no fixes"
+            click.echo(f"[{status}] {result.file_path}: {fixes_summary}")
+            if result.fixes_applied:
+                for fix in result.fixes_applied:
+                    click.echo(f"    - {fix}")
 
         click.echo()
         click.echo("=" * 80)
