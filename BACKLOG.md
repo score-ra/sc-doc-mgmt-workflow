@@ -236,9 +236,97 @@ As a content contributor, I want automatic tagging so that I don't have to manua
 
 ---
 
+### 6. Intelligent Content Recommendations (8 points)
+
+**Epic**: Content Intelligence
+**Priority**: P1 - HIGH
+**Story Points**: 8
+**Estimated Effort**: 2 days
+
+**User Story:**
+As a documentation manager, I want intelligent recommendations on content improvements so that I can identify quality issues beyond validation rules.
+
+**Context:**
+Currently, the CLI only detects rule violations (naming, YAML, markdown). It doesn't provide insights on:
+- Content organization issues (misnamed files, wrong folders)
+- Metadata quality (generic tags, inaccurate status values)
+- Document structure problems (duplicate content, missing fields)
+- Best practice suggestions (cross-linking, categorization)
+
+**Requirements:**
+- [ ] Content analysis module that examines document corpus holistically
+- [ ] Detect mismatches between filename and content
+- [ ] Suggest better tags based on document content and location
+- [ ] Identify stale status values (e.g., "draft" on actively used docs)
+- [ ] Recommend folder reorganization opportunities
+- [ ] Suggest missing metadata fields
+- [ ] Identify duplicate or redundant content
+- [ ] Provide actionable recommendations with rationale
+- [ ] Optional `--recommendations` flag to enable feature
+- [ ] Separate recommendations report section
+
+**Acceptance Criteria:**
+- Analyze document corpus for structural and organizational issues
+- Generate actionable recommendations (not just rule violations)
+- Include "why" rationale for each recommendation
+- Recommendations organized by priority (high/medium/low)
+- Can run standalone or with validation
+- Performance: < 5 seconds additional overhead for 50 docs
+- No Claude API usage (rule-based heuristics only for v1)
+
+**Example Recommendations:**
+```
+CONTENT RECOMMENDATIONS:
+
+High Priority:
+  - kristina-tracking-info.md: Filename doesn't match content
+    Rationale: File contains "Kristina Caravetta" applicant info, not generic tracking template
+    Suggestion: Rename to 'kristina-caravetta.md'
+
+  - working-with-rohit-context-guide.md: Status is 'draft' but content is actively used
+    Rationale: Document is comprehensive and references active processes
+    Suggestion: Change status to 'active'
+
+Medium Priority:
+  - All documents have generic 'operations' tag
+    Rationale: Tags should be more specific for better organization
+    Suggestion: Use 'hiring', 'onboarding', 'templates' based on document purpose
+
+Low Priority:
+  - Templates missing 'category' metadata field
+    Rationale: Category field helps with document classification
+    Suggestion: Add 'category: templates' to template files
+```
+
+**Future Enhancements (v2):**
+- LLM-powered content analysis using Claude API
+- Semantic similarity detection
+- Writing style consistency checks
+- Readability scoring
+- SEO optimization suggestions
+
+**Value:**
+- Catch quality issues that rules can't detect
+- Improve documentation organization without manual review
+- Save 30-60 minutes per validation run on manual inspection
+- Proactive guidance reduces technical debt
+- Better document quality and discoverability
+
+**Dependencies:**
+- None (uses existing validation infrastructure)
+
+**Files to Create/Modify:**
+- `src/core/recommendation_engine.py` (NEW)
+- `src/reporting/recommendation_reporter.py` (NEW)
+- `src/cli.py` (add `--recommendations` flag)
+- `tests/core/test_recommendation_engine.py` (NEW)
+- `tests/reporting/test_recommendation_reporter.py` (NEW)
+
+---
+
 ## COULD HAVE (P2) - v1.4+
 
-### 6. Interactive Fix Mode (8 points)
+### 7. Interactive Fix Mode (8 points)
 
 **Epic**: User Experience
 **Priority**: P2 - MEDIUM
@@ -263,7 +351,7 @@ As a documentation manager, I want to review fixes interactively so that I maint
 
 ---
 
-### 7. Document Similarity Detection (13 points)
+### 8. Document Similarity Detection (13 points)
 
 **Epic**: Content Intelligence
 **Priority**: P2 - MEDIUM
@@ -286,7 +374,7 @@ As a documentation manager, I want to detect duplicate or similar content so tha
 
 ---
 
-### 8. VS Code Extension (13 points)
+### 9. VS Code Extension (13 points)
 
 **Epic**: Developer Tools
 **Priority**: P2 - MEDIUM
@@ -312,7 +400,7 @@ As a developer, I want real-time validation in VS Code so that I fix issues whil
 
 ## WON'T HAVE (P3) - v2.0+
 
-### 9. Web Dashboard (21 points)
+### 10. Web Dashboard (21 points)
 
 **Epic**: Visualization & Analytics
 **Priority**: P3 - LOW
@@ -337,7 +425,7 @@ As a team lead, I want a web dashboard so that I can see validation trends and t
 
 ---
 
-### 10. Multi-Language Support (13 points)
+### 11. Multi-Language Support (13 points)
 
 **Epic**: Format Support
 **Priority**: P3 - LOW
@@ -576,18 +664,18 @@ To add a feature request or enhancement:
 
 ## Backlog Health Metrics
 
-**Total Items**: 20
+**Total Items**: 21
 **Must Have (P0)**: 2 items, 13 points
-**Should Have (P1)**: 6 items, 45 points
+**Should Have (P1)**: 7 items, 53 points
 **Could Have (P2)**: 5 items, 52 points
 **Won't Have (P3)**: 7 items, 72 points
 
-**Total Points in Backlog**: 182 points
+**Total Points in Backlog**: 190 points
 **Estimated Timeline**: 6-12 months for all features
 
 ---
 
-**Last Updated**: 2025-11-13
+**Last Updated**: 2025-11-14
 **Next Review**: 2025-11-20
 **Owner**: Engineering Team
 **Status**: Active - v1.2 Complete, v1.3 Planning
