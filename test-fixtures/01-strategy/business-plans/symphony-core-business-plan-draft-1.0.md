@@ -8,6 +8,8 @@ status: draft
 
 This document outlines the business strategy for Symphony Core.
 
+## Financial Projections
+
 ### Profit and Loss Statement (With Monthly Detail)
 
 Here is the profit and loss statement for the first year.

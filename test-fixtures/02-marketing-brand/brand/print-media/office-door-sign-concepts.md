@@ -8,7 +8,7 @@ status: concepts
 
 ## Design Option 1: Professional Plate
 
-```
+```text
 ┌─────────────────────────────┐
 │  SYMPHONY CORE              │
 │  Document Management        │
@@ -18,7 +18,7 @@ status: concepts
 
 ## Design Option 2: Modern Minimalist
 
-```
+```text
 ┌─────────────────────┐
 │                     │
 │   [LOGO]            │
@@ -30,7 +30,7 @@ status: concepts
 
 ## Design Option 3: Glass Vinyl
 
-```
+```text
 ┌─────────────────────┐
 │  Symphony Core      │
 │  Suite 200          │

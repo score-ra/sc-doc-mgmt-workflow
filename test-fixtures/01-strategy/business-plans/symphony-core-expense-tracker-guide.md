@@ -10,7 +10,7 @@ status: active
 
 Use the following format in your CSV file:
 
-```
+```csv
 Date,Description,Amount,Category
 2025-01-15,Office Supplies,$45.00,Operations
 2025-01-16,AWS Hosting,$120.00,Infrastructure
@@ -20,7 +20,7 @@ Date,Description,Amount,Category
 
 Import your expense data using this command:
 
-```
+```bash
 import-expenses --file expenses.csv --validate
 ```
 
@@ -28,7 +28,7 @@ import-expenses --file expenses.csv --validate
 
 Generate monthly reports:
 
-```
+```bash
 generate-report --month 2025-01 --format pdf
 ```
 
@@ -36,7 +36,7 @@ generate-report --month 2025-01 --format pdf
 
 Match transactions with this SQL query:
 
-```
+```sql
 SELECT * FROM expenses
 WHERE category = 'Operations'
 AND amount > 100
